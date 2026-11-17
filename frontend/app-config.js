@@ -13,6 +13,10 @@
   else o = location.origin;
   window.API_ORIGIN = o;
   window.LA_APP_NATIVE = native;
+  // App Android mở trang từ máy chủ (vd. https://airhcmcity.asia): Capacitor vẫn gửi sự kiện tạm dừng / mở lại vào trang
+  // qua window.Capacitor.triggerEvent, nhưng trang web không nạp thư viện Capacitor → lỗi "reading 'triggerEvent'".
+  // Đặt hàm rỗng để bỏ qua; không đặt isNativePlatform nên kiểm tra "native" ở trên không bị ảnh hưởng.
+  if (/AirHCM-App/.test(navigator.userAgent || '') && !window.Capacitor) window.Capacitor = { triggerEvent: function () {} };
   // Các trang cũ viết cứng 'http://localhost:8000/...': chuyển hướng sang địa chỉ máy chủ đúng mà không phải sửa từng chỗ.
   if (o !== 'http://localhost:8000' && window.fetch) {
     var f = window.fetch.bind(window);

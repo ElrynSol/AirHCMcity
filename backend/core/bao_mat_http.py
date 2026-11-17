@@ -18,7 +18,9 @@ from core.config import COOKIE_NAME, CORS_ORIGINS
 _CDN_SCRIPT = "https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com"
 CSP = "; ".join([
     "default-src 'self'",
-    f"script-src 'self' 'unsafe-inline' {_CDN_SCRIPT}",           # trang dùng script nội tuyến + thư viện từ CDN
+    # trang dùng script nội tuyến + thư viện từ CDN; static.cloudflareinsights.com: Cloudflare Web Analytics
+    # (Cloudflare tự chèn khi web chạy qua tên miền + Cloudflare Tunnel, đếm lượt truy cập, không dùng cookie)
+    f"script-src 'self' 'unsafe-inline' {_CDN_SCRIPT} https://static.cloudflareinsights.com",
     f"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com {_CDN_SCRIPT}",
     "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
     "img-src 'self' data: blob: https:",                         # ảnh nền bản đồ (ArcGIS), biểu tượng Leaflet
@@ -57,7 +59,7 @@ class BaoMatHTTP(BaseHTTPMiddleware):
         h.setdefault("X-Content-Type-Options", "nosniff")
         h.setdefault("X-Frame-Options", "DENY")
         h.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-        h.setdefault("Permissions-Policy", "camera=(), microphone=(), payment=(), usb=(), geolocation=(self)")
+        h.setdefault("Permissions-Policy", "camera=(), microphone=(), payment=(), geolocation=(self)")
         h.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         if "text/html" in h.get("content-type", ""):
             h.setdefault("Content-Security-Policy", CSP + ("; upgrade-insecure-requests" if https else ""))
