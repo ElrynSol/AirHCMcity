@@ -206,6 +206,15 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
   và WHO; ô "Phường/xã của bạn" (gõ tên hoặc dùng vị trí GPS → PostGIS `ST_Contains`) hiện 3 ngày và lời khuyên; bấm phường trên
   bản đồ hoặc trong bảng xếp hạng để xem. Tùy chọn hiển thị và chỉ số kỹ thuật thu gọn.
 
+- **Dự báo** (`du-bao.html`): một câu tóm tắt 24 giờ tới, giờ đẹp nhất / nên tránh ra ngoài, lời khuyên theo nhóm người và việc định làm,
+  dải màu 24 giờ, 7 ngày có "Hôm nay / Ngày mai / Thứ…". Bỏ khung giờ thứ hai lấy từ CAMS thô (từng mâu thuẫn với dự báo học máy) và mục
+  "dự báo theo khu vực" (trả cùng một số cho mọi phường) — thay bằng lối tắt sang Bản đồ nhiệt. Mô hình, kỹ năng, yếu tố: mục "Chi tiết kỹ thuật".
+- **Thống kê** (`thong-ke.html`): câu tóm tắt (bao nhiêu ngày tốt / ô nhiễm, xu hướng), lịch màu mỗi ô một ngày, biểu đồ một trục có vạch WHO và
+  chuẩn Việt Nam (thay biểu đồ hai trục), tỉ lệ ngày theo mức, xếp hạng điểm đo kèm mức không khí.
+- **So sánh** (`so-sanh.html`): kết quả hiện ngay (tự chọn nơi nhiều bụi nhất – trung tâm – trong lành nhất), câu tóm tắt "gấp mấy lần",
+  thẻ từng nơi; so sánh theo phường/xã dùng dữ liệu PostGIS của máy chủ thay cho tải ranh giới từ GitHub. Màu 3 nơi theo bảng màu đã kiểm định cho người mù màu.
+- **Tổng quan**: thay thuật ngữ (chất chính, % ngưỡng QCVN) bằng "Đạt / Vượt chuẩn Việt Nam", "cao gấp … lần mức WHO khuyên"; giải thích AQI; câu xu hướng 14 ngày.
+
 ## Mã nguồn mở và bộ dữ liệu
 
 - Mã nguồn: giấy phép **MIT** (tệp `LICENSE`). Tự do dùng, sửa, phân phối; giữ lại thông báo bản quyền.

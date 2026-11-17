@@ -135,18 +135,19 @@
   </div>
 
   <div class="card">
-    <div class="tieu-de-the"><h3>24 giờ tới <span style="font-weight:500;color:var(--text-muted);font-size:13px">· PM2.5 dự báo theo giờ (µg/m³), màu theo mức AQI</span></h3><a class="lk" href="du-bao.html">Dự báo chi tiết →</a></div>
+    <div class="tieu-de-the"><h3>⏰ 24 giờ tới: khi nào nên ra ngoài? <span style="font-weight:500;color:var(--text-muted);font-size:13px">· mỗi cột là một giờ, cao = nhiều bụi mịn</span></h3><a class="lk" href="du-bao.html">Dự báo 7 ngày →</a></div>
+    <div class="chip-dong" id="chip24" style="margin-bottom:10px"></div>
     <div class="cot-bd" id="cot24"><span class="khung-cho" style="height:120px;width:100%"></span></div>
-    <div class="chip-dong" id="chip24" style="margin-top:12px"></div>
   </div>
 
   <div class="luoi2 hang-cho">
     <div class="card">
-      <div class="tieu-de-the"><h3>14 ngày qua</h3><a class="lk" href="thong-ke.html">Thống kê →</a></div>
+      <div class="tieu-de-the"><h3>📅 14 ngày qua</h3><a class="lk" href="thong-ke.html">Thống kê →</a></div>
+      <div id="xuHuongCau" style="font-size:14px;color:var(--text-2);line-height:1.55;margin-bottom:6px"></div>
       <div class="cot-bd" id="cot14"><span class="khung-cho" style="height:120px;width:100%"></span></div>
     </div>
     <div class="card">
-      <div class="tieu-de-the"><h3>Các trạm lúc này</h3><a class="lk" href="index.html">Bản đồ →</a></div>
+      <div class="tieu-de-the"><h3>📍 Các điểm đo lúc này</h3><a class="lk" href="ban-do-nhiet.html">Phường của bạn →</a></div>
       <div id="phanBo"><span class="khung-cho" style="height:18px"></span></div>
       <div class="cuc" id="cucTri"></div>
       <div id="theIot" style="margin-top:14px"></div>
@@ -154,14 +155,16 @@
   </div>
 
   <div class="card">
-    <div class="tieu-de-the"><h3>Xếp hạng trạm</h3>
-      <div class="xh-dk"><button class="chon" data-xep="tang">Sạch nhất trước</button><button data-xep="giam">Ô nhiễm nhất trước</button></div></div>
+    <div class="tieu-de-the"><h3>🏁 Nơi nào trong lành, nơi nào nhiều bụi?</h3>
+      <div class="xh-dk"><button class="chon" data-xep="tang">Trong lành nhất trước</button><button data-xep="giam">Nhiều bụi nhất trước</button></div></div>
     <div id="xepHang" style="overflow-x:auto"><span class="khung-cho" style="height:200px"></span></div>
   </div>
 
   <div class="loi-tat">
     <a href="index.html"><span class="bt">🗺️</span><b>Bản đồ</b><small>Trạm, phường/xã, bản đồ nhiệt</small></a>
-    <a href="du-bao.html"><span class="bt">🔮</span><b>Dự báo</b><small>Theo giờ, theo ngày, kịch bản</small></a>
+    <a href="du-bao.html"><span class="bt">🔮</span><b>Dự báo</b><small>24 giờ và 7 ngày tới</small></a>
+    <a href="ban-do-nhiet.html"><span class="bt">🏘️</span><b>Phường của bạn</b><small>Bản đồ màu 168 phường/xã</small></a>
+    <a href="kich-ban.html"><span class="bt">🎛️</span><b>Nếu… thì sao?</b><small>Mưa, gió, khí thải thay đổi</small></a>
     <a href="canh-bao.html"><span class="bt">🔔</span><b>Cảnh báo</b><small>Đăng ký nhận email</small></a>
     <a href="iot.html"><span class="bt">📡</span><b>Trạm IoT</b><small>Thời gian thực (mô phỏng)</small></a>
     <a href="phuong-phap.html"><span class="bt">🔬</span><b>Phương pháp</b><small>Cách tính & kiểm chứng</small></a>
@@ -206,13 +209,17 @@ function veAqi(d) {
   document.getElementById('taMuc').innerHTML = `<span style="color:${m.dam}">${m.bieuTuong} ${e(m.ten)}</span>`;
   document.getElementById('taYNghia').textContent = h.y_nghia || '';
   const c = [];
-  if (h.chat) c.push(`<span class="chip">Chất chính <b>${e(h.chat)}</b></span>`);
-  if (h.pm25 != null) c.push(`<span class="chip">PM2.5 <b>${so(h.pm25)}</b> µg/m³</span>`);
-  if (d.nguong.lan_who) c.push(`<span class="chip" title="Ngưỡng WHO 2021 cho PM2.5 trung bình 24 giờ: ${d.nguong.who} µg/m³">Gấp <b>${so(d.nguong.lan_who)}×</b> ngưỡng WHO</span>`);
-  if (d.nguong.phan_tram_qcvn != null) c.push(`<span class="chip" title="QCVN 05:2023: PM2.5 trung bình 24 giờ ${d.nguong.qcvn} µg/m³">${d.nguong.phan_tram_qcvn > 100 ? '⚠️ Vượt' : 'Bằng'} <b>${d.nguong.phan_tram_qcvn}%</b> ngưỡng QCVN</span>`);
+  if (h.pm25 != null) c.push(`<span class="chip">Bụi mịn PM2.5 <b>${so(h.pm25)}</b> µg/m³</span>`);
+  if (d.nguong.phan_tram_qcvn != null) c.push(d.nguong.phan_tram_qcvn > 100
+    ? `<span class="chip" title="QCVN 05:2023: PM2.5 trung bình 24 giờ ≤ ${d.nguong.qcvn} µg/m³">⚠️ <b>Vượt chuẩn Việt Nam</b></span>`
+    : `<span class="chip" title="QCVN 05:2023: PM2.5 trung bình 24 giờ ≤ ${d.nguong.qcvn} µg/m³">✅ <b>Đạt chuẩn Việt Nam</b></span>`);
+  if (d.nguong.lan_who) c.push(d.nguong.lan_who > 1
+    ? `<span class="chip" title="WHO 2021 khuyến nghị PM2.5 trung bình 24 giờ ≤ ${d.nguong.who} µg/m³">Cao gấp <b>${so(d.nguong.lan_who)} lần</b> mức WHO khuyên</span>`
+    : `<span class="chip">✅ <b>Đạt mức WHO khuyên</b></span>`);
   const hq = d.so_voi_hom_qua;
-  if (hq && hq.chenh != null) c.push(`<span class="chip">So với hôm qua <b class="${hq.chenh > 0 ? 'len' : hq.chenh < 0 ? 'xuong' : ''}">${hq.chenh > 0 ? '▲ ' + hq.chenh : hq.chenh < 0 ? '▼ ' + (-hq.chenh) : '='}</b></span>`);
-  document.getElementById('taChip').innerHTML = c.join('');
+  if (hq && hq.chenh != null) c.push(`<span class="chip">So với hôm qua <b class="${hq.chenh > 0 ? 'len' : hq.chenh < 0 ? 'xuong' : ''}">${hq.chenh > 0 ? '▲ xấu hơn' : hq.chenh < 0 ? '▼ tốt hơn' : 'không đổi'}</b></span>`);
+  document.getElementById('taChip').innerHTML = c.join('') +
+    '<div style="flex-basis:100%;font-size:12.5px;color:var(--text-muted);margin-top:4px">AQI là chỉ số chất lượng không khí từ 0 đến 500: <b>càng thấp càng tốt</b> (0–50 Tốt, 51–100 Trung bình, trên 100 bắt đầu ảnh hưởng sức khỏe).</div>';
   veKhuyenNghi();
 }
 
@@ -247,12 +254,15 @@ function veDuBao(db) {
   const c = [];
   if (db.khung_tot) c.push(`<span class="chip">✅ Nên ra ngoài <b>${gioNgan(db.khung_tot.tu)}–${gioNgan(db.khung_tot.den)}</b> ${ngayNgan(db.khung_tot.tu)}</span>`);
   if (db.khung_xau) c.push(`<span class="chip">⚠️ Nên tránh <b>${gioNgan(db.khung_xau.tu)}–${gioNgan(db.khung_xau.den)}</b> ${ngayNgan(db.khung_xau.tu)}</span>`);
-  if (db.aqi_cao_nhat) c.push(`<span class="chip">AQI cao nhất <b style="color:${AQI_VN.mauDam(db.aqi_cao_nhat)}">${db.aqi_cao_nhat}</b></span>`);
-  if (db.so_gio_tren_who != null) c.push(`<span class="chip">Số giờ PM2.5 > WHO <b>${db.so_gio_tren_who}/24</b></span>`);
+  if (db.aqi_cao_nhat) c.push(`<span class="chip">Mức xấu nhất ${AQI_VN.huyHieu(db.aqi_cao_nhat, true)}</span>`);
   chip.innerHTML = c.join('');
 }
 
 function veXuHuong(ds) {
+  const co = ds.filter(x => x.aqi != null), tot = co.filter(x => x.aqi <= 100).length, tuan = a => a.reduce((s, x) => s + (x.pm25 || 0), 0) / (a.length || 1);
+  const tr = co.length >= 8 ? (tuan(co.slice(-7)) - tuan(co.slice(-14, -7))) / (tuan(co.slice(-14, -7)) || 1) * 100 : 0;
+  document.getElementById('xuHuongCau').innerHTML = co.length ? `<b>${tot}/${co.length} ngày</b> không khí tốt hoặc trung bình. ` +
+    (Math.abs(tr) < 10 ? 'Tuần này <b>tương tự</b> tuần trước.' : `Tuần này <b style="color:${tr > 0 ? '#b42318' : '#137333'}">${tr > 0 ? 'nhiều bụi hơn' : 'ít bụi hơn'}</b> tuần trước khoảng ${so(Math.abs(tr), 0)}%.`) : '';
   veCot(document.getElementById('cot14'), ds.map((x, i) => ({
     nhan: (ds.length - i) % 2 === 1 ? ngayNgan(x.ngay) : '', gia_tri: x.aqi, aqi: x.aqi,
     tieu_de: `${ngayNgan(x.ngay)} · AQI ${x.aqi} (${x.muc}) · PM2.5 ${so(x.pm25)} µg/m³`
@@ -262,11 +272,11 @@ function veXuHuong(ds) {
 function vePhanBo(d) {
   const tong = d.xep_hang.length || 1, pb = d.phan_bo;
   document.getElementById('phanBo').innerHTML =
-    `<div style="font-size:13px;color:var(--text-2)"><b>${d.xep_hang.length}</b> trạm đang hoạt động</div>` +
+    `<div style="font-size:13px;color:var(--text-2)"><b>${d.xep_hang.length}</b> điểm đo đang hoạt động, chia theo mức không khí:</div>` +
     `<div class="phan-bo">${AQI_VN.THANG.map(m => `<span title="${m.ten}: ${pb[m.ten] || 0} trạm" style="width:${(pb[m.ten] || 0) / tong * 100}%;background:${m.mau}"></span>`).join('')}</div>` +
     `<div class="pb-chu">${AQI_VN.THANG.filter(m => pb[m.ten]).map(m => `<span><i style="background:${m.mau}"></i>${m.ten}: <b>${pb[m.ten]}</b></span>`).join('')}</div>`;
   const s = d.xep_hang[0], o = d.xep_hang[d.xep_hang.length - 1];
-  document.getElementById('cucTri').innerHTML = s ? `<div>🌿 Sạch nhất<b>${e(s.ma)} · ${e(s.ten)}</b>${AQI_VN.huyHieu(s.aqi)}</div><div>🏭 Ô nhiễm nhất<b>${e(o.ma)} · ${e(o.ten)}</b>${AQI_VN.huyHieu(o.aqi)}</div>` : '';
+  document.getElementById('cucTri').innerHTML = s ? `<div>🌿 Trong lành nhất<b>${e(s.ten)}</b>${AQI_VN.huyHieu(s.aqi)}</div><div>🏭 Nhiều bụi nhất<b>${e(o.ten)}</b>${AQI_VN.huyHieu(o.aqi)}</div>` : '';
   const iot = (d.iot || [])[0];
   document.getElementById('theIot').innerHTML = iot ? `<a href="iot.html" style="text-decoration:none;color:inherit"><div class="the-iot">
       <span class="so-iot" style="background:${AQI_VN.mau(iot.aqi)};color:${AQI_VN.mauChu(iot.aqi)}">${iot.aqi ?? '--'}</span>
@@ -277,8 +287,8 @@ function veXepHang() {
   if (!D) return;
   const ds = [...D.xep_hang]; if (xep === 'giam') ds.reverse();
   const max = Math.max(150, ...ds.map(x => x.aqi));
-  document.getElementById('xepHang').innerHTML = `<table class="xh"><thead><tr><th>#</th><th>Trạm</th><th>AQI</th><th class="an-dt">PM2.5 (µg/m³)</th><th class="an-dt" style="width:30%"></th></tr></thead><tbody>` +
-    ds.map((x, i) => `<tr><td class="hang">${i + 1}</td><td><b>${e(x.ma)}</b> · ${e(x.ten)}</td><td>${AQI_VN.huyHieu(x.aqi)}</td>
+  document.getElementById('xepHang').innerHTML = `<table class="xh"><thead><tr><th>#</th><th>Điểm đo</th><th>Mức không khí (AQI)</th><th class="an-dt">Bụi mịn (µg/m³)</th><th class="an-dt" style="width:30%"></th></tr></thead><tbody>` +
+    ds.map((x, i) => `<tr><td class="hang">${i + 1}</td><td><b>${e(x.ten)}</b> <span style="color:var(--text-muted);font-size:12px">${e(x.ma)}</span></td><td>${AQI_VN.huyHieu(x.aqi)}</td>
       <td class="an-dt" style="font-variant-numeric:tabular-nums">${so(x.pm25)}</td>
       <td class="an-dt"><div class="thanh"><span style="width:${(x.aqi / max * 100).toFixed(1)}%;background:${AQI_VN.mau(x.aqi)}"></span></div></td></tr>`).join('') + '</tbody></table>';
 }

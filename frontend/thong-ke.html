@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Thống kê chất lượng không khí – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="description" content="Không khí TP.HCM trong 30 ngày, 3 tháng, 1 năm qua: bao nhiêu ngày tốt, bao nhiêu ngày ô nhiễm, nơi nào bụi mịn nhiều nhất – AirHCM.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
@@ -17,26 +17,55 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
-<title>Thống kê chất lượng không khí</title>
+<title>Thống kê không khí</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="chart-theme.js"></script>
 <style>
-  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
-  .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
-  .kpi .l { font-size:11.5px; color:var(--text-muted); } .kpi .v { font-size:24px; font-weight:800; margin-top:4px; font-variant-numeric: tabular-nums; } .kpi .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } #content { padding:12px; } }
-  .luu-y { color:#888; font-size:12px; font-style:italic; margin:10px 0; }
-  .tag { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; }
-  .tag.ok { background:#e6f4ea; color:#137333; } .tag.warn { background:#fff4e5; color:#b45309; } .tag.bad { background:#fde7e9; color:#b3261e; } .tag.info { background:#e8f0fe; color:#1557b0; }
-  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-  .toolbar select { width:auto; min-width:150px; }
-  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:13px; }
-  
+  .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
+  .thanh-cong-cu { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .ky { display:inline-flex; background:#eef2f6; border-radius:10px; padding:3px; }
+  .ky button { border:0; background:none; padding:8px 14px; border-radius:8px; font:600 13.5px var(--font); color:var(--text-muted); cursor:pointer; }
+  .ky button.on { background:#fff; color:var(--text-main); box-shadow:0 1px 3px rgba(16,24,40,.12); }
+  .thanh-cong-cu select { padding:9px 10px; border-radius:8px; border:1px solid #d0d5dd; font:14px var(--font); background:#fff; max-width:100%; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:14px; }
+
+  .tom-tat { display:flex; gap:14px; align-items:flex-start; }
+  .tom-tat .bt { font-size:44px; line-height:1; }
+  .tom-tat .cau { font-size:18px; font-weight:700; line-height:1.45; }
+  .tom-tat .phu { font-size:14px; color:var(--text-2); margin-top:6px; line-height:1.65; }
+  .muc { display:inline-flex; align-items:center; gap:5px; padding:2px 10px; border-radius:999px; font-weight:700; font-size:13px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); white-space:nowrap; }
+
+  .o-so { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-top:16px; }
+  .o-so > div { background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+  .o-so .l { font-size:13px; color:var(--text-muted); } .o-so .v { font-size:26px; font-weight:800; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .o-so .s { font-size:12.5px; color:var(--text-muted); margin-top:2px; line-height:1.45; }
+
+  /* Lịch màu: mỗi ô một ngày */
+  .lich { display:grid; grid-template-columns:repeat(auto-fill,minmax(18px,1fr)); gap:3px; }
+  .lich span { aspect-ratio:1; border-radius:4px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.08); cursor:default; }
+  .lich span.trong { background:#eef1f5; }
+  .chu-giai { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; margin-top:10px; color:var(--text-2); }
+  .chu-giai i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:4px; vertical-align:-1px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.1); }
+
+  .thanh-muc { display:flex; height:22px; border-radius:11px; overflow:hidden; gap:2px; margin:6px 0 8px; }
+  .thanh-muc div { display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; min-width:0; overflow:hidden; }
+  .hai-cot { display:grid; grid-template-columns:1fr 1fr; gap:16px; } .hai-cot > * { min-width:0; }
+  @media (max-width:760px) { .hai-cot { grid-template-columns:1fr; } }
+
+  table.xh { width:100%; border-collapse:collapse; box-shadow:none; display:table; white-space:normal; font-size:14px; }
+  table.xh th { text-align:left; font-size:12px; color:var(--text-muted); font-weight:600; padding:7px 8px; border-bottom:1px solid var(--border); background:none; }
+  table.xh td { padding:9px 8px; border-bottom:1px solid #f0f2f5; vertical-align:middle; }
+  table.xh .r { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  table.xh small { color:var(--text-muted); }
+  .ray { height:8px; border-radius:999px; background:#eef2f6; overflow:hidden; min-width:70px; }
+  .ray span { display:block; height:100%; border-radius:999px; }
+  @media (max-width:640px) { table.xh .an-dt { display:none; } }
+  details.mo-rong summary { cursor:pointer; color:var(--primary); font-weight:600; font-size:13.5px; }
+  .luu-y { color:var(--text-muted); font-size:12.5px; line-height:1.6; }
+  canvas { max-width:100%; }
 </style>
 </head>
 <body>
-
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
@@ -57,82 +86,174 @@
 <script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
 
 <div id="content">
+  <div class="hero"><h2>📈 Không khí TP.HCM thời gian qua</h2>
+    <div class="sub">Bao nhiêu ngày không khí tốt, bao nhiêu ngày ô nhiễm, tháng nào và nơi nào bụi mịn nhiều nhất.</div></div>
 
-  <div class="hero"><h2>📈 Thống kê chất lượng không khí</h2><div class="sub">Xu hướng, phân bố mức AQI và số ngày vượt ngưỡng QCVN 05:2023/BTNMT</div></div>
-
-  <div class="toolbar">
-    <select id="chonKy" onchange="tai()"><option value="30">30 ngày</option><option value="90" selected>90 ngày</option><option value="180">180 ngày</option><option value="365">1 năm</option></select>
-    <select id="chonTram" onchange="tai()"><option value="">Toàn thành phố (TB các trạm)</option></select>
+  <div class="thanh-cong-cu">
+    <div class="ky" id="chonKy" role="tablist">
+      <button data-ky="30">30 ngày</button><button data-ky="90" class="on">3 tháng</button><button data-ky="180">6 tháng</button><button data-ky="365">1 năm</button>
+    </div>
+    <select id="chonTram" aria-label="Khu vực"><option value="">Toàn thành phố</option></select>
   </div>
   <div id="thongBaoLoi"></div>
 
-  <div class="kpis" id="kpis"></div>
+  <div class="card">
+    <div class="tom-tat"><div class="bt" id="ttIcon">📊</div><div><div class="cau" id="ttCau">Đang tải…</div><div class="phu" id="ttPhu"></div></div></div>
+    <div class="o-so" id="oSo"></div>
+  </div>
 
-  <div class="card"><h3>📉 Diễn biến theo ngày</h3><canvas id="cNgay" height="110"></canvas></div>
-  <div class="grid2">
-    <div class="card"><h3>🧮 Phân bố mức AQI (số ngày)</h3><canvas id="cPhanBo" height="200"></canvas></div>
-    <div class="card"><h3>🗓️ PM2.5 trung bình theo tháng</h3><canvas id="cThang" height="200"></canvas></div>
+  <div class="card">
+    <h3>🗓️ Mỗi ô là một ngày</h3>
+    <p class="goi-y">Màu theo mức không khí của ngày đó. Rê chuột (hoặc chạm) vào một ô để xem chi tiết.</p>
+    <div class="lich" id="lich"></div>
+    <div class="chu-giai" id="chuGiaiLich"></div>
   </div>
-  <div class="card" id="cardTram"><h3>🏁 Xếp hạng trạm trong kỳ (PM2.5 trung bình)</h3>
-    <table><thead><tr><th>#</th><th>Trạm</th><th>PM2.5 TB (µg/m³)</th><th>Số ngày &gt; 50</th></tr></thead><tbody id="bangTram"></tbody></table>
+
+  <div class="card">
+    <h3>📉 Bụi mịn PM2.5 mỗi ngày</h3>
+    <p class="goi-y">Đường <b style="color:#16a34a">xanh nét đứt</b> là mức WHO khuyến nghị (15 µg/m³), đường <b style="color:#dc2626">đỏ nét đứt</b> là giới hạn chuẩn Việt Nam (50 µg/m³). Càng thấp càng tốt.</p>
+    <canvas id="cNgay" height="110" aria-label="Biểu đồ bụi mịn PM2.5 theo ngày"></canvas>
   </div>
-  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian.</summary><div style="margin-top:6px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b>, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
-  <p class="luu-y">* Ngưỡng so sánh: PM2.5 trung bình 24 giờ = 50 µg/m³ (QCVN 05:2023/BTNMT). AQI tính từ PM2.5, PM10, O₃.</p>
+
+  <div class="hai-cot">
+    <div class="card">
+      <h3>🧮 Bao nhiêu ngày ở mỗi mức?</h3>
+      <div class="thanh-muc" id="thanhMuc"></div>
+      <div class="chu-giai" id="chuMuc"></div>
+    </div>
+    <div class="card">
+      <h3>🗓️ Bụi mịn trung bình theo tháng</h3>
+      <canvas id="cThang" height="190" aria-label="Biểu đồ bụi mịn trung bình theo tháng"></canvas>
+    </div>
+  </div>
+
+  <div class="card" id="cardTram">
+    <h3>🏁 Nơi nào bụi mịn nhiều nhất?</h3>
+    <p class="goi-y">Xếp theo bụi mịn trung bình trong khoảng thời gian đã chọn, nhiều nhất ở trên.</p>
+    <div style="overflow-x:auto"><table class="xh"><thead><tr><th>#</th><th>Điểm đo</th><th class="r">Bụi mịn TB</th><th>Mức</th><th class="r an-dt">Ngày vượt chuẩn VN</th><th class="an-dt" style="width:22%"></th></tr></thead><tbody id="bangTram"></tbody></table></div>
+  </div>
+
+  <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
+    <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ là cột khí đo từ
+      vệ tinh Sentinel-5P (trễ 2–3 tuần). Giá trị theo từng điểm đo là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất.
+      Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT), tính từ PM2.5, PM10, O₃. Chuẩn Việt Nam: PM2.5 trung bình 24 giờ ≤ 50 µg/m³ (QCVN 05:2023/BTNMT);
+      khuyến nghị WHO 2021: ≤ 15 µg/m³. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
+  </details>
 </div>
 
 <script>
-const API = 'http://localhost:8000/api/v1';
-const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
-const hoTen = localStorage.getItem('ho_ten');
-const userBox = document.getElementById('userBox');
-userBox.innerHTML = token
-  ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
+const API = (window.API_ORIGIN || '') + '/api/v1';
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const so = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
+const ngay = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) : '--';
+const ngayDu = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) + '/' + s.slice(0, 4) : '--';
+const theMuc = m => `<span class="muc" style="background:${m.mau};color:${m.chu}">${m.bieuTuong || ''} ${esc(m.ten)}</span>`;
+const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
+document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
-async function goiApi(path, opt = {}) {
-  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} try { localStorage.clear(); } catch (e) {} location.reload(); }
+async function goiApi(path) {
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 30000);
   try {
-    const r = await fetch(API + path, { signal: ctl.signal, ...opt });
+    const r = await fetch(API + path, { signal: ctl.signal });
     const d = await r.json().catch(() => null);
     if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
     return d;
   } catch (e) {
     if (e.name === 'AbortError') throw new Error('Máy chủ phản hồi quá lâu, vui lòng thử lại.');
-    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra máy chủ đã chạy chưa.');
     throw e;
   } finally { clearTimeout(to); }
 }
-const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-</script>
 
-<script>
-const MAU = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));  // màu chuẩn QĐ 1459
-const charts = {};
+const WHO = 15, QCVN = 50, charts = {};
+let ky = 90;
 function ve(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
-goiApi('/tram').then(ds => { const s = document.getElementById('chonTram'); ds.forEach(t => s.insertAdjacentHTML('beforeend', `<option value="${t.id}">${esc(t.ma_tram)} - ${esc(t.ten_tram)}</option>`)); }).catch(() => {});
+const TEN_KY = { 30: '30 ngày qua', 90: '3 tháng qua', 180: '6 tháng qua', 365: '1 năm qua' };
+
+goiApi('/tram').then(ds => { const s = document.getElementById('chonTram');
+  ds.forEach(t => s.insertAdjacentHTML('beforeend', `<option value="${t.id}">${esc(t.ten_tram)} (${esc(t.ma_tram)})</option>`)); }).catch(() => {});
+
 async function tai() {
-  const ky = document.getElementById('chonKy').value, tr = document.getElementById('chonTram').value;
-  const box = document.getElementById('thongBaoLoi'); box.innerHTML = '';
+  const tr = document.getElementById('chonTram').value, box = document.getElementById('thongBaoLoi'); box.innerHTML = '';
   try {
     const d = await goiApi(`/thong-ke?so_ngay=${ky}` + (tr ? `&tram_id=${tr}` : ''));
     if (d.error) throw new Error(d.error);
-    const xn = d.ngay_xau_nhat;
-    document.getElementById('kpis').innerHTML = `
-      <div class="kpi"><div class="l">PM2.5 trung bình</div><div class="v">${d.pm25_tb ?? '--'}</div><div class="s">µg/m³ · ${d.tu_ngay} → ${d.den_ngay}</div></div>
-      <div class="kpi"><div class="l">PM2.5 cao nhất / thấp nhất</div><div class="v">${d.pm25_max ?? '--'} / ${d.pm25_min ?? '--'}</div><div class="s">µg/m³ (TB ngày)</div></div>
-      <div class="kpi"><div class="l">Số ngày PM2.5 &gt; 50</div><div class="v" style="color:${d.ngay_vuot_pm25_qcvn ? '#c62828' : '#2e7d32'}">${d.ngay_vuot_pm25_qcvn}</div><div class="s">trên ${d.so_ngay} ngày có dữ liệu</div></div>
-      <div class="kpi"><div class="l">Ngày xấu nhất</div><div class="v">${xn ? xn.aqi : '--'}</div><div class="s">${xn ? xn.ngay + ' · ' + xn.muc_do : ''}</div></div>`;
-    ve('cNgay', { type: 'line', data: { labels: d.theo_ngay.map(x => x.ngay), datasets: [
-      { label: 'PM2.5 (µg/m³)', data: d.theo_ngay.map(x => x.pm25), borderColor: '#e65100', backgroundColor: '#e6510022', fill: true, tension: .3, pointRadius: 0, yAxisID: 'y' },
-      { label: 'AQI', data: d.theo_ngay.map(x => x.aqi), borderColor: '#1a73e8', tension: .3, pointRadius: 0, yAxisID: 'y1' }] },
-      options: { responsive: true, interaction: { mode: 'index', intersect: false }, scales: { y: { title: { display: true, text: 'PM2.5' } }, y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'AQI' } }, x: { ticks: { maxTicksLimit: 8 } } } } });
-    const mucs = Object.keys(MAU).filter(m => d.phan_bo_muc_do[m]);
-    ve('cPhanBo', { type: 'bar', data: { labels: mucs, datasets: [{ data: mucs.map(m => d.phan_bo_muc_do[m]), backgroundColor: mucs.map(m => MAU[m]) }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
-    ve('cThang', { type: 'bar', data: { labels: d.theo_thang.map(x => x.thang), datasets: [{ label: 'PM2.5 TB', data: d.theo_thang.map(x => x.pm25_tb), backgroundColor: '#1a73e8' }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
-    document.getElementById('cardTram').style.display = d.theo_tram.length ? '' : 'none';
-    document.getElementById('bangTram').innerHTML = d.theo_tram.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.ma_tram)} - ${esc(t.ten_tram)}</td><td><b>${t.pm25_tb ?? '--'}</b></td><td>${t.ngay_vuot_pm25} / ${t.so_ngay}</td></tr>`).join('');
+    veTomTat(d, tr); veLich(d); veDuong(d); veMuc(d); veThang(d); veTram(d);
   } catch (e) { box.innerHTML = `<div class="loi">${esc(e.message)}</div>`; }
 }
+
+function veTomTat(d, tr) {
+  const ds = d.theo_ngay.filter(x => x.pm25 != null), n = ds.length || 1;
+  const pb = d.phan_bo_muc_do || {}, tot = pb['Tốt'] || 0, tb = pb['Trung bình'] || 0, oNhiem = n - tot - tb;
+  const noi = tr ? document.getElementById('chonTram').selectedOptions[0].textContent : 'TP.HCM';
+  const mTb = AQI_VN.muc(AQI_VN.aqiTuPM25(d.pm25_tb));
+  const trenWho = ds.filter(x => x.pm25 > WHO).length;
+  // Xu hướng: nửa sau so với nửa đầu của kỳ
+  const nua = Math.floor(ds.length / 2), tb1 = ds.slice(0, nua).reduce((s, x) => s + x.pm25, 0) / (nua || 1), tb2 = ds.slice(nua).reduce((s, x) => s + x.pm25, 0) / ((ds.length - nua) || 1);
+  const xh = tb1 ? (tb2 - tb1) / tb1 * 100 : 0;
+  document.getElementById('ttIcon').textContent = oNhiem === 0 ? '😊' : oNhiem <= 3 ? '🙂' : '😷';
+  document.getElementById('ttCau').innerHTML = `Trong ${TEN_KY[ky]}, ${esc(noi)} có <b>${tot + tb} trên ${n} ngày</b> không khí ở mức tốt hoặc trung bình` +
+    (oNhiem ? `, <b>${oNhiem} ngày ô nhiễm</b> (kém trở lên).` : ', không có ngày nào ô nhiễm.');
+  document.getElementById('ttPhu').innerHTML = `Bụi mịn trung bình <b>${so(d.pm25_tb)} µg/m³</b> ${theMuc(mTb)} — ` +
+    (d.pm25_tb > QCVN ? '<b>vượt chuẩn Việt Nam</b>.' : d.pm25_tb > WHO ? `đạt chuẩn Việt Nam nhưng <b>cao hơn mức WHO khuyến nghị</b>; ${trenWho}/${n} ngày vượt mức WHO.` : 'đạt cả chuẩn Việt Nam và khuyến nghị WHO.') +
+    (Math.abs(xh) >= 10 ? ` Gần đây không khí đang <b style="color:${xh > 0 ? '#b42318' : '#137333'}">${xh > 0 ? 'xấu đi' : 'tốt lên'}</b> (bụi mịn ${xh > 0 ? 'tăng' : 'giảm'} khoảng ${so(Math.abs(xh), 0)}% so với đầu kỳ).` : ' Mức bụi mịn khá ổn định trong suốt kỳ.');
+  const xn = d.ngay_xau_nhat, mXn = xn ? AQI_VN.muc(xn.aqi) : null;
+  document.getElementById('oSo').innerHTML = `
+    <div><div class="l">Bụi mịn trung bình</div><div class="v">${so(d.pm25_tb)} <small style="font-size:13px">µg/m³</small></div><div class="s">${ngayDu(d.tu_ngay)} → ${ngayDu(d.den_ngay)}</div></div>
+    <div><div class="l">Ngày vượt chuẩn Việt Nam</div><div class="v" style="color:${d.ngay_vuot_pm25_qcvn ? '#b42318' : '#137333'}">${d.ngay_vuot_pm25_qcvn}</div><div class="s">bụi mịn trên 50 µg/m³</div></div>
+    <div><div class="l">Ngày trong lành nhất</div><div class="v">${so(d.pm25_min)} <small style="font-size:13px">µg/m³</small></div><div class="s">bụi mịn thấp nhất trong kỳ</div></div>
+    <div><div class="l">Ngày ô nhiễm nhất</div><div class="v">${xn ? ngay(xn.ngay) : '--'}</div><div class="s">${xn ? `${mXn.bieuTuong || ''} ${esc(xn.muc_do)} · bụi mịn ${so(d.pm25_max)} µg/m³` : ''}</div></div>`;
+}
+
+function veLich(d) {
+  const nhan = AQI_VN.THANG.filter(m => d.theo_ngay.some(x => x.aqi != null && AQI_VN.muc(x.aqi).ten === m.ten));
+  document.getElementById('lich').innerHTML = d.theo_ngay.map(x => { const m = AQI_VN.muc(x.aqi);
+    return x.aqi == null ? `<span class="trong" title="${ngayDu(x.ngay)}: chưa có số liệu"></span>`
+      : `<span style="background:${m.mau}" title="${ngayDu(x.ngay)}: ${m.ten} · bụi mịn ${so(x.pm25)} µg/m³"></span>`; }).join('');
+  document.getElementById('chuGiaiLich').innerHTML = nhan.map(m => `<span><i style="background:${m.mau}"></i>${m.bieuTuong || ''} ${esc(m.ten)}</span>`).join('') +
+    `<span style="color:var(--text-muted)">· từ ${ngayDu(d.tu_ngay)} (trên, trái) đến ${ngayDu(d.den_ngay)}</span>`;
+}
+
+function veDuong(d) {
+  const nhan = d.theo_ngay.map(x => ngay(x.ngay));
+  ve('cNgay', { type: 'line', data: { labels: nhan, datasets: [
+      { label: 'Bụi mịn PM2.5 (µg/m³)', data: d.theo_ngay.map(x => x.pm25), borderColor: '#1b63d6', backgroundColor: 'rgba(27,99,214,.10)', fill: true, borderWidth: 2, tension: .3, pointRadius: 0, pointHoverRadius: 5 },
+      { label: 'WHO khuyến nghị (15)', data: nhan.map(() => WHO), borderColor: '#16a34a', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false },
+      { label: 'Chuẩn Việt Nam (50)', data: nhan.map(() => QCVN), borderColor: '#dc2626', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false }] },
+    options: { responsive: true, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.datasetIndex ? c.dataset.label : `Bụi mịn ${so(c.parsed.y)} µg/m³ · ${AQI_VN.ten(AQI_VN.aqiTuPM25(c.parsed.y))}` } } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'µg/m³' } }, x: { ticks: { maxTicksLimit: 8, maxRotation: 0 } } } } });
+}
+
+function veMuc(d) {
+  const pb = d.phan_bo_muc_do || {}, ds = AQI_VN.THANG.filter(m => pb[m.ten]), tong = ds.reduce((s, m) => s + pb[m.ten], 0) || 1;
+  document.getElementById('thanhMuc').innerHTML = ds.map(m => `<div style="flex:${pb[m.ten]};background:${m.mau};color:${m.chu}" title="${esc(m.ten)}: ${pb[m.ten]} ngày">${pb[m.ten] / tong > .08 ? Math.round(pb[m.ten] / tong * 100) + '%' : ''}</div>`).join('');
+  document.getElementById('chuMuc').innerHTML = ds.map(m => `<span><i style="background:${m.mau}"></i>${m.bieuTuong || ''} ${esc(m.ten)}: <b>${pb[m.ten]} ngày</b> (${Math.round(pb[m.ten] / tong * 100)}%)</span>`).join('');
+}
+
+function veThang(d) {
+  const TH = ['', 'Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+  ve('cThang', { type: 'bar', data: { labels: d.theo_thang.map(x => `${TH[+x.thang.slice(5, 7)]}/${x.thang.slice(0, 4)}`),
+      datasets: [{ label: 'Bụi mịn TB (µg/m³)', data: d.theo_thang.map(x => x.pm25_tb), backgroundColor: d.theo_thang.map(x => AQI_VN.mau(AQI_VN.aqiTuPM25(x.pm25_tb))),
+        borderColor: '#344054', borderWidth: 1, borderRadius: 4, maxBarThickness: 48 }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Bụi mịn TB ${so(c.parsed.y)} µg/m³ · ${AQI_VN.ten(AQI_VN.aqiTuPM25(c.parsed.y))}` } } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'µg/m³' } }, x: { grid: { display: false } } } } });
+}
+
+function veTram(d) {
+  document.getElementById('cardTram').style.display = d.theo_tram.length ? '' : 'none';
+  const max = Math.max(...d.theo_tram.map(t => t.pm25_tb || 0), 1);
+  document.getElementById('bangTram').innerHTML = d.theo_tram.map((t, i) => { const m = AQI_VN.muc(AQI_VN.aqiTuPM25(t.pm25_tb));
+    return `<tr><td style="color:var(--text-muted);font-weight:700">${i + 1}</td><td><b>${esc(t.ten_tram)}</b><br><small>${esc(t.ma_tram)}</small></td>
+      <td class="r"><b>${so(t.pm25_tb)}</b> <small>µg/m³</small></td><td>${theMuc(m)}</td>
+      <td class="r an-dt">${t.ngay_vuot_pm25} <small>/ ${t.so_ngay} ngày</small></td>
+      <td class="an-dt"><div class="ray"><span style="width:${(t.pm25_tb / max * 100).toFixed(1)}%;background:${m.mau}"></span></div></td></tr>`; }).join('');
+}
+
+document.getElementById('chonKy').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return;
+  ky = +b.dataset.ky; document.querySelectorAll('#chonKy button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); }); tai(); });
+document.getElementById('chonTram').addEventListener('change', tai);
 tai();
 </script>
 <script src="nav.js"></script>
