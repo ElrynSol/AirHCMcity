@@ -42,12 +42,14 @@ fi
 xanh "[3/6] Mở cổng 80, 443 (HTTP/HTTPS) trong iptables..."
 for p in "tcp 80" "tcp 443" "udp 443"; do
   set -- $p
+  # Oracle: chèn trước quy tắc REJECT (vị trí 5). Google Cloud/AWS: chuỗi INPUT trống → chèn đầu chuỗi.
+  VT=1; [ "$($SUDO iptables -S INPUT | grep -c '^-A')" -ge 4 ] && VT=5
   $SUDO iptables -C INPUT -p "$1" --dport "$2" -m state --state NEW -j ACCEPT 2>/dev/null \
-    || $SUDO iptables -I INPUT 5 -p "$1" --dport "$2" -m state --state NEW -j ACCEPT
+    || $SUDO iptables -I INPUT "$VT" -p "$1" --dport "$2" -m state --state NEW -j ACCEPT
 done
 if command -v netfilter-persistent >/dev/null 2>&1; then $SUDO netfilter-persistent save >/dev/null 2>&1 || true
 else $SUDO apt-get install -y iptables-persistent >/dev/null 2>&1 && $SUDO netfilter-persistent save >/dev/null 2>&1 || true; fi
-vang "    Nhớ mở thêm cổng 80, 443 ở Oracle Cloud: VCN → Security List → Add Ingress Rules (xem docs/TRIEN_KHAI_ORACLE.md)"
+vang "    Nhớ mở cổng 80, 443 ở nhà cung cấp: Oracle → VCN → Security List; Google Cloud → tick Allow HTTP/HTTPS traffic khi tạo máy"
 
 # ---------------------------------------------------------------- 4. Tệp cấu hình .env
 khoa() { head -c 48 /dev/urandom | base64 | tr -d '/+=\n' | head -c "$1"; }
