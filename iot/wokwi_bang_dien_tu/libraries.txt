@@ -1,0 +1,4 @@
+# Thư viện Arduino cho Wokwi (tab Library Manager)
+PubSubClient
+ArduinoJson
+LiquidCrystal I2C

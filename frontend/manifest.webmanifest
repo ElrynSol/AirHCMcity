@@ -1,0 +1,22 @@
+{
+  "name": "AQI TP.HCM – Giám sát, quản lý & dự báo chất lượng không khí",
+  "short_name": "AQI TP.HCM",
+  "description": "Bản đồ chất lượng không khí, dự báo PM2.5, kịch bản và bản đồ nhiệt cho TP.HCM",
+  "lang": "vi",
+  "start_url": "./tong-quan.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f1f4f9",
+  "theme_color": "#0b2545",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Dự báo", "url": "du-bao.html" },
+    { "name": "Kịch bản", "url": "kich-ban.html" },
+    { "name": "Bản đồ nhiệt", "url": "ban-do-nhiet.html" }
+  ]
+}

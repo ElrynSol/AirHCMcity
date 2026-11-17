@@ -1,0 +1,27 @@
+{
+  "appId": "vn.edu.aqi.hcm",
+  "appName": "AirHCM",
+  "webDir": "www",
+  "appendUserAgent": "AirHCM-App",
+  "backgroundColor": "#0b2545",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "allowNavigation": ["*"],
+    "errorPath": "loi.html"
+  },
+  "android": {
+    "appendUserAgent": "AirHCM-App",
+    "backgroundColor": "#0b2545"
+  },
+  "plugins": {
+    "BackgroundRunner": {
+      "label": "vn.edu.aqi.hcm.kiemtraaqi",
+      "src": "runners/kiem_tra_aqi.js",
+      "event": "kiemTraAQI",
+      "repeat": true,
+      "interval": 30,
+      "autoStart": true
+    }
+  }
+}

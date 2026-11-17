@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2545">
+<title>AirHCM</title>
+<!-- Trang khởi động của app: tìm máy chủ AirHCM rồi mở web từ máy chủ đó.
+     Thứ tự thử: máy chủ đã lưu → máy ảo Android (10.0.2.2 = máy tính chạy máy ảo) → IP Wi-Fi mặc định.
+     Mở lại trang này với ?doi_may_chu=1 để chọn máy chủ khác. -->
+<style>
+  :root { --navy: #0b2545; --primary: #1b63d6; --accent: #14b8a6; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #fff;
+    background: radial-gradient(500px 300px at 100% 0%, rgba(20,184,166,.35), transparent 60%),
+                linear-gradient(160deg, #0b2545 0%, #12396b 55%, #1b63d6 120%);
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
+  }
+  .logo { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  h1 { margin: 16px 0 2px; font-size: 26px; letter-spacing: -.02em; }
+  .sub { opacity: .75; font-size: 14px; margin-bottom: 26px; text-align: center; }
+  .the { width: 100%; max-width: 380px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16);
+         border-radius: 18px; padding: 16px; backdrop-filter: blur(8px); }
+  .dong { display: flex; align-items: center; gap: 10px; padding: 9px 4px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .dong:last-child { border-bottom: 0; }
+  .dong .dc { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .9; }
+  .dong .tt { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: rgba(255,255,255,.14); }
+  .tt.ok { background: #16a34a; } .tt.loi { background: rgba(239,68,68,.85); } .tt.dang { background: rgba(255,255,255,.18); }
+  .vong { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: quay .8s linear infinite; flex: none; }
+  @keyframes quay { to { transform: rotate(360deg); } }
+  .trang-thai { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 4px 0 14px; font-size: 14.5px; font-weight: 600; min-height: 22px; }
+  label { display: block; font-size: 13px; opacity: .8; margin: 14px 0 6px; }
+  input { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.18);
+          color: #fff; font-size: 16px; outline: none; }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(20,184,166,.3); }
+  button { width: 100%; margin-top: 10px; padding: 14px; border: 0; border-radius: 12px; font-size: 15.5px; font-weight: 700; cursor: pointer; }
+  .chinh { background: #fff; color: var(--navy); }
+  .phu { background: rgba(255,255,255,.12); color: #fff; }
+  .goi-y { font-size: 12.5px; opacity: .7; margin-top: 14px; line-height: 1.55; }
+  .an { display: none; }
+</style>
+</head>
+<body>
+  <img class="logo" src="icon-192.png" alt="">
+  <h1>AirHCM</h1>
+  <div class="sub">Giám sát chất lượng không khí TP.HCM</div>
+
+  <div class="the">
+    <div class="trang-thai" id="trangThai" aria-live="polite"><span class="vong"></span><span>Đang tìm máy chủ…</span></div>
+    <div id="dsThu"></div>
+
+    <div id="khungNhap" class="an">
+      <label for="oDiaChi">Địa chỉ máy chủ (máy tính chạy backend)</label>
+      <input id="oDiaChi" type="url" inputmode="url" autocomplete="off" placeholder="https://ten-mien hoặc http://192.168.1.x:8000">
+      <button class="chinh" id="nutKetNoi">Kết nối</button>
+      <button class="phu" id="nutThuLai">Thử lại tự động</button>
+      <div class="goi-y">
+        • <b>Máy ảo Android</b>: dùng <code>http://10.0.2.2:8000</code><br>
+        • <b>Điện thoại thật</b>: cùng Wi-Fi với máy tính, chạy backend bằng <code>chay_server_dien_thoai.bat</code>, nhập IP Wi-Fi của máy tính (lệnh <code>ipconfig</code>)<br>
+        • <b>Dùng mọi nơi (4G/Wi-Fi bất kỳ)</b>: địa chỉ <code>https://…</code> của máy chủ đã triển khai lên Internet
+      </div>
+    </div>
+  </div>
+
+<script src="may_chu.js"></script>
+<script>
+(function () {
+  // Thứ tự thử: máy chủ đã lưu → máy chủ công khai trên Internet (may_chu.js, ghi khi build từ TEN_MIEN trong .env)
+  // → máy ảo Android → IP Wi-Fi máy tính lúc build. Đổi được ngay trong app nếu địa chỉ thay đổi.
+  var MAC_DINH = (window.AIRHCM_MAY_CHU || []).concat(['http://10.0.2.2:8000', 'http://192.168.1.227:8000']);
+  var NHAN_TAC_VU_NEN = 'vn.edu.aqi.hcm.kiemtraaqi';
+  var KHOA = 'may_chu_airhcm';
+  var $ = function (id) { return document.getElementById(id); };
+  var doiMay = /[?&]doi_may_chu=1/.test(location.search);
+
+  function chuan(u) {
+    u = (u || '').trim().replace(/\/+$/, '');
+    if (u && !/^https?:\/\//i.test(u)) u = 'http://' + u;
+    if (/^http:\/\/[^/:]+$/i.test(u)) u += ':8000';      // thiếu cổng → mặc định 8000
+    return u;
+  }
+  function luu() { try { return localStorage.getItem(KHOA); } catch (e) { return null; } }
+
+  // Máy chủ "sống" nếu /api/v1/health trả lời trong 3 giây (no-cors: chỉ cần kết nối được)
+  function thu(u) {
+    return new Promise(function (ok) {
+      var xong = false, t = setTimeout(function () { if (!xong) { xong = true; ok(false); } }, 6000);   // 6 giây: máy ảo/điện thoại vừa bật, WebView khởi động lần đầu còn chậm
+      fetch(u + '/api/v1/health', { mode: 'no-cors', cache: 'no-store' })
+        .then(function () { if (!xong) { xong = true; clearTimeout(t); ok(true); } })
+        .catch(function () { if (!xong) { xong = true; clearTimeout(t); ok(false); } });
+    });
+  }
+  function dong(u) {
+    var d = document.createElement('div'); d.className = 'dong';
+    d.innerHTML = '<span class="dc"></span><span class="tt dang">đang thử</span>';
+    d.firstChild.textContent = u.replace(/^https?:\/\//, '');
+    $('dsThu').appendChild(d); return d.lastChild;
+  }
+  // Cấu hình tác vụ nền (cảnh báo AQI khi đã đóng app): xin quyền thông báo (Android 13+) và gửi địa chỉ máy chủ.
+  // Tối đa 4 giây để không chặn việc mở web nếu plugin lỗi.
+  function caiTacVuNen(u) {
+    var P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BackgroundRunner;
+    if (!P) return Promise.resolve();
+    var viec = P.requestPermissions({ apis: ['notifications'] }).catch(function () {})
+      .then(function () { return P.dispatchEvent({ label: NHAN_TAC_VU_NEN, event: 'luuCauHinh', details: { url: u } }); })
+      .catch(function () {});
+    return Promise.race([viec, new Promise(function (ok) { setTimeout(ok, 4000); })]);
+  }
+  function moWeb(u) {
+    try { localStorage.setItem(KHOA, u); } catch (e) {}
+    $('trangThai').innerHTML = '<span class="vong"></span><span>Đang mở AirHCM…</span>';
+    caiTacVuNen(u).then(function () { location.replace(u + '/tong-quan.html'); });
+  }
+  function hienNhap(tb) {
+    $('trangThai').innerHTML = '<span>' + tb + '</span>';
+    $('khungNhap').classList.remove('an');
+    $('oDiaChi').value = luu() || MAC_DINH[MAC_DINH.length - 1];
+  }
+
+  function tuDong(lanThu) {
+    $('dsThu').innerHTML = ''; $('khungNhap').classList.add('an');
+    $('trangThai').innerHTML = '<span class="vong"></span><span>Đang tìm máy chủ…</span>';
+    var ds = [luu()].concat(MAC_DINH).filter(function (u, i, a) { return u && a.indexOf(u) === i; });
+    var nhan = ds.map(dong);
+    // thử song song, ưu tiên theo thứ tự danh sách
+    var kq = ds.map(function (u, i) {
+      return thu(u).then(function (s) { nhan[i].className = 'tt ' + (s ? 'ok' : 'loi'); nhan[i].textContent = s ? 'kết nối được' : 'không thấy'; return s; });
+    });
+    Promise.all(kq).then(function (s) {
+      var i = s.indexOf(true);
+      if (i >= 0) moWeb(ds[i]);
+      else if (!lanThu) setTimeout(function () { tuDong(1); }, 2000);   // tự thử lại 1 lần trước khi báo lỗi
+      else hienNhap('⚠️ Chưa tìm thấy máy chủ');
+    });
+  }
+
+  $('nutKetNoi').onclick = function () {
+    var u = chuan($('oDiaChi').value);
+    if (!u) return;
+    $('dsThu').innerHTML = '';
+    var n = dong(u);
+    $('trangThai').innerHTML = '<span class="vong"></span><span>Đang kết nối…</span>';
+    thu(u).then(function (s) {
+      if (s) moWeb(u);
+      else { n.className = 'tt loi'; n.textContent = 'không thấy'; $('trangThai').innerHTML = '<span>⚠️ Không kết nối được ' + u.replace(/^https?:\/\//, '') + '</span>'; }
+    });
+  };
+  $('oDiaChi').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('nutKetNoi').click(); });
+  $('nutThuLai').onclick = function () { tuDong(1); };
+
+  if (doiMay) hienNhap('Chọn máy chủ AirHCM'); else tuDong();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Giữ đúng kiểu xuống dòng cho từng hệ điều hành dù sửa mã trên Windows hay Linux/macOS
+* text=auto
+*.sh        text eol=lf
+Dockerfile* text eol=lf
+Caddyfile   text eol=lf
+*.yml       text eol=lf
+*.bat       text eol=crlf
+*.ps1       text eol=crlf
+*.png binary
+*.jpg binary
+*.pkl binary
+*.joblib binary
+*.apk binary

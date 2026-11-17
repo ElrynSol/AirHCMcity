@@ -1,0 +1,17 @@
+id,ma_tram,ten_tram,vi_do,kinh_do,trang_thai,nhom_o_nhiem
+59,T01,Phường Sài Gòn ,10.7769,106.7009,Hoat Dong,Ô nhiễm cao
+60,T02,Phường Chợ Lớn (Quận 5 cũ),10.7539,106.6633,Hoat Dong,Ô nhiễm cao
+61,T03,Phường Gia Định (Bình Thạnh cũ),10.8014,106.7109,Hoat Dong,Ô nhiễm cao
+62,T04,Khu vực Quận 7 - Phú Mỹ Hưng,10.7325,106.7144,Ngung,Ô nhiễm cao
+63,T05,Khu vực Tân Bình - Sân bay Tân Sơn Nhất,10.8188,106.6520,Hoat Dong,Ô nhiễm cao
+64,T06,Khu vực Thủ Đức - Khu Công nghệ cao,10.8508,106.7891,Hoat Dong,Ô nhiễm cao
+65,T07,Khu vực Bình Tân - An Lạc,10.7379,106.5991,Hoat Dong,Ô nhiễm trung bình
+66,T08,Phường Bình Dương (Thủ Dầu Một cũ),10.9804,106.6519,Hoat Dong,Ô nhiễm cao
+67,T09,Khu vực Dĩ An - Khu công nghiệp,10.9089,106.7717,Hoat Dong,Ô nhiễm cao
+68,T10,Khu vực Thuận An,10.9158,106.7014,Hoat Dong,Ô nhiễm cao
+69,T11,Phường Vũng Tàu (TP. Vũng Tàu cũ),10.3460,107.0843,Hoat Dong,Ô nhiễm thấp
+70,T12,Khu vực Bà Rịa - Trung tâm hành chính cũ,10.4956,107.1686,Hoat Dong,Ô nhiễm thấp
+73,t14,bến cát,11.2043,106.6315,Hoat Dong,
+74,T15,Bình Khánh,10.5955,106.8375,Hoat Dong,
+75,T16,Bình Chánh,10.6742,106.5865,Hoat Dong,
+76,T17,An Hội Tây,10.8445,106.6445,Hoat Dong,

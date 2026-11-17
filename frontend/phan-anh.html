@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Gửi và xem phản ánh ô nhiễm không khí tại TP.HCM: khói, đốt rác, bụi công trình, khí thải — hiển thị trên bản đồ AirHCM.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<title>Phản ánh ô nhiễm</title>
+<style>
+  .luoi-pa { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; }
+  .luoi-pa > * { min-width: 0; }
+  @media (max-width: 900px) { .luoi-pa { grid-template-columns: 1fr; } }
+  #map { height: 430px; border-radius: 12px; z-index: 0; }
+  @media (max-width: 900px) { #map { height: 330px; } }
+  .leaflet-container { font-family: var(--font); }
+  .card h3 { margin-top: 0; }
+  .ds-loai { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .ds-loai label { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 12px;
+    cursor: pointer; font-size: 13.5px; font-weight: 600; background: #fff; }
+  .ds-loai input { position: absolute; opacity: 0; }
+  .ds-loai label:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); }
+  .ds-loai label:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .ds-loai .bt { font-size: 18px; }
+  textarea { width: 100%; min-height: 84px; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: 10px; font: inherit; resize: vertical; }
+  textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,99,214,.12); }
+  .nhan { font-size: 13px; font-weight: 700; color: var(--text-2); margin: 14px 0 6px; display: flex; justify-content: space-between; }
+  .nhan small { font-weight: 500; color: var(--text-muted); }
+  .nut { padding: 11px 16px; border-radius: 10px; border: 0; cursor: pointer; font: 600 14px var(--font); background: var(--primary); color: #fff; }
+  .nut:disabled { opacity: .55; cursor: not-allowed; }
+  .nut.phu { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+  .nut.nho { padding: 6px 10px; font-size: 12.5px; }
+  .nut.nguy { background: #fde7e9; color: #b3261e; }
+  .hang-nut { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .vi-tri { font-size: 13px; color: var(--text-muted); background: var(--surface-2); border-radius: 10px; padding: 9px 12px; margin-top: 10px; }
+  .vi-tri b { color: var(--text-main); }
+  .tb { font-size: 13px; padding: 9px 12px; border-radius: 9px; margin-top: 10px; }
+  .tb.loi { background: #fde7e9; color: #b3261e; } .tb.ok { background: #e6f4ea; color: #137333; } .tb.info { background: #e8f0fe; color: #1557b0; }
+  .ds-pa { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .ds-pa li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+  .ds-pa .bt { font-size: 22px; line-height: 1.2; }
+  .ds-pa .tt { flex: 1; min-width: 0; font-size: 13px; color: var(--text-muted); overflow-wrap: anywhere; }
+  .ds-pa .tt b { color: var(--text-main); font-size: 14px; }
+  .ds-pa .mt { color: var(--text-2); display: block; margin-top: 2px; }
+  .the { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; vertical-align: 1px; }
+  .the.moi { background: #eef2f6; color: #475467; } .the.xac_minh { background: #ffedd5; color: #c2410c; } .the.an { background: #fde7e9; color: #b3261e; }
+  .thong-ke { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+  .thong-ke span { font-size: 12.5px; font-weight: 600; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 5px 11px; }
+  .ghi { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+  .cac-nut { display: flex; gap: 6px; flex-wrap: wrap; flex: none; }
+</style>
+</head>
+<body>
+<div id="header">
+  <div><a href="index.html">🗺️ Bản đồ</a></div>
+  <div id="userBox"></div>
+</div>
+<div id="content">
+  <div class="hero">
+    <h2>📣 Phản ánh ô nhiễm</h2>
+    <div class="sub">Thấy khói, đốt rác, bụi công trình hay mùi lạ? Chấm vị trí trên bản đồ và gửi phản ánh — thông tin tại chỗ bổ sung cho số liệu vệ tinh và mô hình.</div>
+  </div>
+
+  <div class="luoi-pa">
+    <section class="card">
+      <h3>1. Chọn vị trí</h3>
+      <div id="map" role="application" aria-label="Bản đồ chọn vị trí phản ánh"></div>
+      <div class="hang-nut">
+        <button class="nut phu" id="nutGps" type="button">📍 Dùng vị trí của tôi</button>
+        <span class="ghi">hoặc chạm vào bản đồ để chấm điểm</span>
+      </div>
+      <div class="vi-tri" id="viTri">Chưa chọn vị trí.</div>
+    </section>
+
+    <section class="card">
+      <h3>2. Mô tả hiện tượng</h3>
+      <div class="nhan" id="nhanLoai">Loại ô nhiễm</div>
+      <div class="ds-loai" id="dsLoai" role="radiogroup" aria-labelledby="nhanLoai"></div>
+      <label class="nhan" for="moTa"><span>Mô tả (không bắt buộc)</span><small id="dem">0/500</small></label>
+      <textarea id="moTa" maxlength="500" placeholder="Ví dụ: Khói đen bốc lên từ bãi đất trống cạnh đường, mùi khét, kéo dài từ 17 giờ."></textarea>
+      <div class="hang-nut">
+        <button class="nut" id="nutGui" type="button" disabled>Gửi phản ánh</button>
+        <span class="ghi" id="goiY">Chọn vị trí và loại ô nhiễm để gửi.</span>
+      </div>
+      <div id="tbGui"></div>
+      <p class="ghi" style="margin-bottom:0">Phản ánh hiện ngay trên bản đồ ở trạng thái <b>chưa xác minh</b> (chỉ gồm loại, vị trí, thời điểm).
+        Phần mô tả chỉ công khai sau khi quản trị viên xác minh. Không ghi tên, số điện thoại hay thông tin cá nhân của người khác.
+        Trường hợp khẩn cấp (cháy lớn, rò rỉ hóa chất) hãy gọi <b>114</b>.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h3>Phản ánh trong 72 giờ qua</h3>
+    <div class="thong-ke" id="thongKe"></div>
+    <ul class="ds-pa" id="dsGanDay"><li><div class="tt">Đang tải…</div></li></ul>
+  </section>
+
+  <section class="card" id="theCuaToi" style="display:none">
+    <h3>Phản ánh của tôi</h3>
+    <ul class="ds-pa" id="dsCuaToi"></ul>
+  </section>
+
+  <section class="card" id="theQuanTri" style="display:none">
+    <h3>🛡️ Duyệt phản ánh (quản trị viên)</h3>
+    <p class="ghi" style="margin-top:0">Xác minh: mô tả được hiển thị công khai. Ẩn: gỡ khỏi bản đồ. Danh sách 30 ngày gần nhất, phản ánh chưa duyệt xếp trước.</p>
+    <ul class="ds-pa" id="dsQuanTri"></ul>
+    <div id="tbQuanTri"></div>
+  </section>
+</div>
+
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+const $ = id => document.getElementById(id);
+const tg = s => new Date(s).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
+const TEN_TT = { moi: 'Chưa xác minh', xac_minh: 'Đã xác minh', an: 'Đã ẩn' };
+function el(tag, attrs, ...con) {
+  const e = document.createElement(tag);
+  Object.entries(attrs || {}).forEach(([k, v]) => k === 'onclick' ? e.onclick = v : e.setAttribute(k, v));
+  con.forEach(c => e.append(c)); return e;
+}
+function thongBao(id, text, loai) { const d = el('div', { class: 'tb ' + loai }, text); $(id).textContent = ''; $(id).append(d); }
+async function goi(duong, opt = {}) {
+  const res = await fetch(API + duong, Object.assign({ credentials: 'include', cache: 'no-store', headers: { 'Content-Type': 'application/json' } }, opt));
+  let d = {}; try { d = await res.json(); } catch (e) {}
+  if (!res.ok) { const loi = new Error(Array.isArray(d.detail) ? 'Dữ liệu chưa hợp lệ' : (d.detail || 'Có lỗi xảy ra')); loi.ma = res.status; throw loi; }
+  return d;
+}
+
+// ---------- Bản đồ chọn vị trí
+const map = L.map('map', { zoomSnap: 0.5 }).setView([10.79, 106.70], 11);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom: 18, attribution: 'Tiles © Esri' }).addTo(map);
+let diem = null, viTri = null, phamVi = null, user = null;
+function datViTri(lat, lon, nguon) {
+  if (phamVi && !(lat >= phamVi.vi_do[0] && lat <= phamVi.vi_do[1] && lon >= phamVi.kinh_do[0] && lon <= phamVi.kinh_do[1])) {
+    thongBao('tbGui', 'Vị trí nằm ngoài khu vực TP.HCM mà hệ thống theo dõi.', 'loi'); return;
+  }
+  viTri = { lat, lon };
+  if (!diem) {
+    diem = L.marker([lat, lon], { draggable: true, zIndexOffset: 2000, title: 'Vị trí phản ánh (kéo để chỉnh)' }).addTo(map);
+    diem.on('dragend', () => { const p = diem.getLatLng(); datViTri(p.lat, p.lng, 'kéo điểm'); });
+  } else diem.setLatLng([lat, lon]);
+  $('viTri').textContent = '';
+  $('viTri').append('Vị trí đã chọn: ', el('b', {}, lat.toFixed(5) + ', ' + lon.toFixed(5)), ` (${nguon}). Kéo điểm xanh để chỉnh.`);
+  $('tbGui').textContent = '';
+  capNhatNut();
+}
+map.on('click', e => { if (!(e.originalEvent.target.closest && e.originalEvent.target.closest('.leaflet-popup'))) datViTri(e.latlng.lat, e.latlng.lng, 'chạm bản đồ'); });
+$('nutGps').onclick = () => {
+  if (!navigator.geolocation) { thongBao('tbGui', 'Thiết bị không hỗ trợ định vị. Hãy chạm vào bản đồ để chọn vị trí.', 'loi'); return; }
+  $('nutGps').disabled = true; $('nutGps').textContent = '📍 Đang định vị…';
+  navigator.geolocation.getCurrentPosition(p => {
+    datViTri(p.coords.latitude, p.coords.longitude, 'GPS, sai số ±' + Math.round(p.coords.accuracy) + ' m');
+    map.setView([p.coords.latitude, p.coords.longitude], 16);
+    $('nutGps').disabled = false; $('nutGps').textContent = '📍 Dùng vị trí của tôi';
+  }, e => {
+    thongBao('tbGui', e.code === 1 ? 'Bạn chưa cho phép trang dùng vị trí. Hãy chạm vào bản đồ để chọn.' : 'Không lấy được vị trí (định vị cần HTTPS hoặc localhost). Hãy chạm vào bản đồ để chọn.', 'loi');
+    $('nutGps').disabled = false; $('nutGps').textContent = '📍 Dùng vị trí của tôi';
+  }, { enableHighAccuracy: true, timeout: 10000 });
+};
+
+// ---------- Biểu mẫu
+function loaiDangChon() { const o = document.querySelector('input[name="loai"]:checked'); return o ? o.value : null; }
+function capNhatNut() {
+  const du = viTri && loaiDangChon();
+  $('nutGui').disabled = !(du && user);
+  $('goiY').textContent = !user ? '' : !viTri ? 'Chưa chọn vị trí trên bản đồ.' : !loaiDangChon() ? 'Chưa chọn loại ô nhiễm.' : 'Sẵn sàng gửi.';
+}
+$('moTa').oninput = () => { $('dem').textContent = $('moTa').value.length + '/500'; };
+goi('/phan-anh/loai').then(d => {
+  phamVi = d.pham_vi;
+  d.loai.forEach(l => {
+    const o = el('input', { type: 'radio', name: 'loai', value: l.ma }); o.onchange = capNhatNut;
+    $('dsLoai').append(el('label', {}, o, el('span', { class: 'bt', 'aria-hidden': 'true' }, l.bt), el('span', {}, l.ten)));
+  });
+});
+$('nutGui').onclick = async () => {
+  $('nutGui').disabled = true;
+  try {
+    const d = await goi('/phan-anh', { method: 'POST', body: JSON.stringify({ loai: loaiDangChon(), mo_ta: $('moTa').value, vi_do: viTri.lat, kinh_do: viTri.lon }) });
+    thongBao('tbGui', d.message, 'ok');
+    $('moTa').value = ''; $('dem').textContent = '0/500';
+    document.querySelectorAll('input[name="loai"]').forEach(o => o.checked = false);
+    if (diem) { map.removeLayer(diem); diem = null; } viTri = null; $('viTri').textContent = 'Chưa chọn vị trí.';
+    napTatCa();
+  } catch (e) {
+    if (e.ma === 401) { location.href = 'login.html?tiep=phan-anh.html'; return; }
+    thongBao('tbGui', e.message, 'loi');
+  } finally { capNhatNut(); }
+};
+
+// ---------- Danh sách
+function dong(p, nut) {
+  const tt = el('div', { class: 'tt' }, el('b', {}, p.ten_loai), ' ', el('span', { class: 'the ' + p.trang_thai }, TEN_TT[p.trang_thai] || p.trang_thai),
+    el('br'), `${tg(p.tao_luc)} · ${p.phuong || (p.vi_do.toFixed(4) + ', ' + p.kinh_do.toFixed(4))} · 👥 ${p.so_xac_nhan} người cũng thấy` + (p.aqi_tp != null ? ` · AQI lúc gửi ${p.aqi_tp}` : '') + (p.nguoi_gui ? ` · ${p.nguoi_gui}` : ''));
+  if (p.mo_ta) tt.append(el('span', { class: 'mt' }, p.mo_ta));
+  const li = el('li', {}, el('span', { class: 'bt', 'aria-hidden': 'true' }, p.bieu_tuong), tt);
+  const cac = el('div', { class: 'cac-nut' }, el('button', { class: 'nut phu nho', type: 'button', onclick: () => { map.setView([p.vi_do, p.kinh_do], 16); $('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Xem trên bản đồ'));
+  (nut || []).forEach(n => cac.append(n));
+  li.append(cac);
+  return li;
+}
+function veDs(id, ds, taoNut, rong) {
+  const ul = $(id); ul.textContent = '';
+  if (!ds.length) { ul.append(el('li', {}, el('div', { class: 'tt' }, rong))); return; }
+  ds.forEach(p => ul.append(dong(p, taoNut ? taoNut(p) : [])));
+}
+async function xoa(p) {
+  if (!confirm('Xóa phản ánh này?')) return;
+  try { await goi('/phan-anh/' + p.id, { method: 'DELETE' }); napTatCa(); } catch (e) { alert(e.message); }
+}
+async function duyet(p, tt) {
+  try { const d = await goi('/admin/phan-anh/' + p.id + '/duyet', { method: 'POST', body: JSON.stringify({ trang_thai: tt }) }); thongBao('tbQuanTri', `#${p.id}: ${d.message}`, 'ok'); napTatCa(); }
+  catch (e) { thongBao('tbQuanTri', e.message, 'loi'); }
+}
+async function napTatCa() {
+  if (window.PhanAnhLayer) PhanAnhLayer.tai();
+  if (user) {
+    try { veDs('dsCuaToi', (await goi('/phan-anh/cua-toi')).phan_anh, p => [el('button', { class: 'nut nguy nho', type: 'button', onclick: () => xoa(p) }, 'Xóa')], 'Bạn chưa gửi phản ánh nào.'); } catch (e) {}
+    if (user.vai_tro === 'admin') {
+      try {
+        veDs('dsQuanTri', (await goi('/admin/phan-anh')).phan_anh, p => [
+          p.trang_thai !== 'xac_minh' ? el('button', { class: 'nut nho', type: 'button', onclick: () => duyet(p, 'xac_minh') }, 'Xác minh') : null,
+          p.trang_thai !== 'an' ? el('button', { class: 'nut nguy nho', type: 'button', onclick: () => duyet(p, 'an') }, 'Ẩn') : el('button', { class: 'nut phu nho', type: 'button', onclick: () => duyet(p, 'moi') }, 'Bỏ ẩn'),
+        ].filter(Boolean), 'Chưa có phản ánh nào trong 30 ngày.');
+      } catch (e) {}
+    }
+  }
+}
+
+fetch(API + '/auth/me', { credentials: 'include', cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null).then(u => {
+  user = u;
+  if (u) { $('theCuaToi').style.display = ''; if (u.vai_tro === 'admin') $('theQuanTri').style.display = ''; }
+  else {
+    $('tbGui').textContent = '';
+    const d = el('div', { class: 'tb info' }, 'Cần đăng nhập để gửi phản ánh (chống tin rác). ', el('a', { href: 'login.html?tiep=phan-anh.html' }, 'Đăng nhập / đăng ký'), ' — có thể dùng Google.');
+    $('tbGui').append(d);
+  }
+  capNhatNut(); napTatCa();
+});
+</script>
+<script src="phan-anh-layer.js"></script>
+<script>
+// Danh sách "72 giờ qua" + thống kê dùng chung dữ liệu với lớp bản đồ
+PhanAnhLayer.khiCoDuLieu(d => {
+  veDs('dsGanDay', d.phan_anh || [], null, 'Chưa có phản ánh nào trong 72 giờ qua. Hãy là người đầu tiên!');
+  const tk = $('thongKe'); tk.textContent = '';
+  const t = d.thong_ke || { tong: 0, theo_loai: [] };
+  tk.append(el('span', {}, `30 ngày: ${t.tong} phản ánh`));
+  t.theo_loai.forEach(l => tk.append(el('span', {}, `${l.bieu_tuong} ${l.ten}: ${l.so}`)));
+});
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

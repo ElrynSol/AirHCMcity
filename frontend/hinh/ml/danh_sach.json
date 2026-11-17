@@ -1,0 +1,166 @@
+{
+ "cap_nhat": "2026-11-12T15:03:57",
+ "nguon": "Code bài Lab01, Lab03 môn Python cho Máy học; dữ liệu du_lieu/gio_cache.csv (Open-Meteo, TP.HCM)",
+ "bieu_do": [
+  {
+   "id": "lab01_heatmap",
+   "mo_ta": "Hệ số Pearson giữa PM2.5 và các biến thời tiết (code heatmap của Lab01).",
+   "tieu_de": "Ma trận tương quan",
+   "anh": "hinh/ml/lab01_heatmap.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_tuong_quan",
+   "mo_ta": "Pearson (tuyến tính) và Spearman (thứ hạng) của từng đặc trưng với PM2.5.",
+   "tieu_de": "Xếp hạng tương quan với PM2.5",
+   "anh": "hinh/ml/lab01_tuong_quan.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_theo_thang",
+   "mo_ta": "Phân bố PM2.5 trung bình ngày theo từng tháng; đường đỏ là trung vị.",
+   "tieu_de": "PM2.5 theo tháng",
+   "anh": "hinh/ml/lab01_theo_thang.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_gio",
+   "mo_ta": "Gió càng mạnh, bụi càng được khuếch tán; vòng đỏ là 1% ngày ô nhiễm nhất.",
+   "tieu_de": "Gió và PM2.5",
+   "anh": "hinh/ml/lab01_gio.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_mua",
+   "mo_ta": "PM2.5 mùa khô so với mùa mưa, và phân phối PM2.5 (gốc và log).",
+   "tieu_de": "Mùa khô và mùa mưa",
+   "anh": "hinh/ml/lab01_mua.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_importance",
+   "mo_ta": "Mức đóng góp của từng biến thời tiết vào ước lượng PM2.5.",
+   "tieu_de": "Độ quan trọng đặc trưng (Random Forest)",
+   "anh": "hinh/ml/lab01_importance.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_so_sanh",
+   "mo_ta": "R² và MAE trên tập test của 6 mô hình trong Lab01.",
+   "tieu_de": "So sánh 6 mô hình hồi quy",
+   "anh": "hinh/ml/lab01_so_sanh.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab01_thuc_te_du_doan",
+   "mo_ta": "Mô hình tốt nhất: điểm càng sát đường đỏ càng đúng; phần dư nên dao động quanh 0.",
+   "tieu_de": "Thực tế và dự đoán",
+   "anh": "hinh/ml/lab01_thuc_te_du_doan.png",
+   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab03_prophet",
+   "mo_ta": "Prophet học xu hướng + chu kỳ năm/tuần; 25% cuối chuỗi dùng để kiểm tra.",
+   "tieu_de": "Prophet: mùa vụ của PM2.5",
+   "anh": "hinh/ml/lab03_prophet.png",
+   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab03_ar",
+   "mo_ta": "Dự báo PM2.5 ngày mai từ 7 ngày trước bằng hồi quy tuyến tính.",
+   "tieu_de": "Tự hồi quy 7 ngày",
+   "anh": "hinh/ml/lab03_ar.png",
+   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab03_ar_do_am",
+   "mo_ta": "Thêm độ ẩm 7 ngày trước làm biến phụ (giống bài Lab dùng humidity).",
+   "tieu_de": "Tự hồi quy thêm độ ẩm",
+   "anh": "hinh/ml/lab03_ar_do_am.png",
+   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+  },
+  {
+   "id": "lab03_so_sanh",
+   "mo_ta": "RMSE dự báo ngày mai của Prophet và tự hồi quy so với cách đoán 'ngày mai = hôm nay'.",
+   "tieu_de": "So với mô hình nền",
+   "anh": "hinh/ml/lab03_so_sanh.png",
+   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+  }
+ ],
+ "chi_so": {
+  "lab01": {
+   "so_ngay": 1529,
+   "mo_hinh": [
+    {
+     "model": "Polynomial (bậc 2)",
+     "MAE": 5.1748,
+     "RMSE": 6.8454,
+     "R2": 0.4965
+    },
+    {
+     "model": "Random Forest",
+     "MAE": 5.3749,
+     "RMSE": 7.1261,
+     "R2": 0.4544
+    },
+    {
+     "model": "Linear Regression",
+     "MAE": 5.5774,
+     "RMSE": 7.1809,
+     "R2": 0.446
+    },
+    {
+     "model": "Decision Tree",
+     "MAE": 5.6373,
+     "RMSE": 7.4555,
+     "R2": 0.4028
+    },
+    {
+     "model": "Hist Gradient Boosting",
+     "MAE": 5.7962,
+     "RMSE": 7.7466,
+     "R2": 0.3552
+    },
+    {
+     "model": "AdaBoost",
+     "MAE": 6.6737,
+     "RMSE": 8.2256,
+     "R2": 0.273
+    }
+   ]
+  },
+  "lab03": {
+   "so_ngay_test": 381,
+   "mo_hinh": [
+    {
+     "model": "Ngày mai = hôm nay (nền)",
+     "MAE": 5.5619,
+     "RMSE": 7.6393,
+     "R2": 0.5243,
+     "Kỹ năng so với nền": 0.0
+    },
+    {
+     "model": "Prophet",
+     "MAE": 15.0862,
+     "RMSE": 16.6981,
+     "R2": -1.2726,
+     "Kỹ năng so với nền": -1.1858
+    },
+    {
+     "model": "Auto Regression 7 ngày",
+     "MAE": 5.3279,
+     "RMSE": 7.2096,
+     "R2": 0.5764,
+     "Kỹ năng so với nền": 0.0563
+    },
+    {
+     "model": "AR 7 ngày + độ ẩm",
+     "MAE": 5.2872,
+     "RMSE": 7.1776,
+     "R2": 0.5801,
+     "Kỹ năng so với nền": 0.0604
+    }
+   ]
+  }
+ }
+}

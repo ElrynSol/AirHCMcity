@@ -1,0 +1,5 @@
+# Thư viện cho phát triển và kiểm thử (không cần trên máy chủ chạy thật).
+# Cài: pip install -r requirements-dev.txt
+-r requirements.txt
+pytest==9.2.0
+httpx2==2.16.0

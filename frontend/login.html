@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Đăng nhập - Hệ thống Giám sát Không khí TP.HCM – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<title>Đăng nhập - Hệ thống Giám sát Không khí TP.HCM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: var(--font); }
+  body { display: flex; }
+
+  /* ===== CỘT TRÁI: thương hiệu / ấn tượng ===== */
+  .brand-panel {
+    flex: 1.1; position: relative; overflow: hidden; display: none;
+    background: linear-gradient(160deg, #0d1b2a 0%, #0f3460 45%, #1a73e8 100%);
+    color: white; padding: 56px 52px; flex-direction: column; justify-content: space-between;
+  }
+  @media (min-width: 880px) { .brand-panel { display: flex; } }
+
+  .brand-panel::before {
+    content: ""; position: absolute; inset: 0; opacity: .10; pointer-events: none;
+    background-image:
+      linear-gradient(0deg, transparent 24%, rgba(255,255,255,.4) 25%, rgba(255,255,255,.4) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.4) 75%, rgba(255,255,255,.4) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, rgba(255,255,255,.4) 25%, rgba(255,255,255,.4) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.4) 75%, rgba(255,255,255,.4) 76%, transparent 77%, transparent);
+    background-size: 34px 34px;
+  }
+  .glow { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .35; pointer-events: none; }
+  .glow1 { width: 320px; height: 320px; background: #4facfe; top: -80px; right: -80px; }
+  .glow2 { width: 260px; height: 260px; background: #00c6a9; bottom: -60px; left: -60px; }
+
+  .brand-panel > * { position: relative; z-index: 1; }
+  .brand-logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 17px; letter-spacing: .3px; }
+  .brand-logo .emoji { font-size: 28px; }
+
+  .brand-headline { margin-top: 56px; }
+  .brand-headline h1 { font-size: 32px; line-height: 1.35; margin: 0 0 14px; font-weight: 800; }
+  .brand-headline p { font-size: 14.5px; opacity: .85; line-height: 1.7; max-width: 420px; margin: 0; }
+
+  .brand-stats { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
+  .stat-chip {
+    background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px; padding: 14px 18px; backdrop-filter: blur(6px); min-width: 120px;
+  }
+  .stat-chip .num { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .stat-chip .lbl { font-size: 11px; opacity: .8; margin-top: 2px; }
+
+  .brand-footer { font-size: 11.5px; opacity: .6; font-variant-numeric: tabular-nums; }
+
+  /* ===== CỘT PHẢI: form ===== */
+  .form-panel {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: #f4f6fa; padding: 24px;
+  }
+  .auth-wrap { width: 100%; max-width: 400px; }
+  .auth-card {
+    background: white; border-radius: 20px; padding: 38px 34px;
+    box-shadow: 0 10px 40px rgba(13,27,42,0.10); border: 1px solid #eef0f4;
+  }
+  .auth-logo { text-align: center; margin-bottom: 26px; }
+  .auth-logo .icon {
+    width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 10px;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+    box-shadow: 0 8px 20px rgba(26,115,232,0.3);
+  }
+  .auth-logo h1 { font-size: 16.5px; color: #1a1a2e; margin: 0; font-weight: 700; }
+  .auth-logo .tag { font-size: 11.5px; color: #999; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  .tabs { display: flex; background: #f1f3f5; border-radius: 11px; padding: 4px; margin-bottom: 24px; }
+  .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13.5px; color: #6b7280; transition: all 0.2s; user-select: none; }
+  .tab.active { background: white; color: #1a73e8; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+  .form-group { margin-bottom: 14px; position: relative; }
+  .form-group input {
+    width: 100%; padding: 13px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px;
+    font-size: 14px; transition: border 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+
+  /* ===== Nút xem mật khẩu ===== */
+  .password-wrap { position: relative; }
+  .password-wrap input { padding-right: 42px !important; }
+  .toggle-eye {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; font-size: 17px; user-select: none; opacity: .6;
+  }
+  .toggle-eye:hover { opacity: 1; }
+
+  .submit-btn {
+    width: 100%; padding: 13px; background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; letter-spacing: .2px;
+  }
+  .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(26,115,232,0.35); }
+
+  .link-row { text-align: center; margin-top: 16px; font-size: 13px; }
+  .link-row a { color: #1a73e8; text-decoration: none; font-weight: 600; cursor: pointer; }
+  .link-row a:hover { text-decoration: underline; }
+  .back-link { text-align: center; margin-top: 18px; }
+  .back-link a { color: #9aa0a6; text-decoration: none; font-size: 12.5px; }
+  .back-link a:hover { color: #1a73e8; }
+
+  .msg { text-align: center; font-size: 13px; margin-top: 12px; padding: 10px; border-radius: 8px; }
+  .msg.error { background: #fee2e2; color: #b91c1c; }
+  .msg.success { background: #dcfce7; color: #15803d; }
+
+  .otp-box {
+    text-align: center; background: #eff6ff; border: 1px dashed #1a73e8;
+    border-radius: 12px; padding: 16px; margin-bottom: 16px; font-size: 13px; color: #1557b0;
+  }
+  .otp-so { font-size: 28px; font-weight: 800; letter-spacing: 5px; color: #1a73e8; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .hidden { display: none; }
+  .ghi-nho { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 13px; color: #4b5563; margin: 2px 0 14px; cursor: pointer; }
+  .ghi-nho input { width: 16px; height: 16px; accent-color: #1a73e8; }
+  .ghi-nho small { color: #9aa0a6; flex-basis: 100%; padding-left: 24px; }
+  .do-manh { display: flex; align-items: center; gap: 10px; margin: -6px 0 14px; font-size: 12px; color: #6b7280; }
+  .do-manh i { flex: 0 0 72px; height: 6px; border-radius: 99px; background: #e5e7eb; position: relative; overflow: hidden; }
+  .do-manh i::after { content: ""; position: absolute; inset: 0; width: var(--w, 0%); background: var(--c, #e5e7eb); transition: width .2s; }
+  .submit-btn:disabled { opacity: .6; cursor: wait; transform: none; }
+  .mxh { display: grid; gap: 9px; margin-top: 16px; }
+  .mxh-ngan { display: flex; align-items: center; gap: 10px; color: #9aa0a6; font-size: 12.5px; }
+  .mxh-ngan::before, .mxh-ngan::after { content: ""; flex: 1; height: 1px; background: #e5e7eb; }
+  .mxh-nut { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px 14px; border-radius: 10px;
+    border: 1.5px solid #e5e7eb; background: #fff; color: #1f2937; font-weight: 600; font-size: 14px; text-decoration: none; transition: background .15s, border-color .15s; }
+  .mxh-nut:hover { background: #f8fafc; border-color: #cbd5e1; }
+  .mxh-nut svg { width: 20px; height: 20px; flex: none; }
+  .mxh-facebook { background: #1877F2; border-color: #1877F2; color: #fff; } .mxh-facebook:hover { background: #166fe5; border-color: #166fe5; }
+  .mxh-zalo { background: #0068FF; border-color: #0068FF; color: #fff; } .mxh-zalo:hover { background: #005ce6; border-color: #005ce6; }
+  .mxh-facebook svg circle { fill: #fff; } .mxh-facebook svg path { fill: #1877F2; }
+  .mxh-zalo svg { width: 26px; height: 26px; } .mxh-zalo svg rect { fill: #fff; } .mxh-zalo svg text { fill: #0068FF; font-size: 17px; }
+  /* nền trang đăng nhập: bảng thương hiệu + vùng form có họa tiết riêng, không dùng nền chung */
+  .form-panel { background: radial-gradient(700px 380px at 100% 0%, #e4eefb, transparent 60%), radial-gradient(600px 360px at 0% 100%, #e3f5f3, transparent 55%), #f4f6fa; }
+</style>
+</head>
+<body class="khong-nen">
+
+<!-- CỘT TRÁI -->
+<div class="brand-panel">
+  <div class="glow glow1"></div>
+  <div class="glow glow2"></div>
+
+  <div class="brand-logo"><span class="emoji">🌤️</span> AirHCM · Giám sát Không khí</div>
+
+  <div class="brand-headline">
+    <h1>Theo dõi chất lượng<br>không khí TP.HCM<br>theo thời gian thực</h1>
+    <p>Dữ liệu vệ tinh Sentinel-5P kết hợp mô hình Machine Learning (Random Forest) giúp giám sát, cảnh báo và dự báo AQI theo VN_AQI (QĐ 1459/QĐ-TCMT).</p>
+  </div>
+
+  <div class="brand-stats">
+    <div class="stat-chip"><div class="num">12</div><div class="lbl">TRẠM QUAN TRẮC</div></div>
+    <div class="stat-chip"><div class="num">9.7K+</div><div class="lbl">BẢN GHI DỮ LIỆU</div></div>
+    <div class="stat-chip"><div class="num">0.72</div><div class="lbl">R² MÔ HÌNH</div></div>
+  </div>
+
+  <div class="brand-footer">© 2026 Đồ án Tin Học &amp; Môi trường</div>
+</div>
+
+<!-- CỘT PHẢI: FORM -->
+<div class="form-panel">
+<div class="auth-wrap">
+  <div class="auth-card">
+
+    <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ -->
+    <div id="manHinhChinh">
+      <div class="auth-logo">
+        <div class="icon">🌤️</div>
+        <h1>Hệ thống Giám sát Không khí</h1>
+        <div class="tag">TP.HCM · AQI Monitoring</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" id="tabDangNhap" onclick="chuyenTab('dang-nhap')">Đăng nhập</div>
+        <div class="tab" id="tabDangKy" onclick="chuyenTab('dang-ky')">Đăng ký</div>
+      </div>
+
+      <!-- Đăng nhập -->
+      <div id="formDangNhap">
+        <div class="form-group"><input type="email" id="loginEmail" placeholder="Email" autocomplete="username"></div>
+        <div class="form-group password-wrap">
+          <input type="password" id="loginMatKhau" placeholder="Mật khẩu" autocomplete="current-password" onkeydown="if(event.key==='Enter')dangNhap()">
+          <span class="toggle-eye" onclick="hienAnMatKhau('loginMatKhau', this)">👁️</span>
+        </div>
+        <label class="ghi-nho"><input type="checkbox" id="ghiNho"> Ghi nhớ đăng nhập 30 ngày <small>(chỉ trên thiết bị cá nhân)</small></label>
+        <button class="submit-btn" id="nutDangNhap" onclick="dangNhap()">Đăng nhập</button>
+        <div class="link-row"><a onclick="moQuenMatKhau()">Quên mật khẩu?</a></div>
+        <div id="loginMsg"></div>
+        <div class="mxh hidden" data-loai="Đăng nhập"></div>
+      </div>
+
+      <!-- Đăng ký -->
+      <div id="formDangKy" class="hidden">
+        <div class="form-group"><input type="text" id="regHoTen" placeholder="Họ và tên"></div>
+        <div class="form-group"><input type="email" id="regEmail" placeholder="Email"></div>
+        <div class="form-group password-wrap">
+          <input type="password" id="regMatKhau" placeholder="Mật khẩu" autocomplete="new-password" oninput="doManh(this.value, 'doManhDK')">
+          <span class="toggle-eye" onclick="hienAnMatKhau('regMatKhau', this)">👁️</span>
+        </div>
+        <div class="do-manh" id="doManhDK"><i></i><span>Ít nhất 10 ký tự, có cả chữ và số</span></div>
+        <div class="form-group password-wrap">
+          <input type="password" id="regXacNhanMatKhau" placeholder="Xác nhận mật khẩu">
+          <span class="toggle-eye" onclick="hienAnMatKhau('regXacNhanMatKhau', this)">👁️</span>
+        </div>
+        <button class="submit-btn" onclick="dangKy()">Đăng ký</button>
+        <div id="regMsg"></div>
+        <div class="mxh hidden" data-loai="Đăng ký"></div>
+      </div>
+
+      <div class="back-link"><a href="index.html">← Quay lại bản đồ (xem không cần đăng nhập)</a></div>
+      <div class="back-link" style="margin-top:8px"><a href="chinh-sach-rieng-tu.html">Chính sách quyền riêng tư</a></div>
+    </div>
+
+    <!-- MÀN HÌNH QUÊN MẬT KHẨU -->
+    <div id="manHinhQuenMK" class="hidden">
+      <div class="auth-logo">
+        <div class="icon">🔑</div>
+        <h1>Khôi phục mật khẩu</h1>
+      </div>
+
+      <div id="buocNhapEmail">
+        <div class="form-group"><input type="email" id="quenEmail" placeholder="Nhập email đã đăng ký"></div>
+        <button class="submit-btn" onclick="guiOtp()">Gửi mã OTP</button>
+        <div id="quenMsg"></div>
+      </div>
+
+      <div id="buocNhapOtp" class="hidden">
+        <div class="otp-box">
+          <div id="otpThongDiep">📧 Mã OTP đã được gửi tới email của bạn</div>
+          <div class="otp-so hidden" id="otpHienThi">------</div>
+          <div style="font-size:11px; color:#999; margin-top:6px;">Có hiệu lực trong 5 phút (kiểm tra cả mục Spam)</div>
+        </div>
+        <div class="form-group"><input type="text" id="nhapOtp" placeholder="Nhập mã OTP (6 số)" maxlength="6"></div>
+        <div class="form-group password-wrap">
+          <input type="password" id="matKhauMoi" placeholder="Mật khẩu mới" autocomplete="new-password" oninput="doManh(this.value, 'doManhQMK')">
+          <span class="toggle-eye" onclick="hienAnMatKhau('matKhauMoi', this)">👁️</span>
+        </div>
+        <div class="do-manh" id="doManhQMK"><i></i><span>Ít nhất 10 ký tự, có cả chữ và số</span></div>
+        <button class="submit-btn" onclick="xacNhanOtp()">Xác nhận &amp; Đặt mật khẩu mới</button>
+        <div id="otpMsg"></div>
+      </div>
+
+      <div class="back-link"><a onclick="dongQuenMatKhau()">← Quay lại đăng nhập</a></div>
+    </div>
+
+    <!-- MÀN HÌNH XÁC THỰC 2 LỚP -->
+    <div id="manHinh2FA" class="hidden">
+      <div class="auth-logo">
+        <div class="icon">🔐</div>
+        <h1>Xác thực 2 lớp</h1>
+        <div class="tag">Mở ứng dụng Google Authenticator / Microsoft Authenticator</div>
+      </div>
+      <div class="form-group"><input type="text" id="ma2FA" inputmode="numeric" autocomplete="one-time-code" maxlength="9"
+        placeholder="Mã 6 số (hoặc mã dự phòng xxxx-xxxx)" onkeydown="if(event.key==='Enter')xacThuc2FA()"></div>
+      <button class="submit-btn" onclick="xacThuc2FA()">Xác nhận</button>
+      <div id="msg2FA"></div>
+      <div class="back-link"><a onclick="huy2FA()">← Đăng nhập bằng tài khoản khác</a></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1/auth';
+let maTam2FA = null;
+
+// Sau khi đăng nhập quay về trang trước đó (?tiep=...). Chỉ nhận đường dẫn nội bộ (chống chuyển hướng mở).
+function trangTiep() {
+  const t = new URLSearchParams(location.search).get('tiep') || '';
+  return /^[a-z0-9-]+\.html([?#][^\s]*)?$/i.test(t) && !/^login\.html/i.test(t) ? t : 'tong-quan.html';
+}
+
+function chuyenTab(tab) {
+  document.getElementById('tabDangNhap').classList.toggle('active', tab === 'dang-nhap');
+  document.getElementById('tabDangKy').classList.toggle('active', tab === 'dang-ky');
+  document.getElementById('formDangNhap').classList.toggle('hidden', tab !== 'dang-nhap');
+  document.getElementById('formDangKy').classList.toggle('hidden', tab !== 'dang-ky');
+}
+
+// Thông báo dựng bằng textContent: nội dung từ máy chủ không chèn được mã HTML
+function hienThongBao(elId, text, loai) {
+  const el = document.getElementById(elId), d = document.createElement('div');
+  d.className = 'msg ' + loai; d.textContent = text;
+  el.textContent = ''; el.appendChild(d);
+}
+
+function hienAnMatKhau(id, iconEl) {
+  const input = document.getElementById(id);
+  const hien = input.type === 'password';
+  input.type = hien ? 'text' : 'password';
+  iconEl.innerText = hien ? '🙈' : '👁️';
+}
+
+// Gợi ý độ mạnh mật khẩu (máy chủ mới là nơi kiểm tra chính thức – core/mat_khau.py)
+function doManh(mk, id) {
+  const el = document.getElementById(id), thanh = el.querySelector('i'), chu = el.querySelector('span');
+  let d = 0;
+  if (mk.length >= 10) d++;
+  if (mk.length >= 14) d++;
+  if (/[a-zà-ỹ]/i.test(mk) && /\d/.test(mk)) d++;
+  if (/[A-Z]/.test(mk) && /[a-z]/.test(mk)) d++;
+  if (/[^\w\sà-ỹ]/i.test(mk)) d++;
+  if (mk.length < 10 || !/\d/.test(mk) || !/[a-zà-ỹ]/i.test(mk)) d = Math.min(d, 1);
+  const muc = [['Ít nhất 10 ký tự, có cả chữ và số', '#ef4444', 15], ['Yếu', '#ef4444', 25], ['Tạm được', '#f59e0b', 50],
+               ['Khá mạnh', '#10b981', 75], ['Mạnh', '#059669', 90], ['Rất mạnh', '#047857', 100]][mk ? d : 0];
+  chu.textContent = muc[0];
+  thanh.style.setProperty('--c', muc[1]);
+  thanh.style.setProperty('--w', (mk ? muc[2] : 0) + '%');
+}
+
+async function goi(duong, body) {
+  const res = await fetch(API + duong, { method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    let d = data.detail;
+    if (Array.isArray(d)) {
+      const TEN = { email: 'Email không đúng định dạng (ví dụ: ten@gmail.com)', ho_ten: 'Họ tên cần từ 2 đến 100 ký tự',
+                    mat_khau: 'Mật khẩu quá dài (tối đa 128 ký tự)', mat_khau_moi: 'Mật khẩu mới không hợp lệ', otp: 'Mã OTP gồm 6 chữ số' };
+      d = d.map(x => TEN[(x.loc || []).slice(-1)[0]] || 'Dữ liệu chưa hợp lệ').join('. ');
+    }
+    throw new Error(d || 'Có lỗi xảy ra (mã ' + res.status + ')');
+  }
+  return data;
+}
+
+function loiMang(e) { return e.message === 'Failed to fetch' ? 'Không kết nối được máy chủ' : e.message; }
+
+function luuVaVao(user) {
+  try { localStorage.setItem('ho_ten', user.ho_ten); localStorage.setItem('vai_tro', user.vai_tro); } catch (e) {}
+  location.href = trangTiep();
+}
+
+async function dangNhap() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const mat_khau = document.getElementById('loginMatKhau').value;
+  if (!email || !mat_khau) { hienThongBao('loginMsg', 'Vui lòng nhập email và mật khẩu', 'error'); return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    hienThongBao('loginMsg', 'Hãy nhập đầy đủ địa chỉ email đã đăng ký (ví dụ: ten@gmail.com), không chỉ tên tài khoản', 'error'); return;
+  }
+  const nut = document.getElementById('nutDangNhap');
+  nut.disabled = true;
+  try {
+    const data = await goi('/login', { email, mat_khau, ghi_nho: document.getElementById('ghiNho').checked });
+    if (data.can_2fa) {
+      maTam2FA = data.ma_tam;
+      document.getElementById('manHinhChinh').classList.add('hidden');
+      document.getElementById('manHinh2FA').classList.remove('hidden');
+      document.getElementById('ma2FA').focus();
+    } else luuVaVao(data.user);
+  } catch (e) {
+    hienThongBao('loginMsg', loiMang(e), 'error');
+  } finally {
+    nut.disabled = false;
+    document.getElementById('loginMatKhau').value = '';
+  }
+}
+
+async function xacThuc2FA() {
+  const ma = document.getElementById('ma2FA').value.trim();
+  if (ma.length < 6) { hienThongBao('msg2FA', 'Nhập mã 6 số trong ứng dụng xác thực', 'error'); return; }
+  try { luuVaVao((await goi('/2fa/dang-nhap', { ma_tam: maTam2FA, ma })).user); }
+  catch (e) { hienThongBao('msg2FA', loiMang(e), 'error'); document.getElementById('ma2FA').select(); }
+}
+
+function huy2FA() {
+  maTam2FA = null;
+  document.getElementById('manHinh2FA').classList.add('hidden');
+  document.getElementById('manHinhChinh').classList.remove('hidden');
+  document.getElementById('ma2FA').value = '';
+}
+
+async function dangKy() {
+  const ho_ten = document.getElementById('regHoTen').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const mat_khau = document.getElementById('regMatKhau').value;
+  const xac_nhan = document.getElementById('regXacNhanMatKhau').value;
+  if (!ho_ten || !email || !mat_khau || !xac_nhan) { hienThongBao('regMsg', 'Vui lòng điền đầy đủ thông tin', 'error'); return; }
+  if (mat_khau !== xac_nhan) { hienThongBao('regMsg', 'Mật khẩu xác nhận không khớp', 'error'); return; }
+  try {
+    await goi('/register', { ho_ten, email, mat_khau });
+    hienThongBao('regMsg', 'Đăng ký thành công! Đang chuyển sang đăng nhập...', 'success');
+    setTimeout(() => {
+      chuyenTab('dang-nhap');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginMatKhau').focus();
+    }, 1200);
+  } catch (e) { hienThongBao('regMsg', loiMang(e), 'error'); }
+}
+
+function moQuenMatKhau() {
+  document.getElementById('manHinhChinh').classList.add('hidden');
+  document.getElementById('manHinhQuenMK').classList.remove('hidden');
+  document.getElementById('buocNhapEmail').classList.remove('hidden');
+  document.getElementById('buocNhapOtp').classList.add('hidden');
+}
+
+function dongQuenMatKhau() {
+  document.getElementById('manHinhChinh').classList.remove('hidden');
+  document.getElementById('manHinhQuenMK').classList.add('hidden');
+}
+
+let emailDangXuLy = '';
+
+async function guiOtp() {
+  const email = document.getElementById('quenEmail').value.trim();
+  if (!email) { hienThongBao('quenMsg', 'Vui lòng nhập email', 'error'); return; }
+  try {
+    const data = await goi('/quen-mat-khau', { email });
+    emailDangXuLy = email;
+    document.getElementById('buocNhapEmail').classList.add('hidden');
+    document.getElementById('buocNhapOtp').classList.remove('hidden');
+    const hienOtp = document.getElementById('otpHienThi');
+    document.getElementById('otpThongDiep').innerText = '📧 ' + data.message;
+    if (data.otp_demo) { hienOtp.innerText = data.otp_demo; hienOtp.classList.remove('hidden'); }   // chỉ khi máy chủ bật OTP_DEMO=1
+    else hienOtp.classList.add('hidden');
+  } catch (e) {
+    hienThongBao('quenMsg', loiMang(e), 'error');
+  }
+}
+
+async function xacNhanOtp() {
+  const otp = document.getElementById('nhapOtp').value.trim();
+  const mat_khau_moi = document.getElementById('matKhauMoi').value;
+  if (!otp || !mat_khau_moi) { hienThongBao('otpMsg', 'Vui lòng nhập đầy đủ mã OTP và mật khẩu mới', 'error'); return; }
+  try {
+    await goi('/xac-nhan-otp', { email: emailDangXuLy, otp, mat_khau_moi });
+    hienThongBao('otpMsg', 'Đặt lại mật khẩu thành công! Mọi thiết bị cũ đã được đăng xuất. Đang chuyển về đăng nhập...', 'success');
+    setTimeout(() => { dongQuenMatKhau(); document.getElementById('loginEmail').value = emailDangXuLy; }, 1800);
+  } catch (e) { hienThongBao('otpMsg', loiMang(e), 'error'); }
+}
+
+// ===== Đăng nhập / đăng ký bằng Google, Facebook, Zalo (backend/routers/oauth.py) =====
+const BIEU_TUONG = {
+  google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.1A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.2 0-11.5-4.2-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>',
+  facebook: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#1877F2"/><path fill="#fff" d="M33.3 31l1.1-7h-6.7v-4.5c0-1.9.9-3.8 3.9-3.8h3V9.8s-2.8-.5-5.4-.5c-5.5 0-9.1 3.3-9.1 9.4V24h-6.1v7h6.1v17h7.6V31h5.6z"/></svg>',
+  zalo: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#0068FF"/><text x="24" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">Zalo</text></svg>',
+};
+fetch(API + '/oauth/nha-cung-cap', { cache: 'no-store' }).then(r => r.json()).then(d => {
+  const ds = d.nha_cung_cap || [];
+  if (!ds.length) return;
+  document.querySelectorAll('.mxh').forEach(khung => {
+    khung.classList.remove('hidden');
+    const ngan = document.createElement('div'); ngan.className = 'mxh-ngan'; ngan.textContent = 'hoặc';
+    khung.appendChild(ngan);
+    ds.forEach(n => {
+      const a = document.createElement('a');
+      a.className = 'mxh-nut mxh-' + n.ma; a.href = '#';
+      a.innerHTML = BIEU_TUONG[n.ma] || '';
+      const chu = document.createElement('span'); chu.textContent = khung.dataset.loai + ' bằng ' + n.ten; a.appendChild(chu);
+      a.onclick = e => {
+        e.preventDefault();
+        const q = new URLSearchParams({ ghi_nho: document.getElementById('ghiNho').checked ? '1' : '0', tiep: trangTiep() });
+        location.href = API + '/oauth/' + n.ma + '/bat-dau?' + q;
+      };
+      khung.appendChild(a);
+    });
+  });
+}).catch(() => {});
+
+// Kết quả trả về từ đăng nhập mạng xã hội: thông báo lỗi (?loi=) hoặc cần bước 2 lớp (#ma_tam=)
+(function () {
+  const loi = new URLSearchParams(location.search).get('loi');
+  if (loi) hienThongBao('loginMsg', loi, 'error');
+  const m = location.hash.match(/ma_tam=([\w.-]+)/);
+  if (m) {
+    maTam2FA = m[1];
+    history.replaceState(null, '', location.pathname + location.search);   // xóa mã tạm khỏi thanh địa chỉ
+    document.getElementById('manHinhChinh').classList.add('hidden');
+    document.getElementById('manHinh2FA').classList.remove('hidden');
+    document.getElementById('ma2FA').focus();
+  }
+})();
+
+// Đã đăng nhập (phiên còn hiệu lực) thì không cần ở lại trang này
+fetch(API + '/me', { credentials: 'include', cache: 'no-store' })
+  .then(r => r.ok ? r.json() : null).then(u => { if (u) luuVaVao(u); }).catch(() => {});
+</script>
+
+<script src="pwa.js"></script>
+</body>
+</html>

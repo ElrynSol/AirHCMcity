@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Cảnh báo Chất lượng Không khí – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<title>Cảnh báo Chất lượng Không khí</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  :root { --accent: #1a73e8; }
+  * { box-sizing: border-box; }
+
+
+
+  td b { font-variant-numeric: tabular-nums; }
+
+  .badge { padding: 5px 14px; border-radius: 20px; font-size: 12.5px; color: white; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+  /* màu chuẩn QĐ 1459/QĐ-TCMT; chữ đen trên nền sáng để đủ tương phản */
+  .b-tot { background: #00e400; color: #000; } .b-trung-binh { background: #ffff00; color: #000; }
+  .b-kem { background: #ff7e00; color: #000; } .b-xau { background: #ff0000; }
+  .b-rat-xau { background: #8f3f97; } .b-nguy-hai { background: #7e0023; }
+  .luu-y { color: #999; font-size: 12px; font-style: italic; margin-top: 14px; }
+
+  .khuyen-cao { padding: 20px; border-radius: 12px; margin-bottom: 18px; border-left: 6px solid; display: flex; gap: 16px; align-items: center; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .khuyen-cao .icon { font-size: 36px; }
+  .khuyen-cao .dong-ho { flex: 0 0 170px; }
+  @media (max-width: 640px) { .khuyen-cao { flex-direction: column; text-align: center; } .khuyen-cao .dong-ho { flex-basis: auto; width: 190px; } }
+  .aqi-so { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  .thang-do { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  .thang-item { flex: 1; min-width: 120px; padding: 12px; border-radius: 10px; text-align: center; color: white; }
+  .thang-item .so { font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .thang-item .ten { font-size: 11.5px; margin-top: 2px; }
+
+  .btn { padding: 10px 18px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+  select { width: 100%; padding: 9px; border-radius: 7px; border: 1px solid #ddd; font-size: 13px; }
+
+  .gio-hien-tai-badge { background: #eef4ff; color: #1557b0; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html"><b>⚠️ Cảnh báo</b></a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <div class="hero-card">
+    <h2>⚠️ Cảnh báo chất lượng không khí</h2>
+    <div class="sub" id="ngayHomNay">Đang tải...</div>
+  </div>
+
+  <div class="khuyen-cao" id="khuyenCaoChung">Đang tải khuyến cáo tổng quan...</div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="margin:0;">📈 Diễn biến hôm nay (PM2.5 theo giờ)</h3>
+      <span class="gio-hien-tai-badge" id="gioHienTaiBadge"></span>
+    </div>
+    <canvas id="bieuDoHomNay" height="110"></canvas>
+    <p class="luu-y" style="margin-top:10px;">* Chỉ hiển thị từ 00:00 đến giờ hiện tại; mặc định là trung tâm TP.HCM, bấm "Dùng vị trí hiện tại" để xem theo vị trí của bạn. Để xem chi tiết theo từng trạm và các ngày trước, vào trang Bản đồ.</p>
+  </div>
+
+  <div class="card">
+    <h3>📅 Diễn biến AQI 7 ngày gần đây (trung bình khu vực)</h3>
+    <div id="aqiTheoNgay" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">Đang tải...</div>
+  </div>
+
+  <div class="card">
+    <h3>📍 Tìm trạm gần vị trí của bạn</h3>
+    <button class="btn" onclick="timViTri()">🎯 Dùng vị trí hiện tại</button>
+    <p style="font-size:11.5px; color:#999; margin:6px 0 0;">Hiển thị 3 trạm có khoảng cách gần vị trí bạn nhất (tính theo đường chim bay).</p>
+    <div id="ketQuaViTri" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="card" id="cardEmail">
+    <h3>📧 Nhận cảnh báo qua email</h3>
+    <div id="emailChuaDangNhap" style="display:none;font-size:13.5px;">Đăng nhập để đăng ký nhận email khi AQI của trạm bạn chọn đạt ngưỡng. <button class="btn" onclick="window.location.href='login.html'" style="margin-left:8px;">Đăng nhập</button></div>
+    <div id="emailForm" style="display:none;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:2;min-width:180px;"><label style="font-size:12px;color:#666;">Trạm</label><select id="emTram" style="width:100%;"></select></div>
+        <div style="flex:1;min-width:120px;"><label style="font-size:12px;color:#666;">Ngưỡng AQI</label>
+          <select id="emNguong" style="width:100%;"><option value="51">&ge; 51 (Trung bình)</option><option value="101" selected>&ge; 101 (Kém)</option><option value="151">&ge; 151 (Xấu)</option><option value="201">&ge; 201 (Rất xấu)</option></select></div>
+        <button class="btn" onclick="dangKyEmail()">Đăng ký</button>
+      </div>
+      <div id="emThongBao" style="font-size:12.5px;margin-top:8px;"></div>
+      <div id="emDanhSach" style="margin-top:10px;"></div>
+      <p style="font-size:11.5px;color:#999;margin:8px 0 0;">Email gửi tới địa chỉ tài khoản của bạn, tối đa 1 thư/ngày cho mỗi trạm. Số liệu là ước tính từ mô hình, chỉ mang tính tham khảo.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>👥 Khuyến cáo theo nhóm đối tượng</h3>
+    <select id="chonNhomDoiTuong" onchange="capNhatKhuyenCaoNhom()" style="margin-bottom:12px;">
+      <option value="binh_thuong">Người bình thường</option>
+      <option value="tre_em">Trẻ em</option>
+      <option value="nguoi_cao_tuoi">Người cao tuổi</option>
+      <option value="benh_ho_hap">Người có bệnh hô hấp/tim mạch</option>
+    </select>
+    <div id="khuyenCaoNhom" style="padding:14px; background:#f9f9f9; border-radius:10px; font-size:13.5px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>📖 Ý nghĩa các mức AQI</h3>
+    <div id="chuThichAQI"></div>
+    <p style="font-size:12.5px; color:#666; margin:0;">AQI càng cao, không khí càng ô nhiễm, càng cần hạn chế ra ngoài và bảo vệ sức khỏe.</p>
+  </div>
+
+  <table>
+    <thead><tr><th>Trạm</th><th>AQI</th><th>Chất gây ô nhiễm chính</th><th>Mức độ</th><th>Dữ liệu ngày</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <p class="luu-y">* Chỉ số AQI được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) dựa trên PM2.5, PM10, O3. Dữ liệu NO2, CO, SO2 từ vệ tinh Sentinel-5P được hiển thị riêng để tham khảo, không đưa vào công thức AQI do khác đơn vị đo. Dữ liệu mang tính chất minh họa/tham khảo học thuật, không thay thế nguồn công bố chính thức.</p>
+  <p class="luu-y">* Dữ liệu quan trắc có độ trễ tự nhiên 1-2 ngày do thời gian xử lý từ nguồn dữ liệu vệ tinh và trạm mặt đất.</p>
+</div>
+
+<script>
+function ngayCucBo(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+const API = 'http://localhost:8000/api/v1';
+async function goiApi(path) {
+  let r;
+  try { r = await fetch(API + path); }
+  catch (e) { throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.'); }
+  const data = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((data && (data.detail || data.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+  return data;
+}
+function dinhDangNgayVN(ngayStr) {
+  if (!ngayStr) return '--';
+  const [nam, thang, ngay] = ngayStr.split('-');
+  return `${ngay}/${thang}/${nam}`;
+}
+
+const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
+const hoTen = localStorage.getItem('ho_ten');
+const userBox = document.getElementById('userBox');
+if (token) {
+  userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+} else {
+  userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+}
+async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+
+const badgeClass = { 'Tốt': 'b-tot', 'Trung bình': 'b-trung-binh', 'Kém': 'b-kem', 'Xấu': 'b-xau', 'Rất xấu': 'b-rat-xau', 'Nguy hại': 'b-nguy-hai' };
+const iconMuc = { 'Tốt': '😊', 'Trung bình': '🙂', 'Kém': '😷', 'Xấu': '😨', 'Rất xấu': '🤢', 'Nguy hại': '⚠️' };
+const mauNen = { 'Tốt': '#e6fbe6', 'Trung bình': '#fffbd6', 'Kém': '#fff0e0', 'Xấu': '#ffe5e5', 'Rất xấu': '#f4e9f5', 'Nguy hại': '#f5e3e8' };
+// màu viền + nội dung khuyến cáo lấy từ thang chuẩn QĐ 1459 (aqi-vn.js)
+const mauVien = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));
+AQI_VN.chuThich('chuThichAQI');
+const khuyenCaoTheoMuc = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.yNghia + ' ' + m.binhThuong]));
+const khuyenCaoTheoNhom = {
+  binh_thuong: Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.binhThuong])),
+  tre_em: { 'Tốt': 'Vui chơi ngoài trời bình thường.', 'Trung bình': 'Có thể vui chơi ngoài trời, tránh gắng sức quá mức.', 'Kém': 'Hạn chế vui chơi ngoài trời kéo dài.', 'Xấu': 'Nên ở trong nhà, tránh hoạt động thể chất ngoài trời.', 'Rất xấu': 'Ở trong nhà, đóng cửa sổ.', 'Nguy hại': 'Bắt buộc ở trong nhà, theo dõi sức khỏe hô hấp.' },
+  nguoi_cao_tuoi: { 'Tốt': 'Hoạt động ngoài trời bình thường.', 'Trung bình': 'Hoạt động nhẹ nhàng, tránh gắng sức.', 'Kém': 'Hạn chế ra ngoài lâu, đeo khẩu trang khi cần thiết.', 'Xấu': 'Tránh hoạt động ngoài trời, theo dõi dấu hiệu khó thở.', 'Rất xấu': 'Ở trong nhà, chuẩn bị thuốc theo toa.', 'Nguy hại': 'Bắt buộc ở trong nhà, liên hệ y tế nếu bất thường.' },
+  benh_ho_hap: { 'Tốt': 'Hoạt động ngoài trời bình thường.', 'Trung bình': 'Theo dõi triệu chứng, mang theo thuốc cắt cơn nếu cần.', 'Kém': 'Hạn chế ra ngoài, đeo khẩu trang N95, mang theo thuốc.', 'Xấu': 'Tránh ra ngoài, dùng máy lọc không khí nếu có.', 'Rất xấu': 'Bắt buộc ở trong nhà, sẵn sàng thuốc cấp cứu.', 'Nguy hại': 'Ở trong nhà tuyệt đối, liên hệ bác sĩ nếu khó thở.' }
+};
+
+let mucDoHienTai = 'Trung bình';
+function capNhatKhuyenCaoNhom() {
+  const nhom = document.getElementById('chonNhomDoiTuong').value;
+  const loiKhuyen = khuyenCaoTheoNhom[nhom][mucDoHienTai] || 'Chưa có dữ liệu.';
+  document.getElementById('khuyenCaoNhom').innerHTML = `<b>${mucDoHienTai}:</b> ${loiKhuyen}`;
+}
+
+const homNay = new Date();
+document.getElementById('ngayHomNay').innerText = `📅 Hôm nay: ${homNay.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+
+let danhSachAQI = [];
+
+goiApi('/aqi-tat-ca-tram')
+  .then(data => {
+    danhSachAQI = data;
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    let aqiMax = 0, mucDoMax = 'Tốt', tramMax = '';
+
+    data.forEach(d => {
+      const cls = badgeClass[d.muc_do] || '';
+      const icon = iconMuc[d.muc_do] || '';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><b>${d.ma_tram}</b> - ${d.ten_tram}</td>
+        <td class="aqi-so">${d.aqi ?? '--'}</td>
+        <td>${d.chat_gay_o_nhiem ?? '--'}</td>
+        <td><span class="badge ${cls}">${icon} ${d.muc_do}</span></td>
+        <td>${dinhDangNgayVN(d.ngay_do)}</td>
+      `;
+      tbody.appendChild(row);
+      if (d.aqi && d.aqi > aqiMax) { aqiMax = d.aqi; mucDoMax = d.muc_do; tramMax = `${d.ma_tram} - ${d.ten_tram}`; }
+    });
+
+    mucDoHienTai = mucDoMax;
+    capNhatKhuyenCaoNhom();
+
+    const box = document.getElementById('khuyenCaoChung');
+    if (aqiMax > 0) {
+      box.style.background = mauNen[mucDoMax];
+      box.style.borderColor = mauVien[mucDoMax];
+      box.innerHTML = `
+        <div class="dong-ho" id="dongHoCanhBao"></div>
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#667085">Khu vực ô nhiễm nhất hiện tại</div>
+          <b style="font-size:17px;">${tramMax}</b><br>
+          <b style="font-size:20px;color:${AQI_VN.mauDam(aqiMax)}">${iconMuc[mucDoMax] || ''} ${mucDoMax}</b><br>
+          <span style="font-size:13.5px;line-height:1.6">${khuyenCaoTheoMuc[mucDoMax] || ''}</span>
+        </div>`;
+      AQI_VN.dongHo('dongHoCanhBao', aqiMax);
+    } else {
+      box.innerText = 'Chưa có đủ dữ liệu để đưa ra khuyến cáo.';
+    }
+  })
+  .catch(e => { document.getElementById('khuyenCaoChung').innerText = e.message; });
+
+function tinhKhoangCach(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+const NGUONG_KM = 15;
+function timViTri() {
+  const box = document.getElementById('ketQuaViTri');
+  if (!navigator.geolocation) { box.innerHTML = '<p style="color:red;">Trình duyệt không hỗ trợ định vị.</p>'; return; }
+  box.innerHTML = '<p>Đang xác định vị trí...</p>';
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const tatCa = danhSachAQI
+        .filter(d => d.lat && d.lon)
+        .map(d => ({ ...d, khoangCach: tinhKhoangCach(latitude, longitude, d.lat, d.lon) }))
+        .sort((a, b) => a.khoangCach - b.khoangCach);
+      if (tatCa.length === 0) { box.innerHTML = '<p style="color:#999;">Chưa có dữ liệu tọa độ trạm.</p>'; return; }
+      // Chỉ lấy trạm trong bán kính NGUONG_KM; trạm xa hơn không đại diện cho vị trí của bạn
+      const cacTramCoKhoangCach = tatCa.filter(d => d.khoangCach <= NGUONG_KM).slice(0, 3);
+      if (cacTramCoKhoangCach.length === 0) {
+        const gan = tatCa[0];
+        box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">
+          Bạn đang ở xa khu vực quan trắc: trạm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
+        return;
+      }
+      taiDienBienHomNay(latitude, longitude);
+      box.innerHTML = `<b>Trạm trong bán kính ${NGUONG_KM} km quanh bạn (tối đa 3 trạm):</b>` + cacTramCoKhoangCach.map(d => `
+        <div style="padding:14px; background:${mauNen[d.muc_do] || '#f9f9f9'}; border-left:4px solid ${mauVien[d.muc_do] || '#999'}; border-radius:8px; margin-top:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b style="font-size:14px;">📍 ${d.ma_tram} - ${d.ten_tram}</b>
+            <span style="font-size:12px; color:#666;">cách ${d.khoangCach.toFixed(1)} km</span>
+          </div>
+          <div style="display:flex; gap:16px; margin-top:8px; flex-wrap:wrap;">
+            <div><span style="font-size:11px; color:#777;">AQI</span><br><b style="font-size:20px;">${d.aqi ?? '--'}</b></div>
+            <div><span style="font-size:11px; color:#777;">Mức độ</span><br><b style="font-size:13px;">${iconMuc[d.muc_do] || ''} ${d.muc_do}</b></div>
+            <div><span style="font-size:11px; color:#777;">Chất chính</span><br><b style="font-size:13px;">${d.chat_gay_o_nhiem ?? '--'}</b></div>
+            <div><span style="font-size:11px; color:#777;">PM2.5</span><br><b style="font-size:13px;">${d.pm25 != null ? d.pm25.toFixed(1) + ' µg/m³' : '--'}</b></div>
+          </div>
+          <div style="font-size:11px; color:#999; margin-top:6px;">Dữ liệu ngày: ${dinhDangNgayVN(d.ngay_do)}</div>
+        </div>`).join('');
+    },
+    () => { box.innerHTML = '<p style="color:red;">Không thể lấy vị trí. Vui lòng cho phép truy cập.</p>'; }
+  );
+}
+
+goiApi('/aqi-theo-ngay?so_ngay=7')
+  .then(data => {
+    const box = document.getElementById('aqiTheoNgay');
+    const homNayStr = ngayCucBo(new Date());
+    box.innerHTML = data.map(d => {
+      const laHomNay = d.ngay === homNayStr;
+      return `
+        <div style="min-width:90px; text-align:center; background:${mauNen[d.muc_do] || '#f9f9f9'}; border-radius:10px; padding:10px; flex-shrink:0; ${laHomNay ? 'border:2px solid #1a73e8;' : ''}">
+          <div style="font-size:10px; color:#666;">${laHomNay ? 'Hôm nay' : dinhDangNgayVN(d.ngay)}</div>
+          <div style="font-size:19px; font-weight:800; margin:4px 0; font-variant-numeric: tabular-nums;">${d.aqi ?? '--'}</div>
+          <div style="font-size:10px; font-weight:600;">${d.muc_do}</div>
+        </div>`;
+    }).join('');
+  })
+  .catch(e => { document.getElementById('aqiTheoNgay').innerHTML = `<span style="color:#c62828;font-size:13px;">${e.message}</span>`; });
+
+// ============ DIỄN BIẾN HÔM NAY THEO GIỜ (kiểu Apple Weather - chỉ hôm nay, không lùi ngày) ============
+let chartHomNay = null;
+
+function taiDienBienHomNay(lat = 10.7769, lon = 106.7009) {
+  const homNay = new Date();
+  const gioHienTai = homNay.getHours();
+  document.getElementById('gioHienTaiBadge').innerText = `Bây giờ: ${gioHienTai}:00`;
+
+  const ngayStr = ngayCucBo(homNay);
+  // Dùng tọa độ trung tâm TP.HCM làm mặc định (có thể mở rộng sau để theo vị trí người dùng)
+  goiApi(`/du-lieu-theo-gio?chi_so=pm2_5&ngay=${ngayStr}&lat=${lat}&lon=${lon}`)
+    .then(result => {
+      // Chỉ lấy từ 00:00 đến giờ hiện tại; các giờ chưa diễn ra (dữ liệu ước tính của nguồn) không vẽ để tránh gây hiểu nhầm
+      const rows = result.du_lieu.filter(d => parseInt(d.gio.split(':')[0], 10) <= gioHienTai && d.gia_tri != null);
+      if (!rows.length) throw new Error('Chưa có dữ liệu theo giờ cho hôm nay.');
+      const labels = rows.map(d => d.gio);
+      const values = rows.map(d => d.gia_tri);
+
+      // Đánh dấu giờ hiện tại rõ ràng trên biểu đồ
+      const diemMau = labels.map(g => parseInt(g.split(':')[0]) === gioHienTai ? '#c62828' : '#1a73e8');
+      const diemBanKinh = labels.map(g => parseInt(g.split(':')[0]) === gioHienTai ? 6 : 2);
+
+      document.getElementById('bieuDoHomNay').style.display = '';
+      const gc = document.getElementById('ghiChuGio'); if (gc) gc.remove();
+      const ctx = document.getElementById('bieuDoHomNay').getContext('2d');
+      if (chartHomNay) chartHomNay.destroy();
+      chartHomNay = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'PM2.5 hôm nay (µg/m³)',
+            data: values,
+            borderColor: '#1a73e8',
+            backgroundColor: '#1a73e820',
+            fill: true, tension: 0.35,
+            pointBackgroundColor: diemMau,
+            pointRadius: diemBanKinh
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { x: { ticks: { maxTicksLimit: 8 } }, y: { title: { display: true, text: 'µg/m³' } } }
+        }
+      });
+    })
+    .catch(e => {
+      if (chartHomNay) { chartHomNay.destroy(); chartHomNay = null; }
+      const cv = document.getElementById('bieuDoHomNay');
+      cv.style.display = 'none';
+      let note = document.getElementById('ghiChuGio');
+      if (!note) { note = document.createElement('p'); note.id = 'ghiChuGio'; note.style.cssText = 'color:#999;font-size:13px;'; cv.parentElement.insertBefore(note, cv); }
+      note.textContent = e.message;
+    });
+}
+taiDienBienHomNay();
+</script>
+
+
+<script>
+(function () {
+  const API_EM = 'http://localhost:8000/api/v1';
+  const tk = localStorage.getItem('ho_ten') ? 'phien-cookie' : null;
+  const hd = () => ({ 'Content-Type': 'application/json' });
+  const esc2 = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function goi(path, opt) {
+    let r;
+    try { r = await fetch(API_EM + path, { credentials: 'include', ...opt }); } catch (e) { throw new Error('Không kết nối được máy chủ.'); }
+    const d = await r.json().catch(() => null);
+    if (r.status === 401) { localStorage.clear(); throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.'); }
+    if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+    return d;
+  }
+  const tb = (m, ok) => { const e = document.getElementById('emThongBao'); e.style.color = ok ? '#137333' : '#b3261e'; e.textContent = m; };
+  if (!tk) { document.getElementById('emailChuaDangNhap').style.display = 'block'; return; }
+  document.getElementById('emailForm').style.display = 'block';
+  async function taiDs() {
+    try {
+      const ds = await goi('/canh-bao/dang-ky', { headers: hd() });
+      document.getElementById('emDanhSach').innerHTML = ds.length ? '<div style="font-size:12px;color:#666;margin-bottom:4px;">Đăng ký của bạn:</div>' + ds.map(x =>
+        `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #eee;font-size:13px;"><span>${esc2(x.ma_tram)} · ${esc2(x.ten_tram)} &mdash; AQI &ge; <b>${x.nguong_aqi}</b>${x.lan_gui_cuoi ? ` <small style="color:#999">(gửi gần nhất ${x.lan_gui_cuoi})</small>` : ''}</span><button class="btn" data-id="${x.id}" style="padding:5px 12px;background:#c62828;font-size:12px;">Hủy</button></div>`).join('') : '';
+      document.querySelectorAll('#emDanhSach button[data-id]').forEach(b => b.onclick = async () => {
+        try { await goi('/canh-bao/dang-ky/' + b.dataset.id, { method: 'DELETE', headers: hd() }); tb('Đã hủy đăng ký.', true); taiDs(); } catch (e) { tb(e.message, false); }
+      });
+    } catch (e) { tb(e.message, false); }
+  }
+  window.dangKyEmail = async function () {
+    const tram_id = document.getElementById('emTram').value, nguong_aqi = document.getElementById('emNguong').value;
+    if (!tram_id) { tb('Chưa có trạm để chọn.', false); return; }
+    try {
+      const d = await goi('/canh-bao/dang-ky', { method: 'POST', headers: hd(), body: JSON.stringify({ tram_id: +tram_id, nguong_aqi: +nguong_aqi }) });
+      tb(d.message, true); taiDs();
+    } catch (e) { tb(e.message, false); }
+  };
+  fetch(API_EM + '/tram').then(r => r.json()).then(ds => {
+    document.getElementById('emTram').innerHTML = ds.filter(t => t.trang_thai === 'Hoat Dong').map(t => `<option value="${t.id}">${esc2(t.ma_tram)} - ${esc2(t.ten_tram)}</option>`).join('');
+  }).catch(() => tb('Không tải được danh sách trạm.', false));
+  taiDs();
+})();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

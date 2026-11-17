@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Bản đồ nhiệt dự báo PM2.5 – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Bản đồ nhiệt dự báo PM2.5</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  .luu-y { color: #888; font-size: 12px; font-style: italic; margin-top: 10px; line-height: 1.5; }
+  .canh-bao { background:#f4f7fb; border-left:4px solid #1b63d6; padding:8px 12px; font-size:12.5px; color:#344054; margin:10px 0; border-radius:4px; line-height:1.5; }
+  .loi { color:#c62828; font-size:13px; }
+  .btn { padding: 9px 16px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+  .btn.phu { background: #fff; color: #1a73e8; border: 1px solid #1a73e8; }
+  select { padding: 8px; border-radius: 7px; border: 1px solid #ddd; font-size: 13px; background: #fff; max-width: 100%; }
+  #ban-do { height: 62vh; min-height: 380px; border-radius: 12px; border: 1px solid #e5e7eb; }
+  .tab { padding:7px 14px; border-radius:18px; border:1px solid #1a73e8; background:#fff; color:#1a73e8; cursor:pointer; font-size:13px; font-weight:600; }
+  .tab.on { background:#1a73e8; color:#fff; }
+  .huy-hieu { display:inline-block; font-size:11px; border-radius:10px; padding:1px 8px; margin-left:4px; }
+  .hh-ok { background:#e8f5e9; color:#2e7d32; } .hh-tk { background:#f2f4f7; color:#667085; }
+  .chu-giai { display:flex; flex-wrap:wrap; gap:6px 12px; font-size:12px; margin-top:8px; }
+  .chu-giai span i { display:inline-block; width:14px; height:14px; border:1px solid #888; vertical-align:-2px; margin-right:4px; }
+  .dieu-khien { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .so { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+  .so > div { flex:1; min-width:150px; background:#f7f8fa; border:1px solid #eee; border-radius:10px; padding:10px 12px; font-size:12px; color:#667085; }
+  .so b { display:block; font-size:18px; color:#222; font-variant-numeric: tabular-nums; }
+
+  .luoi-kv { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:6px 0 16px; }
+  .kv { background:#f7f9fc; border:1px solid #e4e8ef; border-radius:12px; padding:12px 14px; }
+  .kv-ten { font-size:12.5px; font-weight:700; color:#667085; text-transform:uppercase; letter-spacing:.03em; }
+  .kv-so { font-size:26px; font-weight:800; margin:4px 0 2px; display:flex; align-items:center; gap:8px; }
+  .kv-so small { font-size:13px; font-weight:600; color:#667085; }
+  .cham { width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,.2); display:inline-block; }
+  .kv-muc { font-size:13px; font-weight:600; color:#344054; } .kv-ct { font-size:12.5px; color:#667085; margin-top:6px; line-height:1.55; }
+  .hai-cot { display:grid; grid-template-columns:1fr 1fr; gap:16px; } .hai-cot > * { min-width:0; }
+  @media (max-width:760px) { .hai-cot { grid-template-columns:1fr; } }
+  table.bang-nho { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; box-shadow:none; display:table; white-space:normal; }
+  table.bang-nho th { text-align:left; font-size:12px; color:#667085; font-weight:600; padding:6px 8px; border-bottom:1px solid #e4e8ef; background:none; }
+  table.bang-nho td { padding:7px 8px; border-bottom:1px solid #f0f2f5; } table.bang-nho small { color:#98a2b3; }
+  table.bang-nho .r { text-align:right; white-space:nowrap; }
+  .aqi-the { display:inline-block; min-width:34px; text-align:center; padding:2px 6px; border-radius:6px; font-weight:700; font-size:12px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+  .thanh-muc { display:flex; height:16px; border-radius:8px; overflow:hidden; margin:8px 0 4px; }
+  .dien-giai ul { margin:8px 0 0; padding-left:20px; } .dien-giai li { margin:6px 0; font-size:14px; line-height:1.6; color:#344054; }
+  .so > div b { margin:2px 0; } .so > div { line-height:1.45; }
+  details.chi-tiet { margin-top:10px; } details.chi-tiet summary { cursor:pointer; font-size:13px; font-weight:600; color:#1b63d6; }
+
+</style>
+</head>
+<body>
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html"><b>🌡️ Bản đồ nhiệt</b></a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <div class="hero-card">
+    <h2>🌡️ Bản đồ nhiệt PM2.5 dự báo</h2>
+    <div class="sub">Bước 1: dự báo theo thời gian cho từng trạm · Bước 2: nội suy theo không gian cho từng ngày · cắt theo ranh giới 168 phường/xã TP.HCM (PostGIS) · tô màu theo thang AQI Việt Nam</div>
+  </div>
+  <div id="trangThai" class="card">Đang tính bản đồ…</div>
+  <div id="vung" style="display:none;">
+    <div class="card">
+      <div class="dieu-khien">
+        <div id="tabs"></div>
+        <label style="font-size:13px;">Kiểu <select id="kieu">
+          <option value="phuong">Theo phường/xã</option><option value="muc">Lưới theo mức AQI</option><option value="muot">Lưới chuyển màu mịn</option></select></label>
+        <label style="font-size:13px;">Độ mờ <input type="range" id="doMo" min="20" max="100" value="75" style="vertical-align:middle;"></label>
+        <label style="font-size:13px;"><input type="checkbox" id="hienTram" checked> Hiện trạm</label>
+        <label style="font-size:13px;" title="Phường cách trạm gần nhất hơn 15 km: giá trị là ngoại suy"><input type="checkbox" id="hienXa" checked> Gạch chéo vùng xa trạm</label>
+      </div>
+      <div id="canhBao"></div>
+      <div id="ban-do"></div>
+      <div class="chu-giai" id="chuGiai"></div>
+    </div>
+
+    <div class="card" id="theVung">
+      <h3>Đánh giá theo vùng <span class="huy-hieu hh-tk" id="vungNgay"></span></h3>
+      <div class="luoi-kv" id="khuVuc"></div>
+      <div class="hai-cot">
+        <div><b>5 phường/xã có PM2.5 dự báo cao nhất</b><table class="bang-nho" id="topCao"></table></div>
+        <div><b>5 phường/xã có PM2.5 dự báo thấp nhất</b><table class="bang-nho" id="topThap"></table></div>
+      </div>
+      <div style="margin-top:14px"><b>Số phường/xã theo mức AQI</b><div class="thanh-muc" id="thanhMuc"></div><div class="chu-giai" id="chuMuc"></div></div>
+      <p class="luu-y">Xếp hạng chỉ dùng các phường/xã cách trạm gần nhất ≤ 15 km. Giá trị mỗi phường nội suy tại điểm đại diện nằm trong
+        phường (PostGIS ST_PointOnSurface); khoảng cách tới trạm tính bằng ST_Distance trên mặt cầu, trạm gần nhất tìm bằng chỉ mục không gian (KNN).</p>
+    </div>
+
+    <div class="card">
+      <h3>Độ tin cậy — nên tin bản đồ này tới đâu?</h3>
+      <div class="so" id="so"></div>
+      <div id="dienGiai" class="dien-giai"></div>
+      <details class="chi-tiet"><summary>Chi tiết kỹ thuật</summary><p class="luu-y" id="luuY"></p></details>
+    </div>
+  </div>
+</div>
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+async function goiApi(path, opt) {
+  let r;
+  try { r = await fetch(API + path, opt); }
+  catch (e) { throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.'); }
+  const data = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((data && (data.detail || data.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+  return data;
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const f1 = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
+const TIN = { cao: ['Cao', 'cách trạm ≤ 5 km'], trung_binh: ['Trung bình', '5–15 km'], thap: ['Thấp', '> 15 km, ngoại suy'], khong_ro: ['Không rõ', ''] };
+
+let D = null, ngayChon = 0, ban = null, lopAnh = null, lopPhuong = null, lopBao = null, lopTram = L.layerGroup(), GEO = null, TT_PHUONG = {};
+function hex2rgb(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+function mucCua(a) { return D.thang_mau.find(x => a <= x.den) || D.thang_mau[D.thang_mau.length - 1]; }
+function mauMuc(a) { return mucCua(a).mau; }
+function mauMuot(a) {
+  const tam = D.thang_mau.map(m => [(m.tu + m.den) / 2, hex2rgb(m.mau)]);
+  if (a <= tam[0][0]) return tam[0][1];
+  for (let i = 1; i < tam.length; i++) if (a <= tam[i][0]) {
+    const t = (a - tam[i - 1][0]) / (tam[i][0] - tam[i - 1][0]);
+    return tam[i - 1][1].map((v, k) => Math.round(v + t * (tam[i][1][k] - v)));
+  }
+  return tam[tam.length - 1][1];
+}
+function bilinear(g, x, y) {
+  const n = g.length, x0 = Math.max(0, Math.min(n - 1, Math.floor(x))), y0 = Math.max(0, Math.min(n - 1, Math.floor(y)));
+  const x1 = Math.min(n - 1, x0 + 1), y1 = Math.min(n - 1, y0 + 1), tx = x - x0, ty = y - y0;
+  return (g[y0][x0] * (1 - tx) + g[y0][x1] * tx) * (1 - ty) + (g[y1][x0] * (1 - tx) + g[y1][x1] * tx) * ty;
+}
+// Ảnh lưới nội suy, CẮT theo đường bao TP.HCM (vẽ đa giác ranh giới làm vùng cắt của canvas)
+function anhLuoi(a, muot) {
+  const n = D.luoi.n, S = 320, L0 = D.luoi;
+  const g = a.aqi.map(r => r.map(z => z == null ? 0 : z));
+  const cv = document.createElement('canvas'); cv.width = cv.height = S; const cx = cv.getContext('2d');
+  const img = cx.createImageData(S, S);
+  for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) {
+    const v = bilinear(g, i / (S - 1) * (n - 1), j / (S - 1) * (n - 1));
+    const c = muot ? mauMuot(v) : hex2rgb(mauMuc(v));
+    const k = (j * S + i) * 4; img.data[k] = c[0]; img.data[k + 1] = c[1]; img.data[k + 2] = c[2]; img.data[k + 3] = 255;
+  }
+  const bao = D.ranh_gioi && D.ranh_gioi.duong_bao;
+  if (!bao) { cx.putImageData(img, 0, 0); return cv.toDataURL(); }
+  const tam = document.createElement('canvas'); tam.width = tam.height = S; tam.getContext('2d').putImageData(img, 0, 0);
+  const px = lon => (lon - L0.lon0) / (L0.lon1 - L0.lon0) * S, py = lat => (L0.lat1 - lat) / (L0.lat1 - L0.lat0) * S;
+  cx.beginPath();
+  (bao.type === 'Polygon' ? [bao.coordinates] : bao.coordinates).forEach(da => da.forEach(vong => vong.forEach((p, i) => i ? cx.lineTo(px(p[0]), py(p[1])) : cx.moveTo(px(p[0]), py(p[1])))));
+  cx.clip('evenodd');
+  cx.drawImage(tam, 0, 0);
+  return cv.toDataURL();
+}
+function ve() {
+  const a = D.anh[ngayChon], kieu = document.getElementById('kieu').value, doMo = document.getElementById('doMo').value / 100;
+  if (lopAnh) { ban.removeLayer(lopAnh); lopAnh = null; }
+  if (lopPhuong) { ban.removeLayer(lopPhuong); lopPhuong = null; }
+  if (kieu === 'phuong' && GEO) {
+    const gt = {}; a.phuong.forEach(p => gt[p.ma] = p);
+    const gach = document.getElementById('hienXa').checked;
+    lopPhuong = L.geoJSON(GEO, {
+      style: f => { const p = gt[f.properties.ma], tt = TT_PHUONG[f.properties.ma] || {}, xa = tt.do_tin_cay === 'thap';
+        return { color: '#fff', weight: .6, fillColor: p && p.aqi != null ? mauMuc(p.aqi) : '#ccc', fillOpacity: xa && gach ? doMo * .35 : doMo, dashArray: xa && gach ? '3' : null }; },
+      onEachFeature: (f, l) => { const p = gt[f.properties.ma] || {}, tt = TT_PHUONG[f.properties.ma] || {}, m = p.aqi != null ? mucCua(p.aqi) : null;
+        l.bindPopup(`<b>${esc(f.properties.ten)}</b><br><small>${esc(f.properties.khu_vuc)}</small><br>${D.ngay[ngayChon]}: PM2.5 <b>${f1(p.pm25)}</b> µg/m³ · AQI <b>${p.aqi ?? '--'}</b> ${m ? '(' + esc(m.muc) + ')' : ''}` +
+          `<br><small>Trạm gần nhất: ${esc(tt.tram_gan_nhat || '--')}, cách ${f1(tt.km_tram_gan_nhat)} km · độ tin cậy <b>${(TIN[tt.do_tin_cay] || TIN.khong_ro)[0]}</b></small>`);
+        l.on('mouseover', () => l.setStyle({ weight: 2, color: '#0b2545' })); l.on('mouseout', () => lopPhuong && lopPhuong.resetStyle(l)); }
+    }).addTo(ban);
+  } else {
+    lopAnh = L.imageOverlay(anhLuoi(a, kieu === 'muot'), [[D.luoi.lat0, D.luoi.lon0], [D.luoi.lat1, D.luoi.lon1]], { opacity: doMo }).addTo(ban);
+  }
+  if (lopBao) lopBao.bringToFront();
+  lopTram.clearLayers();
+  D.tram.forEach(t => {
+    const aq = t.aqi[ngayChon];
+    L.circleMarker([t.lat, t.lon], { radius: 7, color: '#222', weight: 1.5, fillColor: mauMuc(aq == null ? 0 : aq), fillOpacity: 1 })
+      .bindPopup(`<b>${esc(t.ma_tram || '')}</b> ${esc(t.ten_tram || '')}<br>${D.ngay[ngayChon]}: PM2.5 <b>${f1(t.pm25[ngayChon])}</b> µg/m³ · AQI <b>${aq ?? '--'}</b>`).addTo(lopTram);
+  });
+  if (document.getElementById('hienTram').checked) lopTram.addTo(ban); else ban.removeLayer(lopTram);
+  const cb = a.canh_bao || [];
+  document.getElementById('canhBao').innerHTML = cb.map(t => `<div class="canh-bao">${esc(t)}</div>`).join('') +
+    (a.da_kiem_chung ? '' : '<div class="canh-bao">Ngày này suy ra đệ quy từ dự báo của ngày trước, <b>chưa được kiểm chứng</b>; chỉ để tham khảo.</div>');
+  veDanhGiaVung(a); veDoTinCay(a);
+}
+
+function veDanhGiaVung(a) {
+  if (!a.khu_vuc || !a.khu_vuc.length) { document.getElementById('theVung').style.display = 'none'; return; }
+  document.getElementById('vungNgay').textContent = D.ngay[ngayChon].split('-').reverse().join('/') + (a.da_kiem_chung ? ' · đã kiểm chứng' : ' · tham khảo');
+  document.getElementById('khuVuc').innerHTML = a.khu_vuc.map(k => { const m = mucCua(k.aqi_tb ?? 0);
+    return `<div class="kv"><div class="kv-ten">${esc(k.khu_vuc)}</div><div class="kv-so"><span style="background:${m.mau}" class="cham"></span>${f1(k.pm25_tb)} <small>µg/m³</small></div>
+      <div class="kv-muc">AQI ≈ ${k.aqi_tb ?? '--'} · ${esc(m.muc)}</div>
+      <div class="kv-ct">Cao nhất: ${esc(k.phuong_cao_nhat)} (${f1(k.pm25_cao_nhat)})<br>Thấp nhất: ${esc(k.phuong_thap_nhat)} (${f1(k.pm25_thap_nhat)})<br>
+      ${k.so_phuong} phường/xã${k.so_phuong_tin_cay_thap ? ` · <span title="Không dùng để xếp hạng">${k.so_phuong_tin_cay_thap} xa trạm</span>` : ''}</div></div>`; }).join('');
+  const ten = {}; D.ranh_gioi.phuong.forEach(p => ten[p.ma] = p);
+  const tin = a.phuong.filter(p => (ten[p.ma] || {}).do_tin_cay !== 'thap').sort((x, y) => y.pm25 - x.pm25);
+  const dong = p => { const t = ten[p.ma] || {}, m = mucCua(p.aqi ?? 0);
+    return `<tr><td>${esc(t.ten_day_du)}<br><small>${esc(t.khu_vuc)} · cách trạm ${f1(t.km_tram_gan_nhat)} km</small></td><td class="r"><b>${f1(p.pm25)}</b></td><td class="r"><span class="aqi-the" style="background:${m.mau}">${p.aqi ?? '--'}</span></td></tr>`; };
+  const dau = '<tr><th>Phường/xã</th><th class="r">PM2.5</th><th class="r">AQI</th></tr>';
+  document.getElementById('topCao').innerHTML = dau + tin.slice(0, 5).map(dong).join('');
+  document.getElementById('topThap').innerHTML = dau + tin.slice(-5).reverse().map(dong).join('');
+  const dem = D.thang_mau.map(m => ({ m, n: a.phuong.filter(p => p.aqi != null && mucCua(p.aqi) === m).length })).filter(x => x.n);
+  const tong = dem.reduce((s, x) => s + x.n, 0) || 1;
+  document.getElementById('thanhMuc').innerHTML = dem.map(x => `<div style="flex:${x.n};background:${x.m.mau}" title="${esc(x.m.muc)}: ${x.n}"></div>`).join('');
+  document.getElementById('chuMuc').innerHTML = dem.map(x => `<span><i style="background:${x.m.mau}"></i>${esc(x.m.muc)}: <b>${x.n}</b> (${Math.round(x.n / tong * 100)}%)</span>`).join('');
+}
+
+function veDoTinCay(a) {
+  const so = a.sai_so_noi_suy, md = D.mo_hinh, ci = md.ky_nang_ci95, dem = { cao: 0, trung_binh: 0, thap: 0 };
+  (D.ranh_gioi.phuong || []).forEach(p => dem[p.do_tin_cay] = (dem[p.do_tin_cay] || 0) + 1);
+  const tong = (D.ranh_gioi.phuong || []).length;
+  document.getElementById('so').innerHTML = `
+    <div>Sai số nội suy giữa các trạm<b>± ${so ? f1(so.RMSE_idw) : '--'} µg/m³</b>${so ? `thử che từng trạm rồi đoán lại từ ${so.so_tram - 1} trạm còn lại` : ''}</div>
+    <div>Mức chênh giữa nơi cao nhất và thấp nhất<b>${f1(a.chenh_max_min)} µg/m³</b>giữa các trạm trong ngày</div>
+    <div>Phường/xã gần trạm (≤ 5 km)<b>${dem.cao}/${tong}</b>${dem.thap} phường xa trạm > 15 km</div>
+    <div>Dự báo ngày mai so với "mai = hôm nay"<b>${md.ky_nang != null ? (md.ky_nang > 0 ? '+' : '') + f1(md.ky_nang * 100) + '%' : '--'}</b>${ci ? `khoảng tin cậy ${f1(ci.thap * 100)}% … ${f1(ci.cao * 100)}%` : ''}</div>`;
+  const y = [];
+  if (so) {
+    const tot = so.ky_nang_so_voi_trung_binh;
+    y.push(`<li><b>Phân bố theo không gian đáng tin ở mức vừa phải.</b> Che một trạm rồi dùng các trạm khác đoán lại, sai số trung bình khoảng ±${f1(so.RMSE_idw)} µg/m³` +
+      (tot != null ? ` — ${tot > 0 ? 'tốt hơn' : 'không tốt hơn'} cách đơn giản là lấy trung bình các trạm (±${f1(so.RMSE_trung_binh_cac_tram_con_lai)} µg/m³).` : '.') +
+      ` Vì vậy chỉ nên so sánh hai khu vực khi chúng chênh nhau rõ hơn mức này.</li>`);
+  }
+  y.push(a.chenh_max_min < (so ? so.RMSE_idw * 1.5 : 5)
+    ? `<li><b>Hôm nay các khu vực khá giống nhau</b> (chênh ${f1(a.chenh_max_min)} µg/m³) — màu khác nhau trên bản đồ chủ yếu do nội suy, chưa phải khác biệt thật.</li>`
+    : `<li><b>Có khác biệt rõ giữa các khu vực</b> (chênh ${f1(a.chenh_max_min)} µg/m³, lớn hơn sai số nội suy) — các vùng cao/thấp trong bảng xếp hạng là đáng chú ý.</li>`);
+  y.push(`<li><b>Càng xa trạm càng kém tin cậy.</b> ${dem.cao} phường/xã cách trạm ≤ 5 km, ${dem.trung_binh} phường 5–15 km, ${dem.thap} phường > 15 km
+    (vùng gạch chéo trên bản đồ, gồm Côn Đảo và nhiều xã ven biển) chỉ là ngoại suy và không được dùng để xếp hạng.</li>`);
+  y.push(md.ky_nang != null && ci && ci.thap > 0
+    ? `<li><b>Dự báo theo thời gian có kỹ năng</b> so với cách đoán "mai = hôm nay".</li>`
+    : `<li><b>Dự báo cho ngày mai chỉ ngang cách đoán "mai = hôm nay"</b> (khoảng tin cậy chứa 0): bản đồ ngày đầu chủ yếu phản ánh hiện trạng; ngày 2–3 chỉ để tham khảo.</li>`);
+  y.push('<li><b>Nguồn số liệu là mô hình CAMS (ô lưới ~45 km)</b>, chưa phải trạm đo mặt đất: phù hợp để xem xu hướng chung, chưa đủ để kết luận cho từng con phố.</li>');
+  document.getElementById('dienGiai').innerHTML = '<ul>' + y.join('') + '</ul>';
+}
+
+function dungTab() {
+  document.getElementById('tabs').innerHTML = D.ngay.map((d, i) => `<button class="tab ${i === ngayChon ? 'on' : ''}" onclick="chonNgay(${i})">${d.slice(8, 10)}/${d.slice(5, 7)}<span class="huy-hieu ${D.anh[i].da_kiem_chung ? 'hh-ok' : 'hh-tk'}">${D.anh[i].da_kiem_chung ? 'đã kiểm chứng' : 'tham khảo'}</span></button>`).join(' ');
+}
+function chonNgay(i) { ngayChon = i; dungTab(); ve(); }
+(async function () {
+  try {
+    D = await goiApi('/ban-do-nhiet?so_ngay=3&do_phan_giai=40');
+    (D.ranh_gioi.phuong || []).forEach(p => TT_PHUONG[p.ma] = p);
+    if (D.ranh_gioi.co) { try { GEO = await goiApi('/ranh-gioi/phuong-xa'); } catch (e) { GEO = null; } }
+    if (!GEO) { const k = document.getElementById('kieu'); k.querySelector('option[value="phuong"]').remove(); k.value = 'muc'; }
+    document.getElementById('trangThai').style.display = 'none'; document.getElementById('vung').style.display = '';
+    ban = L.map('ban-do', { zoomSnap: .5 });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16, attribution: 'Tiles © Esri · Ranh giới: thanglequoc/vietnamese-provinces-database' }).addTo(ban);
+    if (D.ranh_gioi.duong_bao) lopBao = L.geoJSON(D.ranh_gioi.duong_bao, { style: { color: '#0b2545', weight: 2, fill: false }, interactive: false }).addTo(ban);
+    ban.fitBounds([[D.luoi.lat0, D.luoi.lon0], [D.luoi.lat1, D.luoi.lon1]]);
+    document.getElementById('chuGiai').innerHTML = D.thang_mau.map(m => `<span><i style="background:${m.mau}"></i>${esc(m.muc)} (AQI ${m.tu}–${m.den})</span>`).join('') +
+      '<span><i style="background:repeating-linear-gradient(45deg,#ccc 0 2px,#fff 2px 5px)"></i>Xa trạm > 15 km (ngoại suy)</span>';
+    const md = D.mo_hinh;
+    document.getElementById('luuY').innerHTML = D.luu_y.map(esc).join('<br>') +
+      `<br>Mô hình theo điểm: ${md.so_tram} trạm, kiểm tra từ ${esc(md.kiem_tra_tu)}. Nội suy IDW (nghịch đảo bình phương khoảng cách).` +
+      '<br>Thang màu: AQI Việt Nam (QĐ 1459/QĐ-TCMT); PM2.5 quy đổi sang AQI theo bảng ngưỡng của QĐ 1459.';
+    ['doMo', 'hienTram', 'kieu', 'hienXa'].forEach(id => document.getElementById(id).addEventListener('input', ve));
+    dungTab(); ve();
+  } catch (e) { document.getElementById('trangThai').innerHTML = `<p class="loi">${esc(e.message)}</p>`; }
+})();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

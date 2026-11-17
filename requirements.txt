@@ -1,0 +1,50 @@
+# Thư viện Python cho máy chủ AirHCM + thu thập dữ liệu + huấn luyện mô hình.
+# Python 3.12. Chạy thật trên Windows 11 x86-64. Với Linux x86-64 và ARM64 (Oracle Ampere A1, Docker python:3.12-slim):
+# đã kiểm bằng pip download — cả 100 gói (kể cả gói phụ thuộc) đều có bản cài sẵn (wheel), riêng http-ece là Python thuần.
+# Cài:  pip install -r requirements.txt
+# Kiểm thử thêm: pip install -r requirements-dev.txt · Notebook phân tích: pip install -r ml/notebooks/requirements-notebook.txt
+#
+# Ghim CHÍNH XÁC (==) các thư viện ảnh hưởng tới tệp mô hình đã huấn luyện (models/*.pkl, *.joblib):
+# khác phiên bản scikit-learn/numpy/joblib có thể không nạp được mô hình trên máy khác.
+
+# --- Máy chủ web ---
+fastapi==0.141.1
+starlette==1.7.0
+uvicorn[standard]==0.53.0
+pydantic==2.13.5
+email-validator==2.3.0
+python-multipart==0.0.32
+python-dotenv==1.2.3
+
+# --- Cơ sở dữ liệu PostgreSQL/PostGIS ---
+SQLAlchemy==2.0.54
+GeoAlchemy2==0.20.0
+psycopg2-binary==2.9.13
+shapely==2.1.2
+
+# --- Bảo mật: mật khẩu Argon2id, JWT, xác thực 2 lớp, thông báo đẩy ---
+argon2-cffi==25.1.0
+passlib==1.7.4
+bcrypt==4.0.1              # chỉ để kiểm tra hash cũ (tự nâng cấp sang Argon2id khi đăng nhập)
+python-jose[cryptography]==3.5.0
+cryptography==50.0.1
+pyotp==2.10.0
+qrcode==8.2
+pywebpush==2.5.0
+
+# --- Học máy (ghim chính xác: khớp tệp mô hình đã huấn luyện) ---
+numpy==2.5.3
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0
+
+# --- Dữ liệu ngoài, báo cáo, IoT, trợ lý AI ---
+requests==2.34.2
+earthengine-api==1.7.45
+python-dateutil==2.9.0.post0
+pytz==2026.4
+openpyxl==3.1.5
+reportlab==5.1.0
+paho-mqtt==2.2.0
+google-genai==3.0.0
+anthropic==2.6.0

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Tra cứu không gian chất lượng không khí TP.HCM: định vị, quét vùng tròn/khung/đa giác, khoảng cách và chỉ đường tới trạm quan trắc gần nhất.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.js"></script>
+<link rel="stylesheet" href="style.css">
+<title>Tra cứu không gian</title>
+<style>
+  .luoi-kg { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 960px) { .luoi-kg { grid-template-columns: 1fr; } }
+  #map { height: 560px; border-radius: 12px; z-index: 0; }
+  @media (max-width: 960px) { #map { height: 420px; } }
+  .leaflet-container { font-family: var(--font); }
+  .card h3 { margin-top: 0; }
+  .cong-cu { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .cong-cu button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: #fff; font: 600 13px var(--font); cursor: pointer; color: var(--text-2); }
+  .cong-cu button.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); }
+  .cong-cu button.chinh { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .thanh { display: flex; align-items: center; gap: 10px; font-size: 13px; flex-wrap: wrap; margin-bottom: 8px; }
+  .thanh input[type=range] { flex: 1; min-width: 160px; }
+  .thanh label { display: inline-flex; align-items: center; gap: 6px; }
+  .huong-dan { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin: 8px 0 0; }
+  .tb { font-size: 13px; padding: 9px 12px; border-radius: 9px; margin-top: 8px; line-height: 1.5; }
+  .tb.loi { background: #fde7e9; color: #b3261e; } .tb.ok { background: #e6f4ea; color: #137333; } .tb.info { background: #e8f0fe; color: #1557b0; }
+  .tom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .tom div { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); }
+  .tom b { display: block; font-size: 19px; color: var(--text-main); }
+  .ds { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; max-height: 330px; overflow: auto; }
+  .ds li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+  .ds .tt { flex: 1; min-width: 0; } .ds .tt b { display: block; font-size: 13.5px; } .ds .tt small { color: var(--text-muted); }
+  .ds .aqi { min-width: 38px; text-align: center; font-weight: 700; border-radius: 7px; padding: 3px 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+  .ds button { padding: 6px 9px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font: 600 12px var(--font); cursor: pointer; white-space: nowrap; }
+  h4 { margin: 12px 0 6px; font-size: 14px; }
+  .thanh-tl { height: 6px; border-radius: 3px; background: #e4e8ef; overflow: hidden; margin-top: 4px; }
+  .thanh-tl i { display: block; height: 100%; background: var(--primary); }
+  .duong { background: #f0f7ff; border: 1px solid #c9dcf7; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 12px; }
+  .moc-icon { font-size: 26px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.4)); }
+  .xung-dot { width: 22px; height: 22px; border-radius: 50%; background: #d93025; border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(217,48,37,.35); }
+</style>
+</head>
+<body>
+<div id="header">
+  <div><a href="index.html">🗺️ Bản đồ</a></div>
+  <div id="userBox"></div>
+</div>
+<div id="content">
+  <div class="hero">
+    <h2>🧭 Tra cứu không gian</h2>
+    <div class="sub">Định vị, quét vùng tròn / khung / đa giác để tìm trạm quan trắc, thiết bị IoT, phản ánh và phường/xã trong vùng; đo khoảng cách và chỉ đường. Mọi phép tính không gian chạy trên PostGIS.</div>
+  </div>
+
+  <div class="luoi-kg">
+    <section class="card">
+      <div class="cong-cu" role="toolbar" aria-label="Công cụ quét">
+        <button type="button" class="chinh" id="nutGps">📍 Vị trí của tôi</button>
+        <button type="button" data-kieu="tron" class="on">⭕ Vòng tròn</button>
+        <button type="button" data-kieu="khung">⬜ Khung chữ nhật</button>
+        <button type="button" data-kieu="da_giac">🔷 Đa giác</button>
+        <button type="button" id="nutXoa">🗑️ Xóa vùng</button>
+      </div>
+      <div class="thanh" id="thanhBanKinh">
+        <span>Bán kính</span><input type="range" id="banKinh" min="200" max="20000" step="100" value="3000" aria-label="Bán kính quét">
+        <b id="nhanBanKinh">3,0 km</b>
+      </div>
+      <div class="thanh">
+        <label><input type="checkbox" id="tuSua"> Tự sửa vùng tự cắt</label>
+        <label><input type="checkbox" id="theoMoc" checked> Đo khoảng cách từ cột mốc 📌</label>
+      </div>
+      <div id="map" role="application" aria-label="Bản đồ quét không gian"></div>
+      <p class="huong-dan" id="huongDan"></p>
+      <div id="tbLoi"></div>
+    </section>
+
+    <section class="card" id="ketQua">
+      <h3>Kết quả trong vùng</h3>
+      <div id="trong" class="tb info">Bấm “Vị trí của tôi” hoặc chạm bản đồ để đặt vùng quét.</div>
+      <div id="noiDung" style="display:none">
+        <div class="tom" id="tom"></div>
+        <div class="duong" id="duong" style="display:none"></div>
+        <h4>Trạm quan trắc (gần cột mốc nhất trước)</h4><ul class="ds" id="dsTram"></ul>
+        <h4>Thiết bị IoT</h4><ul class="ds" id="dsIot"></ul>
+        <h4>Phản ánh của người dân (7 ngày)</h4><ul class="ds" id="dsPa"></ul>
+        <h4>Phường/xã bị vùng quét cắt qua</h4><ul class="ds" id="dsPhuong"></ul>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1/khong-gian';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const km = x => x == null ? '--' : x < 1 ? Math.round(x * 1000) + ' m' : x.toFixed(x < 10 ? 2 : 1).replace('.', ',') + ' km';
+
+const map = L.map('map', { zoomSnap: 0.5 }).setView([10.79, 106.70], 12);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom: 19, attribution: 'Tiles © Esri · Chỉ đường © OSRM, OpenStreetMap' }).addTo(map);
+map.pm.setLang('vi');
+map.pm.setGlobalOptions({ allowSelfIntersection: true, snappable: false, templineStyle: { color: '#1b63d6' }, hintlineStyle: { color: '#1b63d6', dashArray: '5,5' } });
+
+let kieu = 'tron', vung = null, moc = null, lopKq = L.layerGroup().addTo(map), lopDuong = null, lopXungDot = null, hen = null, dangQuet = 0;
+const iconMoc = L.divIcon({ className: '', html: '<div class="moc-icon">📌</div>', iconSize: [26, 26], iconAnchor: [6, 25] });
+
+// Cột mốc = vị trí người dùng (kéo được). Mọi khoảng cách đo từ đây; vòng tròn lấy cột mốc làm tâm.
+function datMoc(lat, lon, nguon) {
+  if (!moc) {
+    moc = L.marker([lat, lon], { draggable: true, icon: iconMoc, zIndexOffset: 3000, title: 'Cột mốc — kéo để di chuyển' }).addTo(map);
+    moc.on('drag', () => { if (kieu === 'tron' && vung) vung.setLatLng(moc.getLatLng()); });
+    moc.on('dragend', () => { nguonMoc = 'kéo tay'; quetSau(); });
+  } else moc.setLatLng([lat, lon]);
+  nguonMoc = nguon || nguonMoc;
+  if (kieu === 'tron') veTron(); else quetSau();
+}
+let nguonMoc = '';
+function veTron() {
+  if (!moc) return;
+  const r = +$('banKinh').value;
+  if (vung && vung instanceof L.Circle) { vung.setLatLng(moc.getLatLng()); vung.setRadius(r); }
+  else { xoaVung(false); vung = L.circle(moc.getLatLng(), { radius: r, color: '#1b63d6', weight: 2, fillOpacity: .08 }).addTo(map); }
+  quetSau();
+}
+function xoaVung(xoaKq = true) {
+  if (vung) { map.removeLayer(vung); vung = null; }
+  if (lopXungDot) { map.removeLayer(lopXungDot); lopXungDot = null; }
+  if (xoaKq) { lopKq.clearLayers(); if (lopDuong) { map.removeLayer(lopDuong); lopDuong = null; } $('noiDung').style.display = 'none'; $('trong').style.display = ''; $('tbLoi').textContent = ''; }
+}
+function chonKieu(k) {
+  kieu = k; map.pm.disableDraw();
+  document.querySelectorAll('[data-kieu]').forEach(b => b.classList.toggle('on', b.dataset.kieu === k));
+  $('thanhBanKinh').style.display = k === 'tron' ? '' : 'none';
+  xoaVung();
+  if (k === 'tron') { $('huongDan').textContent = 'Chạm bản đồ để đặt cột mốc 📌 làm tâm. Kéo cột mốc hoặc thanh bán kính để quét lại.'; if (moc) veTron(); }
+  else if (k === 'khung') { $('huongDan').textContent = 'Kéo trên bản đồ để vẽ khung. Sau khi vẽ, kéo các góc để chỉnh — kết quả tự cập nhật.'; map.pm.enableDraw('Rectangle', { pathOptions: { color: '#1b63d6', fillOpacity: .08 } }); }
+  else { $('huongDan').textContent = 'Chạm từng điểm để vẽ đa giác, chạm lại điểm đầu để khép kín. Kéo các đỉnh để chỉnh; nếu các cạnh chéo nhau, hệ thống báo xung đột và đánh dấu điểm cắt.'; map.pm.enableDraw('Polygon', { pathOptions: { color: '#1b63d6', fillOpacity: .08 } }); }
+}
+document.querySelectorAll('[data-kieu]').forEach(b => b.onclick = () => chonKieu(b.dataset.kieu));
+$('nutXoa').onclick = () => { xoaVung(); if (kieu !== 'tron') chonKieu(kieu); };
+$('banKinh').oninput = () => { $('nhanBanKinh').textContent = km(+$('banKinh').value / 1000); veTron(); };
+['tuSua', 'theoMoc'].forEach(id => $(id).onchange = quetSau);
+
+map.on('pm:create', e => {
+  vung = e.layer; vung.setStyle({ color: '#1b63d6', weight: 2, fillOpacity: .08 });
+  vung.pm.enable({ allowSelfIntersection: true, snappable: false });
+  vung.on('pm:edit pm:markerdragend pm:vertexadded pm:vertexremoved', quetSau);
+  map.pm.disableDraw(); quetSau();
+});
+map.on('click', e => { if (kieu === 'tron') datMoc(e.latlng.lat, e.latlng.lng, 'chạm bản đồ'); });
+
+$('nutGps').onclick = () => {
+  if (!navigator.geolocation) { loi('Thiết bị không hỗ trợ định vị. Hãy chạm bản đồ để đặt cột mốc.'); return; }
+  const n = $('nutGps'); n.disabled = true; n.textContent = '📍 Đang định vị…';
+  navigator.geolocation.getCurrentPosition(p => {
+    n.disabled = false; n.textContent = '📍 Vị trí của tôi';
+    datMoc(p.coords.latitude, p.coords.longitude, 'GPS ±' + Math.round(p.coords.accuracy) + ' m');
+    map.setView([p.coords.latitude, p.coords.longitude], 14);
+  }, e => {
+    n.disabled = false; n.textContent = '📍 Vị trí của tôi';
+    loi(e.code === 1 ? 'Bạn chưa cho phép dùng vị trí. Hãy chạm bản đồ để đặt cột mốc.' : 'Không lấy được vị trí (định vị cần HTTPS hoặc localhost). Hãy chạm bản đồ để đặt cột mốc.');
+  }, { enableHighAccuracy: true, timeout: 12000 });
+};
+
+function loi(t, cls = 'loi') { const d = document.createElement('div'); d.className = 'tb ' + cls; d.textContent = t; $('tbLoi').textContent = ''; $('tbLoi').append(d); }
+function quetSau() { clearTimeout(hen); hen = setTimeout(quet, 300); }
+function yeuCau() {
+  const theoMoc = $('theoMoc').checked && moc;
+  const ml = moc ? moc.getLatLng() : null;
+  const yc = { tu_sua: $('tuSua').checked, cot_moc: theoMoc ? { lat: ml.lat, lon: ml.lng } : null };
+  if (!vung) return null;
+  if (vung instanceof L.Circle) { const c = vung.getLatLng(); return { ...yc, kieu: 'tron', tam: { lat: c.lat, lon: c.lng }, ban_kinh_m: vung.getRadius() }; }
+  const dinh = vung.getLatLngs()[0].map(p => ({ lat: p.lat, lon: p.lng }));
+  return { ...yc, kieu: vung instanceof L.Rectangle ? 'khung' : 'da_giac', dinh: vung instanceof L.Rectangle ? [dinh[0], dinh[2]] : dinh };
+}
+async function quet() {
+  const yc = yeuCau(); if (!yc) return;
+  const so = ++dangQuet;
+  if (lopXungDot) { map.removeLayer(lopXungDot); lopXungDot = null; }
+  try {
+    const r = await fetch(API + '/quet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(yc) });
+    const d = await r.json();
+    if (so !== dangQuet) return;   // kết quả cũ về muộn sau khi người dùng đã kéo tiếp: bỏ qua
+    if (!r.ok) {
+      vung.setStyle && vung.setStyle({ color: '#d93025' });
+      loi(d.detail || 'Không quét được vùng này');
+      const vt = d.xung_dot && d.xung_dot.vi_tri;
+      if (vt) lopXungDot = L.marker([vt.lat, vt.lon], { icon: L.divIcon({ className: '', html: '<div class="xung-dot" title="Điểm các cạnh cắt nhau"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }), interactive: false }).addTo(map);
+      return;
+    }
+    vung.setStyle && vung.setStyle({ color: '#1b63d6' });
+    $('tbLoi').textContent = '';
+    if (d.vung.da_tu_sua) loi('Đa giác tự cắt đã được tự sửa (PostGIS ST_MakeValid) trước khi quét.', 'info');
+    if (!d.vung.trong_tp) loi('Vùng quét không cắt qua phường/xã nào của TP.HCM.', 'info');
+    veKq(d);
+  } catch (e) { if (so === dangQuet) loi('Không kết nối được máy chủ.'); }
+}
+
+function veKq(d) {
+  $('trong').style.display = 'none'; $('noiDung').style.display = '';
+  const t = d.tom_tat, m = t.aqi_tb != null ? AQI_VN.muc(t.aqi_tb) : null;
+  $('tom').innerHTML = `<div>Diện tích<b>${String(d.vung.dien_tich_km2.toFixed(1)).replace('.', ',')} km²</b></div>
+    <div>Trạm · IoT<b>${t.so_tram} · ${t.so_iot}</b></div>
+    <div>AQI trung bình<b style="color:${m ? m.dam : 'inherit'}">${t.aqi_tb ?? '--'}</b>${m ? m.ten : 'không có trạm'}</div>
+    <div>Phường/xã<b>${t.so_phuong}</b></div><div>Phản ánh<b>${t.so_phan_anh}</b></div>
+    <div>Đo từ<b style="font-size:13px">${d.cot_moc.la_vi_tri_nguoi_dung ? '📌 cột mốc' : 'tâm vùng'}</b>${esc(d.cot_moc.la_vi_tri_nguoi_dung ? nguonMoc : '')}</div>`;
+  lopKq.clearLayers();
+  const li = (html, nut) => { const e = document.createElement('li'); e.innerHTML = html; if (nut) e.append(nut); return e; };
+  const nutDuong = (lat, lon, ten) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = '🚗 Chỉ đường'; b.onclick = () => chiDuong(lat, lon, ten); return b; };
+  const dsT = $('dsTram'); dsT.textContent = '';
+  if (!d.tram.length) dsT.append(li('<div class="tt"><small>Không có trạm nào trong vùng — thử mở rộng vùng quét.</small></div>'));
+  d.tram.forEach(x => {
+    const mm = x.aqi != null ? AQI_VN.muc(x.aqi) : null;
+    dsT.append(li(`<span class="aqi" style="background:${mm ? mm.mau : '#eee'};color:${mm ? mm.chu : '#333'}">${x.aqi ?? '--'}</span>
+      <div class="tt"><b>${esc(x.ma)} · ${esc(x.ten)}</b><small>${km(x.km)} · PM2.5 ${x.pm25 ?? '--'} µg/m³ · ${esc(x.ngay || '')}</small></div>`, nutDuong(x.lat, x.lon, x.ma + ' · ' + x.ten)));
+    L.circleMarker([x.lat, x.lon], { radius: 9, color: '#222', weight: 1.5, fillColor: mm ? mm.mau : '#ccc', fillOpacity: 1 })
+      .bindPopup(`<b>${esc(x.ma)}</b> ${esc(x.ten)}<br>AQI <b>${x.aqi ?? '--'}</b> · cách ${km(x.km)}`).addTo(lopKq);
+  });
+  const dsI = $('dsIot'); dsI.textContent = '';
+  if (!d.iot.length) dsI.append(li('<div class="tt"><small>Không có thiết bị IoT trong vùng.</small></div>'));
+  d.iot.forEach(x => { dsI.append(li(`<span aria-hidden="true">📡</span><div class="tt"><b>${esc(x.ma)}</b><small>${esc(x.ten)} · ${km(x.km)}</small></div>`, nutDuong(x.lat, x.lon, x.ma)));
+    L.marker([x.lat, x.lon], { icon: L.divIcon({ className: '', html: '<div style="background:#0b2545;color:#fff;border-radius:7px;padding:3px 5px;font:700 10px sans-serif">IoT</div>', iconSize: [26, 18] }) }).addTo(lopKq); });
+  const dsP = $('dsPa'); dsP.textContent = '';
+  if (!d.phan_anh.length) dsP.append(li('<div class="tt"><small>Không có phản ánh trong 7 ngày qua. <a href="phan-anh.html">Gửi phản ánh</a></small></div>'));
+  d.phan_anh.forEach(x => { dsP.append(li(`<span aria-hidden="true">${esc(x.bieu_tuong)}</span><div class="tt"><b>${esc(x.ten_loai)}</b><small>${km(x.km)} · ${new Date(x.tao_luc).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</small></div>`));
+    L.marker([x.lat, x.lon], { icon: L.divIcon({ className: '', html: `<div style="font-size:18px">${esc(x.bieu_tuong)}</div>`, iconSize: [20, 20] }) }).addTo(lopKq); });
+  const dsW = $('dsPhuong'); dsW.textContent = '';
+  d.phuong.slice(0, 40).forEach(x => dsW.append(li(`<div class="tt"><b>${esc(x.ten)}</b><small>${esc(x.khu_vuc)} · ${Math.round(x.ti_le_trong_vung * 100)}% diện tích nằm trong vùng</small>
+    <div class="thanh-tl"><i style="width:${Math.round(x.ti_le_trong_vung * 100)}%"></i></div></div>`)));
+  if (d.phuong.length > 40) dsW.append(li(`<div class="tt"><small>… và ${d.phuong.length - 40} phường/xã khác</small></div>`));
+}
+
+async function chiDuong(lat, lon, ten) {
+  const tu = moc ? moc.getLatLng() : (vung && vung.getLatLng ? vung.getLatLng() : null);
+  if (!tu) { loi('Hãy đặt cột mốc 📌 (vị trí của bạn) trước khi chỉ đường.'); return; }
+  const o = $('duong'); o.style.display = ''; o.textContent = 'Đang tìm đường…';
+  try {
+    const q = new URLSearchParams({ tu_lat: tu.lat, tu_lon: tu.lng, den_lat: lat, den_lon: lon });
+    const d = await (await fetch(API + '/duong-di?' + q)).json();
+    if (lopDuong) map.removeLayer(lopDuong);
+    lopDuong = L.geoJSON(d.geojson, { style: { color: '#7c3aed', weight: 5, opacity: .85, dashArray: d.nguon === 'osrm' ? null : '8,8' } }).addTo(map);
+    map.fitBounds(lopDuong.getBounds().pad(.25));
+    o.innerHTML = `<b>🚗 Tới ${esc(ten)}</b>: ${km(d.km)}${d.phut != null ? ` · khoảng ${Math.round(d.phut)} phút lái xe` : ''}
+      <br><small>${d.nguon === 'osrm' ? 'Tuyến đường theo OSRM (dữ liệu OpenStreetMap).' : esc(d.ghi_chu)}</small>
+      <br><a href="${esc(d.google_maps)}" target="_blank" rel="noopener">Mở chỉ đường trong Google Maps ↗</a>`;
+  } catch (e) { o.textContent = 'Không tìm được đường đi.'; }
+}
+
+chonKieu('tron');
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

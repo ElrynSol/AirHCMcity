@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Quản lý Trạm Quan Trắc – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<title>Quản lý Trạm Quan Trắc</title>
+<style>
+  :root { --accent: #1a73e8; }
+  * { box-sizing: border-box; }
+
+
+  td b { font-variant-numeric: tabular-nums; }
+  .ten-tram-link { cursor: pointer; color: var(--accent); text-decoration: underline dotted; }
+
+  .badge { padding: 4px 12px; border-radius: 20px; font-size: 11.5px; color: white; font-weight: 600; }
+  .badge-active { background: #2e7d32; }
+  .badge-inactive { background: #999; }
+  .btn { padding: 7px 13px; border: none; border-radius: 7px; cursor: pointer; margin-right: 4px; font-size: 12px; font-weight: 600; box-shadow: none; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-danger { background: #c62828; color: white; }
+  .btn-success { background: #2e7d32; color: white; }
+  .btn-edit { background: #f9a825; color: white; }
+  .btn-quick { background: #fff; color: #0f47a6; border: 1px solid #c9d6ea; box-shadow: none; }
+  .btn-quick:hover { background: #f0f6ff; }
+
+  .form-row { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .form-row input, .form-row select { padding: 9px; flex: 1; min-width: 140px; border: 1px solid #ddd; border-radius: 7px; font-size: 13px; }
+  #adminActions { display: none; }
+  #modalOverlay, #quickViewOverlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.5); align-items:center; justify-content:center; z-index:100; }
+  #modalBox, #quickViewBox { background:white; padding:26px; border-radius:14px; width:460px; max-height:90vh; overflow-y:auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+  #oTimKiem { width:100%; padding:11px 14px; border:1px solid #ddd; border-radius:8px; font-size:13.5px; }
+  .map-box { height: 260px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ddd; }
+  .map-hint { font-size: 12.5px; color: #666; margin: 4px 0 8px; }
+  .map-note { font-size: 11px; color: #999; margin: -6px 0 10px; }
+  .quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .quick-stat-item { background: #f7f8fa; border-radius: 8px; padding: 9px; text-align: center; border: 1px solid #eee; }
+  .quick-stat-item .label { font-size: 10.5px; color: #888; }
+  .quick-stat-item .value { font-size: 15px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  .map-wrap { position: relative; }
+  .map-layer-panel {
+    position: absolute; top: 10px; right: 10px; z-index: 600;
+    background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    padding: 10px 12px; font-size: 12px;
+  }
+  .map-layer-panel label { display: flex; align-items: center; gap: 6px; cursor: pointer; margin-bottom: 6px; white-space: nowrap; }
+  .map-layer-panel label:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html"><b>📋 Danh sách trạm</b></a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <div class="hero-card">
+    <h2>📋 Danh sách trạm quan trắc</h2>
+    <div class="sub" id="tongSoTram">Đang tải dữ liệu...</div>
+  </div>
+
+  <div class="card">
+    <input type="text" id="oTimKiem" placeholder="🔍 Tìm theo tên hoặc mã trạm..." onkeyup="locTram()">
+  </div>
+
+  <div id="adminActions" class="card">
+    <h3>➕ Thêm trạm mới</h3>
+    <p class="map-hint">⚡ Cách nhanh: chọn phường/xã bên dưới để tự điền vị trí trung tâm (✅ = đã có trạm, ⭕ = chưa có trạm):</p>
+    <select id="chonPhuongXaThem" onchange="chonPhuongXa()" style="width:100%; padding:10px; margin-bottom:12px;">
+      <option value="">-- Đang tải danh sách phường/xã... --</option>
+    </select>
+    <p class="map-hint">📍 Hoặc bấm trực tiếp vào bản đồ bên dưới để chọn chính xác hơn:</p>
+    <p class="map-note" id="ghiChuRanhGioiThem">Đang tải dữ liệu ranh giới...</p>
+    <div class="map-wrap">
+      <div id="miniMapThem" class="map-box"></div>
+      <div class="map-layer-panel">
+        <label><input type="checkbox" id="toggleVeTinhThem" onchange="doiLopBanDoThem()"> 🛰️ Ảnh vệ tinh</label>
+        <label><input type="checkbox" id="toggleRanhGioiThem" checked onchange="doiRanhGioiThem()"> 🗺️ Ranh giới phường/xã</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <input id="newMaTram" placeholder="Mã trạm (VD: T13)">
+      <input id="newTenTram" placeholder="Tên trạm">
+    </div>
+    <div class="form-row">
+      <input id="newViDo" placeholder="Vĩ độ (tự điền)" type="number" step="0.000001" readonly style="background:#f5f5f5;">
+      <input id="newKinhDo" placeholder="Kinh độ (tự điền)" type="number" step="0.000001" readonly style="background:#f5f5f5;">
+      <select id="newTrangThai">
+        <option value="Hoat Dong">Hoạt động</option>
+        <option value="Ngung">Ngưng</option>
+      </select>
+    </div>
+    <button class="btn btn-success" onclick="themTram()">Thêm trạm</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sapXep('ma_tram')" style="cursor:pointer;">Mã trạm <span id="icon_ma_tram"></span></th>
+        <th onclick="sapXep('ten_tram')" style="cursor:pointer;">Tên trạm <span id="icon_ten_tram"></span></th>
+        <th onclick="sapXep('aqi')" style="cursor:pointer;">AQI <span id="icon_aqi"></span></th>
+        <th>Tọa độ</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- Modal xem nhanh trạm - KHÔNG rời trang -->
+<div id="quickViewOverlay">
+  <div id="quickViewBox">
+    <h3 id="quickViewTitle">📍 Trạm</h3>
+    <div id="miniMapXem" class="map-box"></div>
+    <div id="quickViewStats" class="quick-stats"></div>
+    <button class="btn" onclick="dongQuickView()" style="width:100%; margin-top:14px;">Đóng</button>
+  </div>
+</div>
+
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h3>✏️ Sửa thông tin trạm</h3>
+    <input type="hidden" id="editId">
+    <p class="map-hint">📍 Bấm vào bản đồ để đổi vị trí trạm (chỉ nhận vị trí trong phạm vi TP.HCM):</p>
+    <div class="map-wrap">
+      <div id="miniMapSua" class="map-box"></div>
+      <div class="map-layer-panel">
+        <label><input type="checkbox" id="toggleVeTinhSua" onchange="doiLopBanDoSua()"> 🛰️ Ảnh vệ tinh</label>
+        <label><input type="checkbox" id="toggleRanhGioiSua" checked onchange="doiRanhGioiSua()"> 🗺️ Ranh giới phường/xã</label>
+      </div>
+    </div>
+    <div class="form-row"><input id="editMaTram" placeholder="Mã trạm"></div>
+    <div class="form-row"><input id="editTenTram" placeholder="Tên trạm"></div>
+    <div class="form-row">
+      <input id="editViDo" placeholder="Vĩ độ" type="number" step="0.000001" readonly style="background:#f5f5f5;">
+      <input id="editKinhDo" placeholder="Kinh độ" type="number" step="0.000001" readonly style="background:#f5f5f5;">
+    </div>
+    <div class="form-row">
+      <select id="editTrangThai">
+        <option value="Hoat Dong">Hoạt động</option>
+        <option value="Ngung">Ngưng</option>
+      </select>
+    </div>
+    <button class="btn btn-success" onclick="luuSuaTram()">Lưu</button>
+    <button class="btn" onclick="dongModal()">Hủy</button>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
+const hoTen = localStorage.getItem('ho_ten');
+const vaiTro = localStorage.getItem('vai_tro');
+const userBox = document.getElementById('userBox');
+
+if (token) {
+  userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen} (${vaiTro})</span><button onclick="dangXuat()">Đăng xuất</button>`;
+  if (vaiTro === 'admin') {
+    document.getElementById('adminActions').style.display = 'block';
+    setTimeout(khoiTaoMiniMapThem, 100);
+  }
+} else {
+  userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+}
+async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+
+const badgeAQI = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));  // màu chuẩn QĐ 1459
+
+let danhSachTramGoc = [];
+let banDoAQI = {};
+let sapXepHienTai = { cot: null, tang: true };
+
+// Ranh giới thật TP.HCM mở rộng sau sáp nhập
+const RANH_GIOI = { latMin: 10.30, latMax: 11.10, lonMin: 106.35, lonMax: 107.35 };
+const ranhGioiTPHCM = [[RANH_GIOI.latMin, RANH_GIOI.lonMin], [RANH_GIOI.latMax, RANH_GIOI.lonMax]];
+
+function trongRanhGioiTPHCM(lat, lon) {
+  return lat >= RANH_GIOI.latMin && lat <= RANH_GIOI.latMax && lon >= RANH_GIOI.lonMin && lon <= RANH_GIOI.lonMax;
+}
+
+function khoangCachKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ============ TÔ MÀU RANH GIỚI THEO DỮ LIỆU NỘI SUY (giống trang Bản đồ) ============
+function mauTheoGiaTri(value, maxValue) {
+  const ratio = Math.max(0, Math.min(1, value / (maxValue || 1)));
+  return ratio < .2 ? '#2e7d32' : ratio < .4 ? '#8bc34a' : ratio < .6 ? '#f9a825' : ratio < .8 ? '#e65100' : '#b71c1c';
+}
+
+function noiSuyTai(lat, lon, stations) {
+  const valid = stations.filter(p => Number.isFinite(Number(p.gia_tri)));
+  if (!valid.length) return null;
+  const nearby = valid.map(p => {
+    const dx = (Number(p.lon) - lon) * Math.cos(lat * Math.PI / 180);
+    const dy = Number(p.lat) - lat;
+    return { ...p, d2: dx * dx + dy * dy };
+  }).sort((a, b) => a.d2 - b.d2).slice(0, 4);
+  const exact = nearby.find(p => p.d2 < 1e-12);
+  if (exact) return Number(exact.gia_tri);
+  const weights = nearby.map(p => 1 / Math.max(p.d2, 1e-8));
+  return nearby.reduce((sum, p, i) => sum + Number(p.gia_tri) * weights[i], 0) / weights.reduce((a, b) => a + b, 0);
+}
+
+function toaDoGiua(feature) {
+  const bounds = L.geoJSON(feature).getBounds();
+  return bounds.isValid() ? bounds.getCenter() : null;
+}
+
+async function veRanhGioiCoMau(mapInstance) {
+  const [geoData, readings] = await Promise.all([
+    layDuLieuRanhGioi(null),
+    fetch('http://localhost:8000/api/v1/heatmap?chi_so=pm25').then(r => r.json()).catch(() => [])
+  ]);
+  const values = geoData.features.map(f => {
+    const center = toaDoGiua(f);
+    return center ? noiSuyTai(center.lat, center.lng, readings) : null;
+  });
+  const maxValue = Math.max(...values.filter(Number.isFinite), 0);
+
+  return L.geoJSON(geoData, {
+    style: (feature) => {
+      const i = geoData.features.indexOf(feature), value = values[i];
+      return { color: '#344054', weight: 0.6, opacity: 0.6, fillColor: value == null ? '#cbd5e1' : mauTheoGiaTri(value, maxValue), fillOpacity: 0.4 };
+    },
+    onEachFeature: (feature, layer) => {
+      const i = geoData.features.indexOf(feature), value = values[i];
+      layer.bindPopup(`<b>${feature.properties.__label}</b><br>PM2.5 (ước tính): ${value == null ? 'Chưa có dữ liệu' : value.toFixed(2) + ' µg/m³'}`);
+    }
+  });
+}
+
+// ============ TẢI DỮ LIỆU RANH GIỚI PHƯỜNG/XÃ (dùng chung, tự tải nếu chưa có cache) ============
+const NGUON_RANH_GIOI_TRAM = 'https://api.github.com/repos/thanglequoc/vietnamese-provinces-database/contents/json/geojson/79_ho_chi_minh/wards';
+let duLieuRanhGioiTram = null;
+
+async function layDuLieuRanhGioi(ghiChuElId) {
+  if (duLieuRanhGioiTram) return duLieuRanhGioiTram;
+
+  const cacheKey = 'ranhGioiPhuongXa_v1';
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      duLieuRanhGioiTram = JSON.parse(cached);
+      return duLieuRanhGioiTram;
+    } catch (e) { /* cache hỏng, tải lại */ }
+  }
+
+  if (ghiChuElId) {
+    const el = document.getElementById(ghiChuElId);
+    if (el) el.innerText = 'Đang tải ranh giới phường/xã lần đầu, vui lòng đợi...';
+  }
+
+  const response = await fetch(NGUON_RANH_GIOI_TRAM);
+  if (!response.ok) throw new Error('Không tải được danh sách phường/xã.');
+  const files = await response.json();
+  const wardFiles = files.filter(f => f.name.endsWith('.geojson'));
+  const features = [];
+  for (let i = 0; i < wardFiles.length; i += 12) {
+    const batch = await Promise.all(wardFiles.slice(i, i + 12).map(async f => {
+      const res = await fetch(f.download_url);
+      if (!res.ok) return [];
+      const geo = await res.json();
+      return (geo.features || []).map(feature => ({ ...feature, properties: { ...feature.properties, __label: feature.properties?.fullName || feature.properties?.name || f.name.replace('.geojson', '') } }));
+    }));
+    features.push(...batch.flat());
+  }
+  duLieuRanhGioiTram = { type: 'FeatureCollection', features };
+  try { localStorage.setItem(cacheKey, JSON.stringify(duLieuRanhGioiTram)); } catch (e) { /* bỏ qua nếu quá lớn */ }
+
+  if (ghiChuElId) {
+    const el = document.getElementById(ghiChuElId);
+    if (el) el.innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các trạm gần nhất';
+  }
+  return duLieuRanhGioiTram;
+}
+
+// ============ BẢN ĐỒ CHỌN TỌA ĐỘ - THÊM TRẠM ============
+let miniMapThem = null;
+let miniMarkerThem = null;
+let lopDuongThem = null, lopVeTinhThem = null, lopRanhGioiThem = null;
+
+function khoiTaoMiniMapThem() {
+  if (miniMapThem) return;
+  miniMapThem = L.map('miniMapThem').setView([10.78, 106.70], 10);
+  lopDuongThem = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, attribution: 'Tiles © Esri'
+  }).addTo(miniMapThem);
+  lopVeTinhThem = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+
+  // Mặc định bật sẵn ranh giới phường/xã, tô màu theo dữ liệu PM2.5 nội suy
+  veRanhGioiCoMau(miniMapThem).then(layer => {
+    lopRanhGioiThem = layer;
+    if (document.getElementById('toggleRanhGioiThem').checked) lopRanhGioiThem.addTo(miniMapThem);
+    document.getElementById('ghiChuRanhGioiThem').innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các trạm gần nhất';
+    dienDanhSachPhuongXa();
+  }).catch(err => {
+    document.getElementById('ghiChuRanhGioiThem').innerText = '⚠️ Không tải được ranh giới phường/xã (lỗi mạng).';
+    document.getElementById('toggleRanhGioiThem').checked = false;
+    console.error(err);
+  });
+
+  // Hiện sẵn marker các trạm ĐÃ CÓ, để thấy trước và né khi chọn vị trí mới
+  hienCacTramDaCoLenBanDo(miniMapThem);
+
+  miniMapThem.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+    if (!trongRanhGioiTPHCM(lat, lng)) {
+      alert('⚠️ Vị trí này nằm ngoài ranh giới TP.HCM (mở rộng sau sáp nhập). Vui lòng chọn vị trí trong khu vực được tô màu trên bản đồ.');
+      return;
+    }
+    datToaDo(lat, lng);
+  });
+}
+
+let lopTramDaCoThem = null;
+
+function hienCacTramDaCoLenBanDo(mapInstance) {
+  if (lopTramDaCoThem) { mapInstance.removeLayer(lopTramDaCoThem); }
+  lopTramDaCoThem = L.layerGroup();
+  danhSachTramGoc.forEach(s => {
+    if (!s.vi_do || !s.kinh_do) return;
+    L.circleMarker([s.vi_do, s.kinh_do], {
+      radius: 7, fillColor: '#c62828', color: '#ffffff', weight: 2, fillOpacity: 0.9
+    }).bindTooltip(`${s.ma_tram} - ${s.ten_tram}`, { permanent: false, direction: 'top' }).addTo(lopTramDaCoThem);
+  });
+  lopTramDaCoThem.addTo(mapInstance);
+}
+
+// ============ DROPDOWN CHỌN NHANH PHƯỜNG/XÃ ============
+let danhSachPhuongXaThem = [];
+
+async function dienDanhSachPhuongXa() {
+  const geoData = await layDuLieuRanhGioi(null);
+  danhSachPhuongXaThem = geoData.features.map(f => {
+    const center = toaDoGiua(f);
+    if (!center) return null;
+    const tenPhuong = f.properties.__label;
+
+    // Tìm trạm gần nhất với tâm phường này (bán kính 3km coi là "đã có trạm")
+    let tramGanNhat = null, khoangCachGanNhat = Infinity;
+    danhSachTramGoc.forEach(s => {
+      if (!s.vi_do || !s.kinh_do) return;
+      const d = khoangCachKm(center.lat, center.lng, s.vi_do, s.kinh_do);
+      if (d < khoangCachGanNhat) { khoangCachGanNhat = d; tramGanNhat = s; }
+    });
+    const daCoTram = tramGanNhat && khoangCachGanNhat < 3;
+
+    return { ten: tenPhuong, lat: center.lat, lon: center.lng, daCoTram, tramGanNhat, khoangCach: khoangCachGanNhat };
+  }).filter(Boolean).sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
+
+  const select = document.getElementById('chonPhuongXaThem');
+  select.innerHTML = '<option value="">-- Chọn phường/xã --</option>' +
+    danhSachPhuongXaThem.map((p, i) => {
+      const nhan = p.daCoTram
+        ? `✅ ${p.ten} (gần trạm ${p.tramGanNhat.ma_tram}, ~${p.khoangCach.toFixed(1)}km)`
+        : `⭕ ${p.ten} (chưa có trạm)`;
+      return `<option value="${i}">${nhan}</option>`;
+    }).join('');
+}
+
+function chonPhuongXa() {
+  const idx = document.getElementById('chonPhuongXaThem').value;
+  if (idx === '') return;
+  const p = danhSachPhuongXaThem[idx];
+
+  if (p.daCoTram) {
+    const xacNhan = confirm(`⚠️ Khu vực "${p.ten}" đã có trạm gần đó (${p.tramGanNhat.ma_tram} - ${p.tramGanNhat.ten_tram}, cách ~${p.khoangCach.toFixed(1)}km).\n\nBạn vẫn muốn đặt trạm mới tại trung tâm khu vực này?`);
+    if (!xacNhan) return;
+  }
+
+  miniMapThem.setView([p.lat, p.lon], 14);
+  datToaDo(p.lat, p.lon, true); // true = bỏ qua cảnh báo trùng 300m vì đã tự xác nhận ở trên
+}
+
+function doiLopBanDoThem() {
+  const dungVeTinh = document.getElementById('toggleVeTinhThem').checked;
+  if (dungVeTinh) { miniMapThem.removeLayer(lopDuongThem); lopVeTinhThem.addTo(miniMapThem); }
+  else { miniMapThem.removeLayer(lopVeTinhThem); lopDuongThem.addTo(miniMapThem); }
+}
+
+function doiRanhGioiThem() {
+  const bat = document.getElementById('toggleRanhGioiThem').checked;
+  if (!lopRanhGioiThem) return;
+  if (bat) lopRanhGioiThem.addTo(miniMapThem);
+  else miniMapThem.removeLayer(lopRanhGioiThem);
+}
+
+function datToaDo(lat, lng, boQuaCanhBaoTrung) {
+  if (!boQuaCanhBaoTrung) {
+    const trungVoiTram = danhSachTramGoc.find(s => s.vi_do && s.kinh_do && khoangCachKm(lat, lng, s.vi_do, s.kinh_do) < 0.3);
+    if (trungVoiTram) {
+      alert(`⚠️ Vị trí này cách trạm "${trungVoiTram.ma_tram} - ${trungVoiTram.ten_tram}" chưa tới 300m.\nVui lòng chọn vị trí khác để tránh trùng lặp dữ liệu quan trắc.`);
+      return;
+    }
+  }
+  document.getElementById('newViDo').value = lat.toFixed(6);
+  document.getElementById('newKinhDo').value = lng.toFixed(6);
+  if (miniMarkerThem) miniMapThem.removeLayer(miniMarkerThem);
+  miniMarkerThem = L.marker([lat, lng]).addTo(miniMapThem);
+}
+
+// ============ BẢN ĐỒ CHỌN TỌA ĐỘ - SỬA TRẠM ============
+let miniMapSua = null;
+let miniMarkerSua = null;
+let lopDuongSua = null, lopVeTinhSua = null, lopRanhGioiSua = null;
+
+function khoiTaoMiniMapSua(lat, lon) {
+  if (miniMapSua) { miniMapSua.remove(); miniMapSua = null; }
+  document.getElementById('toggleVeTinhSua').checked = false;
+  document.getElementById('toggleRanhGioiSua').checked = true;
+
+  miniMapSua = L.map('miniMapSua').setView([lat || 10.78, lon || 106.70], 12);
+  lopDuongSua = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, attribution: 'Tiles © Esri'
+  }).addTo(miniMapSua);
+  lopVeTinhSua = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+
+  veRanhGioiCoMau(miniMapSua).then(layer => {
+    lopRanhGioiSua = layer;
+    if (document.getElementById('toggleRanhGioiSua').checked) lopRanhGioiSua.addTo(miniMapSua);
+  }).catch(err => {
+    document.getElementById('toggleRanhGioiSua').checked = false;
+    console.error(err);
+  });
+
+  if (lat && lon) miniMarkerSua = L.marker([lat, lon]).addTo(miniMapSua);
+
+  miniMapSua.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+    if (!trongRanhGioiTPHCM(lat, lng)) {
+      alert('⚠️ Vị trí này nằm ngoài ranh giới TP.HCM. Vui lòng chọn trong khu vực được tô màu trên bản đồ.');
+      return;
+    }
+    document.getElementById('editViDo').value = lat.toFixed(6);
+    document.getElementById('editKinhDo').value = lng.toFixed(6);
+    if (miniMarkerSua) miniMapSua.removeLayer(miniMarkerSua);
+    miniMarkerSua = L.marker([lat, lng]).addTo(miniMapSua);
+  });
+
+  setTimeout(() => miniMapSua.invalidateSize(), 150);
+}
+
+function doiLopBanDoSua() {
+  const dungVeTinh = document.getElementById('toggleVeTinhSua').checked;
+  if (dungVeTinh) { miniMapSua.removeLayer(lopDuongSua); lopVeTinhSua.addTo(miniMapSua); }
+  else { miniMapSua.removeLayer(lopVeTinhSua); lopDuongSua.addTo(miniMapSua); }
+}
+
+function doiRanhGioiSua() {
+  const bat = document.getElementById('toggleRanhGioiSua').checked;
+  if (!lopRanhGioiSua) return;
+  if (bat) lopRanhGioiSua.addTo(miniMapSua);
+  else miniMapSua.removeLayer(lopRanhGioiSua);
+}
+
+// ============ XEM NHANH TRẠM - KHÔNG RỜI TRANG ============
+let miniMapXem = null;
+
+function xemNhanh(station) {
+  document.getElementById('quickViewTitle').innerText = `📍 ${station.ma_tram} - ${station.ten_tram}`;
+  document.getElementById('quickViewOverlay').style.display = 'flex';
+
+  const aqiInfo = banDoAQI[station.ma_tram];
+  document.getElementById('quickViewStats').innerHTML = `
+    <div class="quick-stat-item"><div class="label">AQI</div><div class="value">${aqiInfo?.aqi ?? '--'}</div></div>
+    <div class="quick-stat-item"><div class="label">Mức độ</div><div class="value" style="font-size:12px;">${aqiInfo?.muc_do ?? '--'}</div></div>
+    <div class="quick-stat-item"><div class="label">Trạng thái</div><div class="value" style="font-size:12px;">${station.trang_thai === 'Hoat Dong' ? 'Hoạt động' : 'Ngưng'}</div></div>
+    <div class="quick-stat-item"><div class="label">Tọa độ</div><div class="value" style="font-size:11px;">${station.vi_do?.toFixed(4)}, ${station.kinh_do?.toFixed(4)}</div></div>
+  `;
+
+  setTimeout(() => {
+    if (miniMapXem) { miniMapXem.remove(); miniMapXem = null; }
+    miniMapXem = L.map('miniMapXem').setView([station.vi_do, station.kinh_do], 14);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19, attribution: 'Tiles © Esri'
+    }).addTo(miniMapXem);
+    L.marker([station.vi_do, station.kinh_do]).addTo(miniMapXem).bindPopup(`<b>${station.ma_tram}</b><br>${station.ten_tram}`).openPopup();
+  }, 100);
+}
+
+function dongQuickView() { document.getElementById('quickViewOverlay').style.display = 'none'; }
+
+function taiDanhSachTram() {
+  Promise.all([
+    fetch('http://localhost:8000/api/v1/tram').then(r => r.json()),
+    fetch('http://localhost:8000/api/v1/aqi-tat-ca-tram').then(r => r.json()).catch(() => [])
+  ]).then(([stations, aqiList]) => {
+    danhSachTramGoc = stations;
+    banDoAQI = {};
+    aqiList.forEach(a => { banDoAQI[a.ma_tram] = a; });
+    document.getElementById('tongSoTram').innerText = `${stations.length} trạm quan trắc · Cập nhật: ${new Date().toLocaleString('vi-VN')}`;
+    hienThiTram(stations);
+    // Cập nhật lại marker + dropdown phường/xã trên bản đồ nhỏ (nếu đã khởi tạo), tránh thiếu do tải song song
+    if (miniMapThem) {
+      hienCacTramDaCoLenBanDo(miniMapThem);
+      if (danhSachPhuongXaThem.length === 0) dienDanhSachPhuongXa();
+    }
+  });
+}
+
+function hienThiTram(stations) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  stations.forEach(s => {
+    const badge = s.trang_thai === 'Hoat Dong'
+      ? '<span class="badge badge-active">Hoạt động</span>'
+      : '<span class="badge badge-inactive">Ngưng</span>';
+
+    const aqiInfo = banDoAQI[s.ma_tram];
+    const aqiHtml = aqiInfo
+      ? `<span class="badge" style="background:${badgeAQI[aqiInfo.muc_do] || '#999'};color:${AQI_VN.theoTen(aqiInfo.muc_do).chu};">${aqiInfo.aqi ?? '--'} - ${aqiInfo.muc_do}</span>`
+      : '<span style="color:#999; font-size:12px;">--</span>';
+
+    const nutAdmin = vaiTro === 'admin' ? `
+      <button class="btn btn-edit" onclick='moModalSua(${JSON.stringify(s)})'>Sửa</button>
+      <button class="btn btn-danger" onclick="xoaTram(${s.id}, '${s.ma_tram}')">Xóa</button>
+    ` : '';
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><b>${s.ma_tram}</b></td>
+      <td><span class="ten-tram-link" onclick='xemNhanh(${JSON.stringify(s)})'>${s.ten_tram}</span></td>
+      <td>${aqiHtml}</td>
+      <td>${s.vi_do?.toFixed(4)}, ${s.kinh_do?.toFixed(4)}</td>
+      <td>${badge}</td>
+      <td>
+        <button class="btn btn-quick" onclick='xemNhanh(${JSON.stringify(s)})'>👁️ Xem nhanh</button>
+        ${nutAdmin}
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function locTram() {
+  const tuKhoa = document.getElementById('oTimKiem').value.toLowerCase();
+  const ketQua = danhSachTramGoc.filter(s =>
+    s.ten_tram.toLowerCase().includes(tuKhoa) || s.ma_tram.toLowerCase().includes(tuKhoa)
+  );
+  hienThiTram(ketQua);
+}
+
+function sapXep(cot) {
+  if (sapXepHienTai.cot === cot) { sapXepHienTai.tang = !sapXepHienTai.tang; }
+  else { sapXepHienTai = { cot, tang: true }; }
+
+  const ds = [...danhSachTramGoc];
+  ds.sort((a, b) => {
+    let va, vb;
+    if (cot === 'aqi') { va = banDoAQI[a.ma_tram]?.aqi ?? -1; vb = banDoAQI[b.ma_tram]?.aqi ?? -1; }
+    else { va = (a[cot] || '').toLowerCase(); vb = (b[cot] || '').toLowerCase(); }
+    if (va < vb) return sapXepHienTai.tang ? -1 : 1;
+    if (va > vb) return sapXepHienTai.tang ? 1 : -1;
+    return 0;
+  });
+
+  ['ma_tram', 'ten_tram', 'aqi'].forEach(c => { document.getElementById(`icon_${c}`).innerText = ''; });
+  document.getElementById(`icon_${cot}`).innerText = sapXepHienTai.tang ? '▲' : '▼';
+  hienThiTram(ds);
+}
+
+function themTram() {
+  if (!token) { alert('Vui lòng đăng nhập với quyền Admin!'); return; }
+  const body = {
+    ma_tram: document.getElementById('newMaTram').value,
+    ten_tram: document.getElementById('newTenTram').value,
+    vi_do: parseFloat(document.getElementById('newViDo').value),
+    kinh_do: parseFloat(document.getElementById('newKinhDo').value),
+    trang_thai: document.getElementById('newTrangThai').value
+  };
+
+  if (!body.ma_tram || !body.ten_tram || isNaN(body.vi_do) || isNaN(body.kinh_do)) {
+    alert('Vui lòng điền đầy đủ thông tin, và bấm vào bản đồ để chọn vị trí!'); return;
+  }
+
+  // Chặn trùng mã trạm hoặc tên trạm với trạm đã có (phân biệt hoa/thường, bỏ khoảng trắng thừa)
+  const maTrungLap = danhSachTramGoc.find(s => s.ma_tram.trim().toLowerCase() === body.ma_tram.trim().toLowerCase());
+  if (maTrungLap) {
+    alert(`⚠️ Mã trạm "${body.ma_tram}" đã tồn tại (trùng với "${maTrungLap.ten_tram}"). Vui lòng đặt mã khác.`);
+    return;
+  }
+  const tenTrungLap = danhSachTramGoc.find(s => s.ten_tram.trim().toLowerCase() === body.ten_tram.trim().toLowerCase());
+  if (tenTrungLap) {
+    if (!confirm(`⚠️ Đã có trạm tên "${body.ten_tram}" (mã ${tenTrungLap.ma_tram}). Bạn có chắc muốn thêm trạm trùng tên không?`)) {
+      return;
+    }
+  }
+
+  fetch('http://localhost:8000/api/v1/tram', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(res => {
+    if (res.status === 401) throw new Error('TOKEN_HET_HAN');
+    return res.json();
+  })
+  .then(data => {
+    if (data.id) {
+      alert('Đã thêm trạm thành công!');
+      document.getElementById('newMaTram').value = '';
+      document.getElementById('newTenTram').value = '';
+      document.getElementById('newViDo').value = '';
+      document.getElementById('newKinhDo').value = '';
+      if (miniMarkerThem) { miniMapThem.removeLayer(miniMarkerThem); miniMarkerThem = null; }
+      taiDanhSachTram();
+    } else {
+      alert('Lỗi: ' + JSON.stringify(data.detail));
+    }
+  })
+  .catch(err => {
+    if (err.message === 'TOKEN_HET_HAN') {
+      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng xuất và đăng nhập lại.');
+    } else {
+      alert('Lỗi kết nối. Vui lòng thử lại.');
+    }
+  });
+}
+
+function moModalSua(station) {
+  document.getElementById('editId').value = station.id;
+  document.getElementById('editMaTram').value = station.ma_tram;
+  document.getElementById('editTenTram').value = station.ten_tram;
+  document.getElementById('editViDo').value = station.vi_do;
+  document.getElementById('editKinhDo').value = station.kinh_do;
+  document.getElementById('editTrangThai').value = station.trang_thai;
+  document.getElementById('modalOverlay').style.display = 'flex';
+  khoiTaoMiniMapSua(station.vi_do, station.kinh_do);
+}
+
+function dongModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+function luuSuaTram() {
+  if (!token) { alert('⚠️ Bạn chưa đăng nhập hoặc phiên đã hết hạn. Vui lòng đăng nhập lại.'); return; }
+
+  const id = document.getElementById('editId').value;
+  const body = {
+    ma_tram: document.getElementById('editMaTram').value,
+    ten_tram: document.getElementById('editTenTram').value,
+    vi_do: parseFloat(document.getElementById('editViDo').value),
+    kinh_do: parseFloat(document.getElementById('editKinhDo').value),
+    trang_thai: document.getElementById('editTrangThai').value
+  };
+
+  fetch(`http://localhost:8000/api/v1/tram/${id}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(res => {
+    if (res.status === 401) throw new Error('TOKEN_HET_HAN');
+    return res.json();
+  })
+  .then(data => {
+    if (data.id) { alert('Đã cập nhật trạm!'); dongModal(); taiDanhSachTram(); }
+    else { alert('Lỗi: ' + JSON.stringify(data.detail)); }
+  })
+  .catch(err => {
+    if (err.message === 'TOKEN_HET_HAN') {
+      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng xuất và đăng nhập lại rồi thử sửa trạm lại.');
+    } else {
+      alert('Lỗi kết nối. Vui lòng thử lại.');
+    }
+  });
+}
+
+function xoaTram(id, maTram) {
+  if (!confirm(`Bạn chắc chắn muốn xóa trạm ${maTram}?`)) return;
+  if (!token) { alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'); return; }
+
+  fetch(`http://localhost:8000/api/v1/tram/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: {}
+  })
+  .then(res => {
+    if (res.status === 401) throw new Error('TOKEN_HET_HAN');
+    return res.json();
+  })
+  .then(data => { alert(data.message || 'Đã xóa'); taiDanhSachTram(); })
+  .catch(err => {
+    if (err.message === 'TOKEN_HET_HAN') {
+      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    } else {
+      alert('Lỗi kết nối. Vui lòng thử lại.');
+    }
+  });
+}
+
+taiDanhSachTram();
+</script>
+
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Tổng quan chất lượng không khí TP.HCM: AQI hiện tại theo VN_AQI (QĐ 1459/QĐ-TCMT), khuyến nghị sức khỏe, dự báo 24 giờ, xếp hạng trạm.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<script src="song-truc-tiep.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Tổng quan chất lượng không khí TP.HCM</title>
+<style>
+  /* ---- Thẻ AQI chính: nền nhuộm theo màu mức AQI ---- */
+  .the-aqi { --mau-muc: #98a2b3; position: relative; overflow: hidden; border-radius: 24px; padding: 26px; margin-bottom: 20px;
+    background: linear-gradient(140deg, color-mix(in srgb, var(--mau-muc) 30%, #fff) 0%, color-mix(in srgb, var(--mau-muc) 8%, #fff) 45%, #fff 75%);
+    border: 1px solid color-mix(in srgb, var(--mau-muc) 35%, var(--border)); box-shadow: var(--shadow);
+    display: grid; grid-template-columns: minmax(230px, 300px) 1fr minmax(220px, 260px); gap: 26px; align-items: center; }
+  .the-aqi::after { content: ""; position: absolute; right: -80px; top: -80px; width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--mau-muc) 30%, transparent), transparent 70%); pointer-events: none; }
+  .ta-dong-ho { max-width: 300px; width: 100%; margin: 0 auto; }
+  .ta-chu { min-width: 0; }
+  .ta-nho { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+  .ta-muc { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; margin: 4px 0 8px; }
+  .ta-y-nghia { font-size: 14px; color: var(--text-2); line-height: 1.6; margin: 0 0 12px; max-width: 560px; }
+  .chip-dong { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.75); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--text-2); backdrop-filter: blur(4px); }
+  .chip b { color: var(--text-main); font-variant-numeric: tabular-nums; }
+  .len { color: #c50000; } .xuong { color: #007a00; }
+  .ta-tt { background: rgba(255,255,255,.8); border: 1px solid var(--border); border-radius: 18px; padding: 16px; backdrop-filter: blur(6px); }
+  .tt-chinh { display: flex; align-items: center; gap: 12px; }
+  .tt-chinh .bt { font-size: 44px; line-height: 1; }
+  .tt-chinh .do { font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+  .tt-chinh .mt { font-size: 13px; color: var(--text-muted); }
+  .tt-luoi { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .tt-luoi div { font-size: 12px; color: var(--text-muted); } .tt-luoi b { display: block; font-size: 15px; color: var(--text-main); }
+
+  /* ---- Khuyến nghị theo nhóm ---- */
+  .nhom-tab { display: inline-flex; background: #eef2f6; border-radius: 10px; padding: 3px; margin-bottom: 10px; }
+  .nhom-tab button { border: 0; background: none; padding: 7px 12px; border-radius: 8px; font: 600 13px var(--font); color: var(--text-muted); cursor: pointer; }
+  .nhom-tab button.chon { background: #fff; color: var(--text-main); box-shadow: 0 1px 3px rgba(16,24,40,.12); }
+  .kn-noi-dung { font-size: 14.5px; line-height: 1.65; color: var(--text-2); border-left: 4px solid var(--mau-muc, var(--primary)); padding: 4px 0 4px 12px; }
+
+  /* ---- Cột màu (dự báo 24 giờ, xu hướng) ---- */
+  .cot-bd { display: flex; align-items: flex-end; gap: 4px; height: 150px; padding-top: 18px; }
+  .cot-bd .cot { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
+  .cot-bd .than { width: 100%; border-radius: 6px 6px 3px 3px; min-height: 4px; transition: height .7s cubic-bezier(.2,.8,.2,1), filter .2s; box-shadow: inset 0 -1px 0 rgba(0,0,0,.08); }
+  .cot-bd .cot:hover .than { filter: brightness(.92); }
+  .cot-bd .so { font-size: 10.5px; font-weight: 700; color: var(--text-2); margin-bottom: 3px; font-variant-numeric: tabular-nums; }
+  .cot-bd .nhan { font-size: 10.5px; color: var(--text-muted); margin-top: 6px; height: 14px; white-space: nowrap; }
+  .cot-bd .cot.nay::before { content: "Bây giờ"; position: absolute; top: -18px; font-size: 10px; font-weight: 700; color: var(--primary-dark); white-space: nowrap; }
+  .cot-bd .cot.tot .than { outline: 2px solid #16a34a; outline-offset: 1px; }
+  .cot-bd { position: relative; }
+  .cot-bd .vach { position: absolute; left: 0; right: 0; border-top: 1.5px dashed; pointer-events: none; }
+  .cot-bd .vach span { position: absolute; right: 0; top: -15px; font-size: 10.5px; font-weight: 700; background: rgba(255,255,255,.85); padding: 0 4px; border-radius: 4px; }
+
+  .luoi2 { display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px; }
+  .luoi2 > .card { margin-bottom: 0; }
+  .hang-cho { margin-bottom: 20px; }
+  .phan-bo { display: flex; height: 18px; border-radius: 999px; overflow: hidden; margin: 6px 0 10px; background: #eef2f6; }
+  .phan-bo span { height: 100%; transition: width .8s cubic-bezier(.2,.8,.2,1); }
+  .pb-chu { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--text-2); }
+  .pb-chu i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .cuc { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .cuc div { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; font-size: 12px; color: var(--text-muted); }
+  .cuc b { display: block; color: var(--text-main); font-size: 14px; margin-top: 2px; }
+
+  /* ---- Xếp hạng ---- */
+  .xh-dk { display: flex; gap: 6px; }
+  .xh-dk button { border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 6px 12px; font: 600 12.5px var(--font); color: var(--text-muted); cursor: pointer; }
+  .xh-dk button.chon { background: var(--primary-soft); color: var(--primary-dark); border-color: #c6dafc; }
+  table.xh { box-shadow: none; }
+  table.xh td { padding: 10px 12px; vertical-align: middle; }
+  .xh .hang { width: 36px; color: var(--text-muted); font-weight: 700; }
+  .xh .thanh { height: 8px; border-radius: 999px; background: #eef2f6; overflow: hidden; min-width: 80px; }
+  .xh .thanh span { display: block; height: 100%; border-radius: 999px; }
+  .tieu-de-the { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tieu-de-the h3 { margin: 0; }
+  .lk { font-size: 13px; font-weight: 600; text-decoration: none; }
+
+  /* ---- Lối tắt ---- */
+  .loi-tat { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .loi-tat a { display: flex; flex-direction: column; gap: 4px; background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 14px;
+    text-decoration: none; color: var(--text-main); box-shadow: var(--shadow); transition: transform .15s, box-shadow .2s, border-color .2s; }
+  .loi-tat a:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: #c6dafc; }
+  .loi-tat .bt { font-size: 24px; } .loi-tat b { font-size: 14px; } .loi-tat small { font-size: 12px; color: var(--text-muted); }
+
+  .the-iot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .the-iot .so-iot { font-size: 26px; font-weight: 800; border-radius: 14px; padding: 8px 14px; min-width: 70px; text-align: center; }
+  .song { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: nhip 1.6s infinite; margin-right: 6px; }
+  @keyframes nhip { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.5); } 70% { box-shadow: 0 0 0 9px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
+
+  @media (max-width: 980px) { .the-aqi { grid-template-columns: 1fr 1fr; } .ta-tt { grid-column: 1 / -1; } }
+  @media (max-width: 760px) {
+    .the-aqi { grid-template-columns: 1fr; padding: 18px; gap: 16px; text-align: center; }
+    .chip-dong { justify-content: center; } .ta-y-nghia { margin-left: auto; margin-right: auto; }
+    .luoi2 { grid-template-columns: 1fr; }
+    .cot-bd { height: 120px; gap: 2px; } .cot-bd .so { display: none; }
+    .xh .an-dt { display: none; }
+    table.xh { display: table; white-space: normal; } table.xh td, table.xh th { padding: 9px 8px; }
+  }
+</style>
+</head>
+<body>
+<div id="header">
+  <div><a href="index.html">🗺️ Bản đồ</a></div>
+  <div id="userBox"></div>
+</div>
+<div id="content">
+  <section class="the-aqi" id="theAqi" aria-live="polite">
+    <div class="ta-dong-ho" id="dongHo"><span class="khung-cho" style="height:150px"></span></div>
+    <div class="ta-chu">
+      <div class="ta-nho" id="taNho">Chất lượng không khí TP.HCM</div>
+      <div class="ta-muc" id="taMuc"><span class="khung-cho" style="height:40px;width:60%"></span></div>
+      <p class="ta-y-nghia" id="taYNghia"><span class="khung-cho" style="height:44px"></span></p>
+      <div class="chip-dong" id="taChip"></div>
+    </div>
+    <div class="ta-tt" id="thoiTiet"><span class="khung-cho" style="height:120px"></span></div>
+  </section>
+
+  <div class="hang-song"><span class="pill" id="chiBaoSong"></span><button class="nut-vien" id="nutThongBao" type="button"></button></div>
+
+  <div class="card">
+    <div class="tieu-de-the"><h3>Khuyến nghị sức khỏe</h3>
+      <div class="nhom-tab" role="tablist"><button class="chon" data-nhom="binh" role="tab">Người bình thường</button><button data-nhom="nhay" role="tab">Nhóm nhạy cảm</button></div></div>
+    <div class="kn-noi-dung" id="khuyenNghi"><span class="khung-cho" style="height:40px"></span></div>
+    <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px">Nhóm nhạy cảm: người già, trẻ em, phụ nữ mang thai, người mắc bệnh hô hấp, tim mạch. Nội dung theo Bảng 5, QĐ 1459/QĐ-TCMT.</div>
+  </div>
+
+  <div class="card">
+    <div class="tieu-de-the"><h3>24 giờ tới <span style="font-weight:500;color:var(--text-muted);font-size:13px">· PM2.5 dự báo theo giờ (µg/m³), màu theo mức AQI</span></h3><a class="lk" href="du-bao.html">Dự báo chi tiết →</a></div>
+    <div class="cot-bd" id="cot24"><span class="khung-cho" style="height:120px;width:100%"></span></div>
+    <div class="chip-dong" id="chip24" style="margin-top:12px"></div>
+  </div>
+
+  <div class="luoi2 hang-cho">
+    <div class="card">
+      <div class="tieu-de-the"><h3>14 ngày qua</h3><a class="lk" href="thong-ke.html">Thống kê →</a></div>
+      <div class="cot-bd" id="cot14"><span class="khung-cho" style="height:120px;width:100%"></span></div>
+    </div>
+    <div class="card">
+      <div class="tieu-de-the"><h3>Các trạm lúc này</h3><a class="lk" href="index.html">Bản đồ →</a></div>
+      <div id="phanBo"><span class="khung-cho" style="height:18px"></span></div>
+      <div class="cuc" id="cucTri"></div>
+      <div id="theIot" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tieu-de-the"><h3>Xếp hạng trạm</h3>
+      <div class="xh-dk"><button class="chon" data-xep="tang">Sạch nhất trước</button><button data-xep="giam">Ô nhiễm nhất trước</button></div></div>
+    <div id="xepHang" style="overflow-x:auto"><span class="khung-cho" style="height:200px"></span></div>
+  </div>
+
+  <div class="loi-tat">
+    <a href="index.html"><span class="bt">🗺️</span><b>Bản đồ</b><small>Trạm, phường/xã, bản đồ nhiệt</small></a>
+    <a href="du-bao.html"><span class="bt">🔮</span><b>Dự báo</b><small>Theo giờ, theo ngày, kịch bản</small></a>
+    <a href="canh-bao.html"><span class="bt">🔔</span><b>Cảnh báo</b><small>Đăng ký nhận email</small></a>
+    <a href="iot.html"><span class="bt">📡</span><b>Trạm IoT</b><small>Thời gian thực (mô phỏng)</small></a>
+    <a href="phuong-phap.html"><span class="bt">🔬</span><b>Phương pháp</b><small>Cách tính & kiểm chứng</small></a>
+  </div>
+
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) theo giờ, PM trung bình 24 giờ trượt, O₃ trung bình 8 giờ; thời tiết Open-Meteo. <span class="xem">Chi tiết</span></summary>
+    <div style="margin-top:6px">AQI toàn thành phố được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) từ nồng độ trung bình của các trạm đang hoạt động. Giá trị theo trạm được nội suy từ lưới mô hình (~45 km), chưa hiệu chỉnh bằng số đo trạm mặt đất. Dùng cho nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div>
+  </details>
+  <div id="capNhat" style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:8px"></div>
+</div>
+
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const so = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+const gioNgan = iso => iso ? iso.slice(11, 16) : '--';
+const ngayNgan = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) : '--';
+const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (x) { return null; } })();
+document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${e(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
+
+let D = null, nhom = 'binh', xep = 'tang';
+
+/* Cột màu dùng chung: items = [{nhan, gia_tri, aqi, tieu_de, lop}]; vach = [{gia_tri, nhan, mau}] (vạch ngưỡng ngang) */
+function veCot(el, items, chieuCaoTheo, vach = [], maxToiThieu = 1) {
+  const max = Math.max(maxToiThieu, ...items.map(chieuCaoTheo));
+  el.innerHTML = items.map(x => {
+    const m = AQI_VN.muc(x.aqi);
+    return `<div class="cot ${x.lop || ''}" title="${e(x.tieu_de)}"><span class="so">${x.gia_tri ?? ''}</span>` +
+      `<div class="than" style="height:0;background:${m.mau}" data-h="${(chieuCaoTheo(x) / max * 100).toFixed(1)}"></div><span class="nhan">${x.nhan ?? ''}</span></div>`;
+  }).join('') + vach.map(v => `<div class="vach" data-r="${(v.gia_tri / max).toFixed(4)}" style="border-color:${v.mau}"><span style="color:${v.mau}">${v.nhan}</span></div>`).join('');
+  // Cột và vạch dùng chung một thang pixel: vùng vẽ = cao khung − lề trên 18 − nhãn giờ 20 − nhãn số 17
+  const vung = Math.max(40, el.clientHeight - 55);
+  el.querySelectorAll('.vach').forEach(v => { v.style.bottom = (20 + v.dataset.r * vung) + 'px'; });
+  requestAnimationFrame(() => requestAnimationFrame(() => el.querySelectorAll('.than').forEach(t => { t.style.height = (t.dataset.h / 100 * vung) + 'px'; })));
+}
+
+function veAqi(d) {
+  const h = d.hien_tai, m = AQI_VN.muc(h.aqi), the = document.getElementById('theAqi');
+  the.style.setProperty('--mau-muc', m.mau);
+  AQI_VN.dongHo('dongHo', h.aqi);
+  document.getElementById('taNho').textContent = 'AQI toàn TP.HCM · ' + (h.theo_gio ? 'cập nhật ' + gioNgan(h.gio_so_lieu) : 'trung bình ngày gần nhất');
+  document.getElementById('taMuc').innerHTML = `<span style="color:${m.dam}">${m.bieuTuong} ${e(m.ten)}</span>`;
+  document.getElementById('taYNghia').textContent = h.y_nghia || '';
+  const c = [];
+  if (h.chat) c.push(`<span class="chip">Chất chính <b>${e(h.chat)}</b></span>`);
+  if (h.pm25 != null) c.push(`<span class="chip">PM2.5 <b>${so(h.pm25)}</b> µg/m³</span>`);
+  if (d.nguong.lan_who) c.push(`<span class="chip" title="Ngưỡng WHO 2021 cho PM2.5 trung bình 24 giờ: ${d.nguong.who} µg/m³">Gấp <b>${so(d.nguong.lan_who)}×</b> ngưỡng WHO</span>`);
+  if (d.nguong.phan_tram_qcvn != null) c.push(`<span class="chip" title="QCVN 05:2023: PM2.5 trung bình 24 giờ ${d.nguong.qcvn} µg/m³">${d.nguong.phan_tram_qcvn > 100 ? '⚠️ Vượt' : 'Bằng'} <b>${d.nguong.phan_tram_qcvn}%</b> ngưỡng QCVN</span>`);
+  const hq = d.so_voi_hom_qua;
+  if (hq && hq.chenh != null) c.push(`<span class="chip">So với hôm qua <b class="${hq.chenh > 0 ? 'len' : hq.chenh < 0 ? 'xuong' : ''}">${hq.chenh > 0 ? '▲ ' + hq.chenh : hq.chenh < 0 ? '▼ ' + (-hq.chenh) : '='}</b></span>`);
+  document.getElementById('taChip').innerHTML = c.join('');
+  veKhuyenNghi();
+}
+
+function veKhuyenNghi() {
+  if (!D) return;
+  const h = D.hien_tai;
+  document.getElementById('khuyenNghi').textContent = (nhom === 'binh' ? h.nguoi_binh_thuong : h.nhom_nhay_cam) || '--';
+  document.getElementById('khuyenNghi').style.setProperty('--mau-muc', AQI_VN.mau(h.aqi));
+}
+
+function veThoiTiet(t) {
+  const el = document.getElementById('thoiTiet');
+  if (!t) { el.innerHTML = '<div class="ta-nho">Thời tiết</div><div style="color:var(--text-muted);font-size:13px;margin-top:8px">Chưa lấy được số liệu thời tiết.</div>'; return; }
+  el.innerHTML = `<div class="ta-nho">Thời tiết · ${gioNgan(t.luc?.replace(' ', 'T'))}</div>
+    <div class="tt-chinh"><span class="bt">${t.bieu_tuong}</span><div><div class="do">${so(t.nhiet_do, 0)}°C</div><div class="mt">${e(t.mo_ta)} · cảm giác ${so(t.cam_giac, 0)}°C</div></div></div>
+    <div class="tt-luoi"><div>Độ ẩm<b>${so(t.do_am, 0)}%</b></div><div>Gió<b>${so(t.gio_kmh)} km/h</b></div>
+      <div>Mưa<b>${so(t.mua_mm)} mm</b></div><div>Chỉ số UV<b>${so(t.uv)}</b></div></div>`;
+}
+
+function veDuBao(db) {
+  const el = document.getElementById('cot24'), chip = document.getElementById('chip24');
+  if (!db) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">Chưa có dự báo theo giờ.</div>'; chip.innerHTML = ''; return; }
+  const tot = db.khung_tot ? [db.khung_tot.tu, db.khung_tot.den] : null;
+  const maxPm = Math.max(...db.gio.map(x => x.pm25 || 0));
+  veCot(el, db.gio.map((x, i) => ({
+    nhan: i % 3 === 0 ? gioNgan(x.gio) : '', gia_tri: i % 3 === 0 ? Math.round(x.pm25) : '', aqi: x.aqi, pm25: x.pm25,
+    tieu_de: `${gioNgan(x.gio)} ${ngayNgan(x.gio)} · PM2.5 ${so(x.pm25)} µg/m³ · AQI (TB 24 giờ) ${x.aqi} – ${x.muc}`,
+    lop: (i === 0 ? 'nay ' : '') + (tot && x.gio >= tot[0] && x.gio <= tot[1] ? 'tot' : '')
+  })), x => x.pm25 || 0,
+  [{ gia_tri: D.nguong.who, nhan: 'WHO ' + D.nguong.who, mau: '#16a34a' }].concat(maxPm > D.nguong.qcvn * 0.6 ? [{ gia_tri: D.nguong.qcvn, nhan: 'QCVN ' + D.nguong.qcvn, mau: '#dc2626' }] : []),
+  maxPm > D.nguong.qcvn * 0.6 ? D.nguong.qcvn * 1.08 : 1);
+  const c = [];
+  if (db.khung_tot) c.push(`<span class="chip">✅ Nên ra ngoài <b>${gioNgan(db.khung_tot.tu)}–${gioNgan(db.khung_tot.den)}</b> ${ngayNgan(db.khung_tot.tu)}</span>`);
+  if (db.khung_xau) c.push(`<span class="chip">⚠️ Nên tránh <b>${gioNgan(db.khung_xau.tu)}–${gioNgan(db.khung_xau.den)}</b> ${ngayNgan(db.khung_xau.tu)}</span>`);
+  if (db.aqi_cao_nhat) c.push(`<span class="chip">AQI cao nhất <b style="color:${AQI_VN.mauDam(db.aqi_cao_nhat)}">${db.aqi_cao_nhat}</b></span>`);
+  if (db.so_gio_tren_who != null) c.push(`<span class="chip">Số giờ PM2.5 > WHO <b>${db.so_gio_tren_who}/24</b></span>`);
+  chip.innerHTML = c.join('');
+}
+
+function veXuHuong(ds) {
+  veCot(document.getElementById('cot14'), ds.map((x, i) => ({
+    nhan: (ds.length - i) % 2 === 1 ? ngayNgan(x.ngay) : '', gia_tri: x.aqi, aqi: x.aqi,
+    tieu_de: `${ngayNgan(x.ngay)} · AQI ${x.aqi} (${x.muc}) · PM2.5 ${so(x.pm25)} µg/m³`
+  })), x => (x.aqi || 0) + 10);
+}
+
+function vePhanBo(d) {
+  const tong = d.xep_hang.length || 1, pb = d.phan_bo;
+  document.getElementById('phanBo').innerHTML =
+    `<div style="font-size:13px;color:var(--text-2)"><b>${d.xep_hang.length}</b> trạm đang hoạt động</div>` +
+    `<div class="phan-bo">${AQI_VN.THANG.map(m => `<span title="${m.ten}: ${pb[m.ten] || 0} trạm" style="width:${(pb[m.ten] || 0) / tong * 100}%;background:${m.mau}"></span>`).join('')}</div>` +
+    `<div class="pb-chu">${AQI_VN.THANG.filter(m => pb[m.ten]).map(m => `<span><i style="background:${m.mau}"></i>${m.ten}: <b>${pb[m.ten]}</b></span>`).join('')}</div>`;
+  const s = d.xep_hang[0], o = d.xep_hang[d.xep_hang.length - 1];
+  document.getElementById('cucTri').innerHTML = s ? `<div>🌿 Sạch nhất<b>${e(s.ma)} · ${e(s.ten)}</b>${AQI_VN.huyHieu(s.aqi)}</div><div>🏭 Ô nhiễm nhất<b>${e(o.ma)} · ${e(o.ten)}</b>${AQI_VN.huyHieu(o.aqi)}</div>` : '';
+  const iot = (d.iot || [])[0];
+  document.getElementById('theIot').innerHTML = iot ? `<a href="iot.html" style="text-decoration:none;color:inherit"><div class="the-iot">
+      <span class="so-iot" style="background:${AQI_VN.mau(iot.aqi)};color:${AQI_VN.mauChu(iot.aqi)}">${iot.aqi ?? '--'}</span>
+      <div><div style="font-size:12px;color:var(--text-muted)"><span class="song"></span>Trạm IoT · đang gửi dữ liệu</div><b>${e(iot.ma)} · ${e(iot.ten)}</b></div></div></a>` : '';
+}
+
+function veXepHang() {
+  if (!D) return;
+  const ds = [...D.xep_hang]; if (xep === 'giam') ds.reverse();
+  const max = Math.max(150, ...ds.map(x => x.aqi));
+  document.getElementById('xepHang').innerHTML = `<table class="xh"><thead><tr><th>#</th><th>Trạm</th><th>AQI</th><th class="an-dt">PM2.5 (µg/m³)</th><th class="an-dt" style="width:30%"></th></tr></thead><tbody>` +
+    ds.map((x, i) => `<tr><td class="hang">${i + 1}</td><td><b>${e(x.ma)}</b> · ${e(x.ten)}</td><td>${AQI_VN.huyHieu(x.aqi)}</td>
+      <td class="an-dt" style="font-variant-numeric:tabular-nums">${so(x.pm25)}</td>
+      <td class="an-dt"><div class="thanh"><span style="width:${(x.aqi / max * 100).toFixed(1)}%;background:${AQI_VN.mau(x.aqi)}"></span></div></td></tr>`).join('') + '</tbody></table>';
+}
+
+function tai() {
+  fetch(API + '/tong-quan', { credentials: 'include', cache: 'no-store' }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
+    D = d;
+    veAqi(d); veThoiTiet(d.thoi_tiet); veDuBao(d.du_bao); veXuHuong(d.xu_huong); vePhanBo(d); veXepHang();
+    document.getElementById('capNhat').textContent = 'Cập nhật lúc ' + d.cap_nhat.slice(11) + ' · tự làm mới mỗi 5 phút';
+  }).catch(() => {
+    document.getElementById('taMuc').innerHTML = '<span style="font-size:18px;color:#b3261e">Không tải được số liệu</span>';
+    document.getElementById('taYNghia').textContent = 'Kiểm tra máy chủ đang chạy rồi tải lại trang.';
+  });
+}
+
+document.querySelector('.nhom-tab').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  nhom = b.dataset.nhom; document.querySelectorAll('.nhom-tab button').forEach(x => x.classList.toggle('chon', x === b)); veKhuyenNghi();
+});
+document.querySelector('.xh-dk').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  xep = b.dataset.xep; document.querySelectorAll('.xh-dk button').forEach(x => x.classList.toggle('chon', x === b)); veXepHang();
+});
+// Thời gian thực (SSE): ô trạm IoT cập nhật theo từng gói tin; có dữ liệu mới / đồng bộ xong thì tải lại cả trang tổng quan
+AirLive.nghe('iot.da_nhan', d => {
+  if (!D) return;
+  const cu = (D.iot || []).find(x => x.ma === d.ma);
+  D.iot = [{ ma: d.ma, ten: cu ? cu.ten : 'Trạm ' + d.ma, pm25: d.pm25, ...AQI_VN.muc(d.aqi), aqi: d.aqi }];
+  vePhanBo(D);
+});
+let henTai = null;
+['du_lieu.da_nap', 'dong_bo.xong'].forEach(cd => AirLive.nghe(cd, () => { clearTimeout(henTai); henTai = setTimeout(tai, 20000); }));
+AirLive.chiBao('chiBaoSong');
+AirLive.nutThongBao('nutThongBao');
+tai();
+setInterval(() => { if (!document.hidden) tai(); }, 300000);
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

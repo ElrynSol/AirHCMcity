@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Luồng cảnh báo – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Luồng cảnh báo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
+  .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
+  .kpi .l { font-size:11.5px; color:var(--text-muted); } .kpi .v { font-size:24px; font-weight:800; margin-top:4px; font-variant-numeric: tabular-nums; } .kpi .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } #content { padding:12px; } }
+  .luu-y { color:#888; font-size:12px; font-style:italic; margin:10px 0; }
+  .tag { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; }
+  .tag.ok { background:#e6f4ea; color:#137333; } .tag.warn { background:#fff4e5; color:#b45309; } .tag.bad { background:#fde7e9; color:#b3261e; } .tag.info { background:#e8f0fe; color:#1557b0; }
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar select { width:auto; min-width:150px; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:13px; }
+  .list li { margin-bottom:6px; } ul.list { margin:0; padding-left:20px; line-height:1.7; font-size:14px; }
+</style>
+
+<style>
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+  .tile { background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow); }
+  .tile .l { font-size:11.5px; color:var(--text-muted); } .tile .v { font-size:24px; font-weight:800; font-variant-numeric: tabular-nums; margin-top:2px; }
+  .tbl-wrap { overflow-x:auto; } table.nk { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.nk th, table.nk td { padding:6px 9px; border-bottom:1px solid #eee; text-align:left; vertical-align:top; }
+  table.nk th { background:#f7f8fa; font-size:11.5px; color:#555; position:sticky; top:0; }
+  .toolbar input[type=text], .toolbar input:not([type]) { width:auto; min-width:190px; }
+  .toolbar label { display:flex; gap:6px; align-items:center; }
+  .toolbar input[type=checkbox] { width:auto; min-width:0; }
+  .bus { font-size:12px; color:#555; line-height:1.7; }
+  .bus code { background:#f1f3f4; padding:1px 6px; border-radius:5px; }
+</style>
+<style>
+  .buoc { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border:1px solid var(--border); border-radius:12px; background:#fff; margin-bottom:10px; box-shadow:var(--shadow); animation:vao .35s ease; }
+  @keyframes vao { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .buoc .ic { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; flex:none; }
+  .buoc.ok .ic { background:#e6f4ea; color:#137333; } .buoc.bo_qua .ic { background:#fff4e5; color:#b45309; } .buoc.loi .ic { background:#fde7e9; color:#b3261e; }
+  .buoc .tt { font-weight:700; font-size:14px; } .buoc .ct { font-size:12.5px; color:#555; margin-top:2px; line-height:1.55; word-break:break-word; } .buoc .ms { margin-left:auto; font-size:11.5px; color:#999; white-space:nowrap; }
+  .form { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; align-items:end; }
+  .form label { font-size:12px; color:#555; display:block; margin-bottom:4px; }
+  .thu { white-space:pre-wrap; background:#fafafa; border:1px solid #eee; border-radius:10px; padding:12px 14px; font-size:13px; line-height:1.6; margin-top:10px; }
+  tr.clk { cursor:pointer; } tr.clk:hover { background:#f5f8ff; }
+  .chk { display:flex; gap:6px; align-items:center; font-size:13px; } .chk input { width:auto; min-width:0; }
+  .luu-y { color:#888; font-size:12px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy"><b>🧾 Nhật ký</b></a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <div class="hero"><h2>🔔 Luồng cảnh báo AQI từng giai đoạn</h2><div class="sub">Chạy lại luồng: dữ liệu mới → tính AQI → so ngưỡng → sự kiện → soạn và gửi thư. Dùng dữ liệu thật mới nhất của trạm; không cần mở hộp thư vẫn xem được nội dung thư ngay trên web.</div></div>
+  <div id="khung"></div>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+const hoTen = localStorage.getItem('ho_ten');
+const laAdmin = localStorage.getItem('vai_tro') === 'admin';
+const userBox = document.getElementById('userBox');
+userBox.innerHTML = hoTen
+  ? `<span>👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} localStorage.clear(); location.reload(); }
+async function goiApi(path, opt = {}) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 40000);
+  try {
+    const r = await fetch(API + path, { signal: ctl.signal, credentials: 'include', ...opt });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+    return d;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Máy chủ phản hồi quá lâu, vui lòng thử lại.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.');
+    throw e;
+  } finally { clearTimeout(to); }
+}
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const khung = document.getElementById('khung');
+let thuDs = [];
+
+if (!laAdmin) {
+  khung.innerHTML = '<div class="loi">Trang này chỉ dành cho quản trị viên. Vui lòng <a href="login.html">đăng nhập bằng tài khoản admin</a>.</div>';
+} else {
+  khung.innerHTML = `
+    <div class="card">
+      <div class="form">
+        <div><label>Trạm</label><select id="tram"></select></div>
+        <div><label>Ngưỡng AQI thử (hạ thấp để chắc chắn vượt ngưỡng)</label><input id="nguong" type="number" min="0" max="500" value="50"></div>
+        <div class="chk"><input type="checkbox" id="guiThat"><label for="guiThat" style="margin:0">Gửi email thật tới ${esc(hoTen || 'tôi')} (cần SMTP trong .env)</label></div>
+        <div><button id="btnChay" onclick="chay()">▶ Chạy luồng cảnh báo</button></div>
+      </div>
+      <p class="luu-y" style="margin:10px 0 0">Chế độ trình diễn không bị giới hạn 1 thư/ngày và không đổi trạng thái đăng ký của người dùng thật. Thư thử nghiệm có tiền tố [THỬ NGHIỆM].</p>
+    </div>
+    <div id="cacBuoc"></div>
+    <div class="card"><h3>📬 Hộp thư đã gửi</h3>
+      <div class="tbl-wrap"><table class="nk"><thead><tr><th>Thời gian</th><th>Người nhận</th><th>Trạm</th><th>AQI</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="thuRows"><tr><td colspan="6">Đang tải...</td></tr></tbody></table></div>
+      <div id="thuCT"></div>
+      <p class="luu-y">Bấm một dòng để xem nội dung thư. Thư do hệ thống tự gửi (loại "canh_bao") và thư trình diễn (loại "demo") đều được lưu tại đây.</p>
+    </div>`;
+  taiTram(); taiThu();
+}
+async function taiTram() {
+  try {
+    const ds = await goiApi('/tram');
+    document.getElementById('tram').innerHTML = ds.map(t => `<option value="${t.id}">${esc(t.ma_tram)} - ${esc(t.ten_tram)}</option>`).join('');
+  } catch (e) { document.getElementById('cacBuoc').innerHTML = `<div class="loi">${esc(e.message)}</div>`; }
+}
+const bieuTuong = { ok: '✓', bo_qua: '!', loi: '✕' };
+const cho = ms => new Promise(r => setTimeout(r, ms));
+async function chay() {
+  const btn = document.getElementById('btnChay'), kv = document.getElementById('cacBuoc');
+  btn.disabled = true; kv.innerHTML = '';
+  try {
+    const r = await goiApi('/admin/demo-canh-bao', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tram_id: +document.getElementById('tram').value, nguong_thu: +document.getElementById('nguong').value, gui_that: document.getElementById('guiThat').checked }) });
+    for (const b of r.cac_buoc) {
+      kv.insertAdjacentHTML('beforeend', `<div class="buoc ${b.trang_thai}"><div class="ic">${bieuTuong[b.trang_thai] || '•'}</div><div><div class="tt">${esc(b.ten)}</div><div class="ct">${esc(b.chi_tiet)}</div></div><div class="ms">${b.ms} ms</div></div>`);
+      await cho(550);
+    }
+    await taiThu();
+  } catch (e) { kv.innerHTML = `<div class="loi">${esc(e.message)}</div>`; }
+  btn.disabled = false;
+}
+const nhanTT = { da_gui: ['ok', 'Đã gửi'], chi_luu: ['info', 'Chỉ lưu (không gửi)'], that_bai: ['bad', 'Gửi thất bại'] };
+async function taiThu() {
+  try {
+    thuDs = await goiApi('/admin/thu-da-gui?limit=50');
+    document.getElementById('thuRows').innerHTML = thuDs.length ? thuDs.map((t, i) => {
+      const [c, tx] = nhanTT[t.trang_thai] || ['info', t.trang_thai];
+      return `<tr class="clk" onclick="xemThu(${i})"><td style="white-space:nowrap">${esc(t.thoi_gian)}</td><td>${esc(t.email)}</td><td>${esc(t.ma_tram)}</td><td>${esc(t.aqi)}</td><td>${esc(t.loai)}</td><td><span class="tag ${c}">${tx}</span></td></tr>`;
+    }).join('') : '<tr><td colspan="6">Chưa có thư nào.</td></tr>';
+  } catch (e) { document.getElementById('thuRows').innerHTML = `<tr><td colspan="6"><div class="loi">${esc(e.message)}</div></td></tr>`; }
+}
+function xemThu(i) {
+  const t = thuDs[i];
+  document.getElementById('thuCT').innerHTML = `<div class="thu"><b>Đến:</b> ${esc(t.email)}\n<b>Tiêu đề:</b> ${esc(t.tieu_de)}\n\n${esc(t.noi_dung)}</div>`;
+}
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

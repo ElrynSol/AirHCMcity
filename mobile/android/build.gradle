@@ -1,0 +1,43 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Plugin viết bằng Kotlin (vd. @capacitor/background-runner): Kotlin mặc định nhắm phiên bản của JDK đang chạy Gradle
+// (máy có JDK 23 → nhắm 23) trong khi Java của Capacitor nhắm 21 → lỗi "Inconsistent JVM Target".
+// Ép Kotlin nhắm JVM 21 cho mọi module: build được với bất kỳ JDK nào từ 21 trở lên.
+subprojects {
+    plugins.withId('org.jetbrains.kotlin.android') {
+        tasks.configureEach { t ->
+            if (t.class.name.contains('KotlinCompile') && t.hasProperty('compilerOptions')) {
+                def jvm = t.compilerOptions.jvmTarget
+                jvm.set(jvm.get().getClass().fromTarget('21'))
+            }
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

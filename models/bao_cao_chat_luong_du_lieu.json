@@ -1,0 +1,261 @@
+[
+  {
+    "bang": "du_lieu_tram_mat_dat",
+    "so_dong": 19860,
+    "cot": [
+      "id",
+      "ngay_do",
+      "khu_vuc",
+      "pm25_mean",
+      "pm10_mean",
+      "co_mean",
+      "no2_mean",
+      "so2_mean",
+      "o3_mean",
+      "nguon_du_lieu",
+      "ngay_cap_nhat",
+      "nhiet_do_mean",
+      "do_am_mean",
+      "gio_toc_do_mean",
+      "mua_tong",
+      "tram_id",
+      "pm25_smoothed",
+      "pm10_smoothed",
+      "o3_smoothed"
+    ],
+    "ngay_dau": "2022-08-04",
+    "ngay_cuoi": "2026-10-15",
+    "so_ngay_khac_nhau": 1527,
+    "so_ngay_thieu_trong_khoang": 7,
+    "doan_thieu_dai_nhat": [
+      "2026-10-07 → 2026-10-11 (5 ngày)",
+      "2026-10-05 → 2026-10-05 (1 ngày)",
+      "2026-10-13 → 2026-10-13 (1 ngày)"
+    ],
+    "do_tre_ngay_cuoi_so_voi_hom_nay": 1,
+    "dong_trung_khoa": 0,
+    "dong_moi_ngay": {
+      "trung_vi": 13.0,
+      "toi_da": 16
+    },
+    "cot_so": {
+      "id": {
+        "thieu_pct": 0.0,
+        "min": 2803.0,
+        "max": 63137.0,
+        "tb": 19202.263,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "pm25_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.6083,
+        "max": 96.8167,
+        "tb": 24.8211,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 8
+      },
+      "pm10_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.85,
+        "max": 98.3542,
+        "tb": 31.8556,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 1
+      },
+      "co_mean": {
+        "thieu_pct": 0.0,
+        "min": 59.3333,
+        "max": 2252.4167,
+        "tb": 514.8171,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 16
+      },
+      "no2_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.0,
+        "max": 74.5333,
+        "tb": 26.6016,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "so2_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.3583,
+        "max": 58.8208,
+        "tb": 18.0226,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "o3_mean": {
+        "thieu_pct": 0.0,
+        "min": 5.1667,
+        "max": 227.875,
+        "tb": 59.5755,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 6
+      },
+      "nhiet_do_mean": {
+        "thieu_pct": 0.0,
+        "min": 22.3417,
+        "max": 32.5625,
+        "tb": 27.4571,
+        "so_giong_nhau_lien_tiep_max": 3,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "do_am_mean": {
+        "thieu_pct": 0.0,
+        "min": 49.4583,
+        "max": 97.2083,
+        "tb": 79.0663,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "gio_toc_do_mean": {
+        "thieu_pct": 0.0,
+        "min": 2.4708,
+        "max": 38.1625,
+        "tb": 8.7901,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 66
+      },
+      "mua_tong": {
+        "thieu_pct": 0.0,
+        "min": 0.0,
+        "max": 69.9,
+        "tb": 6.3153,
+        "so_giong_nhau_lien_tiep_max": 33,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 19
+      },
+      "tram_id": {
+        "thieu_pct": 0.0,
+        "min": 59.0,
+        "max": 76.0,
+        "tb": 65.1583,
+        "so_giong_nhau_lien_tiep_max": 954,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "pm25_smoothed": {
+        "thieu_pct": 6.5,
+        "min": 0.5286,
+        "max": 96.8167,
+        "tb": 24.9717,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "so_diem_lech_>5_do_lech_chuan": 7
+      },
+      "pm10_smoothed": {
+        "thieu_pct": 6.5,
+        "min": 0.7514,
+        "max": 98.3542,
+        "tb": 31.999,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "so_diem_lech_>5_do_lech_chuan": 1
+      },
+      "o3_smoothed": {
+        "thieu_pct": 6.5,
+        "min": 5.0262,
+        "max": 238.0615,
+        "tb": 59.4482,
+        "so_giong_nhau_lien_tiep_max": 2,
+        "so_diem_lech_>5_do_lech_chuan": 8
+      }
+    },
+    "pm25_lon_hon_pm10": 0,
+    "van_de": [
+      "Thiếu 7 ngày trong khoảng 2022-08-04 → 2026-10-15; đoạn dài nhất: 2026-10-07 → 2026-10-11 (5 ngày)",
+      "Cột mua_tong: có đoạn 33 dòng liên tiếp giống hệt nhau (nghi nguồn đứng yên/điền khuyết)",
+      "Cột tram_id: có đoạn 954 dòng liên tiếp giống hệt nhau (nghi nguồn đứng yên/điền khuyết)"
+    ]
+  },
+  {
+    "bang": "du_lieu_gee_tphcm",
+    "so_dong": 9892,
+    "cot": [
+      "id",
+      "ngay_do",
+      "khu_vuc",
+      "no2_mean",
+      "co_mean",
+      "so2_mean",
+      "ngay_cap_nhat",
+      "tram_id"
+    ],
+    "ngay_dau": "2021-01-02",
+    "ngay_cuoi": "2026-10-04",
+    "so_ngay_khac_nhau": 1617,
+    "so_ngay_thieu_trong_khoang": 485,
+    "doan_thieu_dai_nhat": [
+      "2025-10-22 → 2025-11-03 (13 ngày)",
+      "2026-09-21 → 2026-09-30 (10 ngày)",
+      "2024-12-07 → 2024-12-15 (9 ngày)",
+      "2024-07-15 → 2024-07-22 (8 ngày)",
+      "2021-11-24 → 2021-11-30 (7 ngày)"
+    ],
+    "do_tre_ngay_cuoi_so_voi_hom_nay": 12,
+    "dong_trung_khoa": 0,
+    "dong_moi_ngay": {
+      "trung_vi": 5.0,
+      "toi_da": 14
+    },
+    "cot_so": {
+      "id": {
+        "thieu_pct": 0.0,
+        "min": 1.0,
+        "max": 12549.0,
+        "tb": 5011.3393,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      },
+      "no2_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.0,
+        "max": 0.0003,
+        "tb": 0.0001,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 13
+      },
+      "co_mean": {
+        "thieu_pct": 0.0,
+        "min": 0.0104,
+        "max": 0.0902,
+        "tb": 0.0355,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 7
+      },
+      "so2_mean": {
+        "thieu_pct": 0.0,
+        "min": -0.001,
+        "max": 0.0026,
+        "tb": -0.0,
+        "so_giong_nhau_lien_tiep_max": 1,
+        "ngoai_khoang_hop_ly": 0,
+        "so_diem_lech_>5_do_lech_chuan": 8
+      },
+      "tram_id": {
+        "thieu_pct": 16.0,
+        "min": 59.0,
+        "max": 76.0,
+        "tb": 65.1199,
+        "so_giong_nhau_lien_tiep_max": 85,
+        "so_diem_lech_>5_do_lech_chuan": 0
+      }
+    },
+    "van_de": [
+      "Thiếu 485 ngày trong khoảng 2021-01-02 → 2026-10-04; đoạn dài nhất: 2025-10-22 → 2025-11-03 (13 ngày)",
+      "Dữ liệu mới nhất là 2026-10-04, cũ 12 ngày",
+      "Cột tram_id: có đoạn 85 dòng liên tiếp giống hệt nhau (nghi nguồn đứng yên/điền khuyết)"
+    ]
+  }
+]

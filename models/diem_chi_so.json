@@ -1,0 +1,37 @@
+{
+  "so_tram": 16,
+  "so_mau": 19769,
+  "so_mau_kiem_tra": 2973,
+  "kiem_tra_tu": "2026-02-23",
+  "tham_so": {
+    "max_depth": 8,
+    "min_samples_leaf": 5,
+    "n_estimators": 150
+  },
+  "random_forest": {
+    "RMSE": 7.32291603350397,
+    "MAE": 5.152018383777352,
+    "R2": 0.6810171847904122,
+    "ky_nang_so_voi_hom_qua": -0.04443014214593455,
+    "RMSE_nen": 7.0113985971890544,
+    "ky_nang_ci95_bootstrap": {
+      "thap": -0.1018272699686922,
+      "cao": 0.012104884676935587
+    },
+    "phan_vi_sai_so": {
+      "q10": -7.438562826201078,
+      "q90": 8.74978937822846
+    }
+  },
+  "khong_gian": {
+    "do_lech_chuan_that_giua_cac_tram": 7.173935567475188,
+    "tuong_quan_lech_du_bao_va_that": 0.90106907278952,
+    "chenh_max_min_trung_binh_moi_ngay": 22.53629385964912
+  },
+  "luu_y": [
+    "Mô hình dùng chung cho mọi trạm, đặc trưng là PM2.5 quá khứ của chính trạm đó + lịch.",
+    "Nhãn PM2.5 từ số liệu mô hình CAMS (lưới ~0,4°): các trạm gần nhau có thể rơi vào cùng ô lưới nên chênh lệch giữa trạm có thể rất nhỏ.",
+    "Kỹ năng > 0 nhưng khoảng tin cậy chứa 0 thì chưa chứng minh được hơn nền 'mai = hôm nay'."
+  ],
+  "trained_at": "2026-10-17T12:56:06"
+}

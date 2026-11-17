@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Thống kê chất lượng không khí – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Thống kê chất lượng không khí</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
+  .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
+  .kpi .l { font-size:11.5px; color:var(--text-muted); } .kpi .v { font-size:24px; font-weight:800; margin-top:4px; font-variant-numeric: tabular-nums; } .kpi .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } #content { padding:12px; } }
+  .luu-y { color:#888; font-size:12px; font-style:italic; margin:10px 0; }
+  .tag { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; }
+  .tag.ok { background:#e6f4ea; color:#137333; } .tag.warn { background:#fff4e5; color:#b45309; } .tag.bad { background:#fde7e9; color:#b3261e; } .tag.info { background:#e8f0fe; color:#1557b0; }
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar select { width:auto; min-width:150px; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:13px; }
+  
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html"><b>📈 Thống kê</b></a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+
+  <div class="hero"><h2>📈 Thống kê chất lượng không khí</h2><div class="sub">Xu hướng, phân bố mức AQI và số ngày vượt ngưỡng QCVN 05:2023/BTNMT</div></div>
+
+  <div class="toolbar">
+    <select id="chonKy" onchange="tai()"><option value="30">30 ngày</option><option value="90" selected>90 ngày</option><option value="180">180 ngày</option><option value="365">1 năm</option></select>
+    <select id="chonTram" onchange="tai()"><option value="">Toàn thành phố (TB các trạm)</option></select>
+  </div>
+  <div id="thongBaoLoi"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card"><h3>📉 Diễn biến theo ngày</h3><canvas id="cNgay" height="110"></canvas></div>
+  <div class="grid2">
+    <div class="card"><h3>🧮 Phân bố mức AQI (số ngày)</h3><canvas id="cPhanBo" height="200"></canvas></div>
+    <div class="card"><h3>🗓️ PM2.5 trung bình theo tháng</h3><canvas id="cThang" height="200"></canvas></div>
+  </div>
+  <div class="card" id="cardTram"><h3>🏁 Xếp hạng trạm trong kỳ (PM2.5 trung bình)</h3>
+    <table><thead><tr><th>#</th><th>Trạm</th><th>PM2.5 TB (µg/m³)</th><th>Số ngày &gt; 50</th></tr></thead><tbody id="bangTram"></tbody></table>
+  </div>
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian.</summary><div style="margin-top:6px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b>, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <p class="luu-y">* Ngưỡng so sánh: PM2.5 trung bình 24 giờ = 50 µg/m³ (QCVN 05:2023/BTNMT). AQI tính từ PM2.5, PM10, O₃.</p>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
+const hoTen = localStorage.getItem('ho_ten');
+const userBox = document.getElementById('userBox');
+userBox.innerHTML = token
+  ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function goiApi(path, opt = {}) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const r = await fetch(API + path, { signal: ctl.signal, ...opt });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+    return d;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Máy chủ phản hồi quá lâu, vui lòng thử lại.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.');
+    throw e;
+  } finally { clearTimeout(to); }
+}
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+</script>
+
+<script>
+const MAU = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));  // màu chuẩn QĐ 1459
+const charts = {};
+function ve(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
+goiApi('/tram').then(ds => { const s = document.getElementById('chonTram'); ds.forEach(t => s.insertAdjacentHTML('beforeend', `<option value="${t.id}">${esc(t.ma_tram)} - ${esc(t.ten_tram)}</option>`)); }).catch(() => {});
+async function tai() {
+  const ky = document.getElementById('chonKy').value, tr = document.getElementById('chonTram').value;
+  const box = document.getElementById('thongBaoLoi'); box.innerHTML = '';
+  try {
+    const d = await goiApi(`/thong-ke?so_ngay=${ky}` + (tr ? `&tram_id=${tr}` : ''));
+    if (d.error) throw new Error(d.error);
+    const xn = d.ngay_xau_nhat;
+    document.getElementById('kpis').innerHTML = `
+      <div class="kpi"><div class="l">PM2.5 trung bình</div><div class="v">${d.pm25_tb ?? '--'}</div><div class="s">µg/m³ · ${d.tu_ngay} → ${d.den_ngay}</div></div>
+      <div class="kpi"><div class="l">PM2.5 cao nhất / thấp nhất</div><div class="v">${d.pm25_max ?? '--'} / ${d.pm25_min ?? '--'}</div><div class="s">µg/m³ (TB ngày)</div></div>
+      <div class="kpi"><div class="l">Số ngày PM2.5 &gt; 50</div><div class="v" style="color:${d.ngay_vuot_pm25_qcvn ? '#c62828' : '#2e7d32'}">${d.ngay_vuot_pm25_qcvn}</div><div class="s">trên ${d.so_ngay} ngày có dữ liệu</div></div>
+      <div class="kpi"><div class="l">Ngày xấu nhất</div><div class="v">${xn ? xn.aqi : '--'}</div><div class="s">${xn ? xn.ngay + ' · ' + xn.muc_do : ''}</div></div>`;
+    ve('cNgay', { type: 'line', data: { labels: d.theo_ngay.map(x => x.ngay), datasets: [
+      { label: 'PM2.5 (µg/m³)', data: d.theo_ngay.map(x => x.pm25), borderColor: '#e65100', backgroundColor: '#e6510022', fill: true, tension: .3, pointRadius: 0, yAxisID: 'y' },
+      { label: 'AQI', data: d.theo_ngay.map(x => x.aqi), borderColor: '#1a73e8', tension: .3, pointRadius: 0, yAxisID: 'y1' }] },
+      options: { responsive: true, interaction: { mode: 'index', intersect: false }, scales: { y: { title: { display: true, text: 'PM2.5' } }, y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'AQI' } }, x: { ticks: { maxTicksLimit: 8 } } } } });
+    const mucs = Object.keys(MAU).filter(m => d.phan_bo_muc_do[m]);
+    ve('cPhanBo', { type: 'bar', data: { labels: mucs, datasets: [{ data: mucs.map(m => d.phan_bo_muc_do[m]), backgroundColor: mucs.map(m => MAU[m]) }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+    ve('cThang', { type: 'bar', data: { labels: d.theo_thang.map(x => x.thang), datasets: [{ label: 'PM2.5 TB', data: d.theo_thang.map(x => x.pm25_tb), backgroundColor: '#1a73e8' }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+    document.getElementById('cardTram').style.display = d.theo_tram.length ? '' : 'none';
+    document.getElementById('bangTram').innerHTML = d.theo_tram.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.ma_tram)} - ${esc(t.ten_tram)}</td><td><b>${t.pm25_tb ?? '--'}</b></td><td>${t.ngay_vuot_pm25} / ${t.so_ngay}</td></tr>`).join('');
+  } catch (e) { box.innerHTML = `<div class="loi">${esc(e.message)}</div>`; }
+}
+tai();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

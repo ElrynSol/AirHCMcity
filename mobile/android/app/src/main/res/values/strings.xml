@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AirHCM</string>
+    <string name="title_activity_main">AirHCM</string>
+    <string name="package_name">vn.edu.aqi.hcm</string>
+    <string name="custom_url_scheme">vn.edu.aqi.hcm</string>
+</resources>

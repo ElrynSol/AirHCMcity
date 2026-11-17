@@ -1,0 +1,33 @@
+{
+ "so_ngay_test": 381,
+ "mo_hinh": [
+  {
+   "model": "Ngày mai = hôm nay (nền)",
+   "MAE": 5.5619,
+   "RMSE": 7.6393,
+   "R2": 0.5243,
+   "Kỹ năng so với nền": 0.0
+  },
+  {
+   "model": "Prophet",
+   "MAE": 15.0862,
+   "RMSE": 16.6981,
+   "R2": -1.2726,
+   "Kỹ năng so với nền": -1.1858
+  },
+  {
+   "model": "Auto Regression 7 ngày",
+   "MAE": 5.3279,
+   "RMSE": 7.2096,
+   "R2": 0.5764,
+   "Kỹ năng so với nền": 0.0563
+  },
+  {
+   "model": "AR 7 ngày + độ ẩm",
+   "MAE": 5.2872,
+   "RMSE": 7.1776,
+   "R2": 0.5801,
+   "Kỹ năng so với nền": 0.0604
+  }
+ ]
+}

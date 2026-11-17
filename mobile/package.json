@@ -1,0 +1,17 @@
+{
+  "name": "airhcm-mobile",
+  "version": "2.0.0",
+  "private": true,
+  "description": "App Android (Capacitor) cho web AirHCM: trang khởi động dò máy chủ rồi mở web từ máy chủ (cùng nguồn nên đăng nhập hoạt động)",
+  "scripts": {
+    "sync": "npx cap sync android",
+    "apk": "node build_apk.js",
+    "may-ao": "node chay_may_ao.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/background-runner": "3.0.0",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  }
+}

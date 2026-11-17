@@ -1,0 +1,61 @@
+# Chạy AirHCM trên MỌI MÁY có Docker (Windows/macOS/Linux, x86-64 hoặc ARM64) — không cần cài Python hay PostgreSQL.
+#   Từ thư mục gốc dự án:  docker compose -f dong_goi/docker-compose.yml up -d --build
+#   Mở: http://localhost:8000
+# Cần file .env ở thư mục gốc (sao chép từ .env.example, hoặc chạy cai_dat.ps1 / cai_dat.sh để tự tạo).
+# Bản cho máy chủ công khai 24/7 (HTTPS, tên miền): docker-compose.prod.yml — xem docs/TRIEN_KHAI_ORACLE.md
+name: airhcm
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    image: airhcm-db:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASS:?Hãy đặt DB_PASS trong .env}
+      POSTGRES_DB: air_quality_db
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Khôi phục dữ liệu lần đầu (chỉ chạy khi volume còn trống). Bỏ dấu # nếu có backup.sql:
+      # - ../backup.sql:/docker-entrypoint-initdb.d/01-backup.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d air_quality_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # Giới hạn tài nguyên (đổi trong .env nếu máy yếu/mạnh hơn)
+    mem_limit: ${DB_RAM:-1g}
+    shm_size: 256m
+
+  backend:
+    build:
+      context: ..
+      dockerfile: dong_goi/Dockerfile
+    image: airhcm:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASS}@db:5432/air_quality_db
+      MOI_TRUONG: ${MOI_TRUONG:-development}
+      GEE_KEY_FILE: /app/bi_mat_ngoai/gee-key.json
+    ports:
+      - "${CONG:-8000}:8000"
+    volumes:
+      - models:/app/models
+      - bimat:/app/bi_mat
+      # Khóa Google Earth Engine (tùy chọn): đặt gee-key.json trong thư mục bi_mat_may_chu/ ở gốc dự án
+      - ../bi_mat_may_chu:/app/bi_mat_ngoai:ro
+    mem_limit: ${APP_RAM:-1536m}
+    cpus: ${APP_CPU:-2}
+
+volumes:
+  pgdata:
+  models:
+  bimat:

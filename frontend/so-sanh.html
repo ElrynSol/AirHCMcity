@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="So sánh Chất lượng Không khí – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>So sánh Chất lượng Không khí</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  :root { --accent: #1a73e8; }
+  * { box-sizing: border-box; }
+
+
+  .chon-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; min-width: 200px; font-size: 13.5px; }
+  .btn { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13.5px; transition: transform .1s; }
+  .btn:hover { transform: translateY(-1px); }
+  .luu-y { color: #999; font-size: 12px; font-style: italic; margin-top: 12px; }
+
+  .chiso-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .chiso-check { display: flex; align-items: center; gap: 6px; background: #f7f8fa; border: 1px solid #eee; border-radius: 8px; padding: 9px 10px; font-size: 13px; cursor: pointer; }
+  .chiso-check input { cursor: pointer; }
+
+  .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin-bottom: 14px; cursor: pointer; }
+
+  .bang-tom-tat { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .bang-tom-tat th, .bang-tom-tat td { padding: 11px; text-align: center; border-bottom: 1px solid #eee; font-size: 13.5px; }
+  .bang-tom-tat th { background: var(--accent); color: white; text-transform: uppercase; font-size: 11px; }
+  .bang-tom-tat td b { font-variant-numeric: tabular-nums; }
+  .nhan-xet-item { padding: 10px 12px; background: #f7f8fa; border-radius: 8px; margin-bottom: 8px; font-size: 13.5px; border-left: 3px solid var(--accent); }
+  .chart-wrap { margin-bottom: 26px; }
+  .chart-wrap h4 { font-size: 13px; color: #555; margin: 0 0 8px; }
+
+  .tab-mode { display: flex; background: #f1f3f5; border-radius: 10px; padding: 4px; margin-bottom: 20px; max-width: 440px; }
+  .tab-mode-item { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; color: #6b7280; }
+  .tab-mode-item.active { background: white; color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+
+  .khu-vuc-card { background: #f7f8fa; border: 1px solid #eee; border-radius: 10px; padding: 14px; text-align: center; }
+  .khu-vuc-card .ten { font-weight: 700; font-size: 13.5px; margin-bottom: 8px; }
+  .khu-vuc-card .gia-tri { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .khu-vuc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html"><b>📊 So sánh</b></a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <div class="hero-card">
+    <h2>📊 So sánh chất lượng không khí</h2>
+    <div class="sub">Theo trạm · Theo khu vực phường/xã (ước tính)</div>
+  </div>
+
+  <div class="tab-mode">
+    <div class="tab-mode-item active" data-mode="tram" onclick="doiCheDo('tram')">📍 So sánh theo trạm</div>
+    <div class="tab-mode-item" data-mode="khuvuc" onclick="doiCheDo('khuvuc')">🗺️ So sánh theo khu vực</div>
+  </div>
+
+  <!-- ========== CHẾ ĐỘ 1: SO SÁNH THEO TRẠM ========== -->
+  <div class="mode-panel active" id="panel-tram">
+    <div class="card">
+      <h3>⚙️ Thiết lập so sánh</h3>
+      <p style="font-size:13px; color:#555; margin:0 0 8px;">Chọn một hoặc nhiều chỉ số (mỗi chỉ số sẽ vẽ 1 biểu đồ riêng):</p>
+      <div class="chiso-grid" id="chonNhieuChiSo">
+        <label class="chiso-check"><input type="checkbox" value="pm25" checked> PM2.5</label>
+        <label class="chiso-check"><input type="checkbox" value="pm10"> PM10</label>
+        <label class="chiso-check"><input type="checkbox" value="o3"> O3</label>
+        <label class="chiso-check"><input type="checkbox" value="no2"> NO2</label>
+        <label class="chiso-check"><input type="checkbox" value="co"> CO</label>
+        <label class="chiso-check"><input type="checkbox" value="so2"> SO2</label>
+      </div>
+
+      <div class="chon-row">
+        <select id="chon1"><option value="">-- Trạm 1 --</option></select>
+        <select id="chon2"><option value="">-- Trạm 2 (tùy chọn) --</option></select>
+        <select id="chon3"><option value="">-- Trạm 3 (tùy chọn) --</option></select>
+      </div>
+
+      <label class="toggle-row">
+        <input type="checkbox" id="toggleKyTruoc"> So sánh thêm với 90 ngày trước đó (đường nét đứt)
+      </label>
+
+      <button class="btn" onclick="soSanh()">So sánh ngay</button>
+      <div id="ghiChuMacDinh" style="font-size:13px;color:var(--text-2);margin-top:10px"></div>
+    </div>
+
+    <div id="ketQuaBieuDo"></div>
+
+    <div class="card" id="nhanXetCard" style="display:none;">
+      <h3>💡 Nhận xét nhanh</h3>
+      <div id="nhanXetNoiDung"></div>
+    </div>
+
+    <div class="card" id="bangTomTatCard" style="display:none;">
+      <h3>📋 Bảng tóm tắt (giá trị mới nhất)</h3>
+      <table class="bang-tom-tat" id="bangTomTat"></table>
+    </div>
+  </div>
+
+  <!-- ========== CHẾ ĐỘ 2: SO SÁNH THEO KHU VỰC PHƯỜNG/XÃ ========== -->
+  <div class="mode-panel" id="panel-khuvuc">
+    <div class="card">
+      <h3>⚙️ Thiết lập so sánh theo khu vực</h3>
+      <p style="font-size:13px; color:#555; margin:0 0 8px;">Chọn tối đa 4 phường/xã để so sánh mức PM2.5 ước tính hiện tại (nội suy từ các trạm gần nhất):</p>
+      <div class="chon-row">
+        <select id="chonKhuVuc1"><option value="">-- Khu vực 1 --</option></select>
+        <select id="chonKhuVuc2"><option value="">-- Khu vực 2 --</option></select>
+        <select id="chonKhuVuc3"><option value="">-- Khu vực 3 (tùy chọn) --</option></select>
+        <select id="chonKhuVuc4"><option value="">-- Khu vực 4 (tùy chọn) --</option></select>
+      </div>
+      <button class="btn" onclick="soSanhKhuVuc()">So sánh khu vực</button>
+      <p class="luu-y" style="margin-top:14px;">⚠️ Đây là giá trị <b>ước tính</b> bằng nội suy theo khoảng cách (IDW) từ tối đa 4 trạm gần nhất, không phải số đo trực tiếp tại từng phường/xã. Chỉ hiển thị giá trị hiện tại, chưa hỗ trợ xem lịch sử theo khu vực.</p>
+    </div>
+
+    <div class="card" id="ketQuaKhuVuc" style="display:none;">
+      <h3>📋 Kết quả so sánh</h3>
+      <div class="khu-vuc-grid" id="khuVucGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
+const hoTen = localStorage.getItem('ho_ten');
+const userBox = document.getElementById('userBox');
+if (token) {
+  userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+} else {
+  userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+}
+async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+
+function doiCheDo(mode) {
+  document.querySelectorAll('.tab-mode-item').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
+  document.getElementById('panel-tram').classList.toggle('active', mode === 'tram');
+  document.getElementById('panel-khuvuc').classList.toggle('active', mode === 'khuvuc');
+  if (mode === 'khuvuc' && danhSachPhuongXa.length === 0) taiDanhSachKhuVuc();
+}
+
+let danhSachTram = [];
+const chartInstances = {};
+const mauSac = ['#1a73e8', '#e65100', '#2e7d32'];
+const tenChiSo = { pm25: 'PM2.5', pm10: 'PM10', o3: 'O3', no2: 'NO2', co: 'CO', so2: 'SO2' };
+const donViChiSo = {
+  pm25: 'µg/m³ (bụi mịn PM2.5)', pm10: 'µg/m³ (bụi mịn PM10)', o3: 'µg/m³ (khí Ozone)',
+  no2: 'mol/m² (khí NO2)', co: 'mol/m² (khí CO)', so2: 'mol/m² (khí SO2)'
+};
+
+fetch('http://localhost:8000/api/v1/tram')
+  .then(res => res.json())
+  .then(stations => {
+    danhSachTram = stations;
+    ['chon1', 'chon2', 'chon3'].forEach(id => {
+      const select = document.getElementById(id);
+      stations.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.text = `${s.ma_tram} - ${s.ten_tram}`;
+        select.appendChild(opt);
+      });
+    });
+    soSanhMacDinh(stations);
+  });
+
+/* Mở trang là có ngay một phép so sánh có ý nghĩa: trạm ô nhiễm nhất – trung tâm (T01) – sạch nhất lúc này
+   (theo xếp hạng của trang Tổng quan); không lấy được xếp hạng thì dùng 3 trạm đầu danh sách. */
+function soSanhMacDinh(stations) {
+  const dat = (ids, ghiChu) => {
+    ids.slice(0, 3).forEach((id, i) => { document.getElementById('chon' + (i + 1)).value = String(id); });
+    const el = document.getElementById('ghiChuMacDinh');
+    if (el) el.innerHTML = ghiChu;
+    soSanh();
+  };
+  const coId = id => stations.some(s => s.id === id);
+  fetch((window.API_ORIGIN || '') + '/api/v1/tong-quan').then(r => r.json()).then(d => {
+    const xh = (d.xep_hang || []).filter(x => coId(x.id));
+    if (xh.length < 2) throw new Error('thiếu xếp hạng');
+    const oNhiem = xh[xh.length - 1], sach = xh[0];
+    const trungTam = xh.find(x => x.ma === 'T01' && x.id !== oNhiem.id && x.id !== sach.id) || xh[Math.floor(xh.length / 2)];
+    const ds = [oNhiem, trungTam, sach].filter((x, i, a) => x && a.findIndex(y => y.id === x.id) === i);
+    dat(ds.map(x => x.id), `💡 Đang hiển thị sẵn: <b>${ds.map(x => x.ma).join(' · ')}</b> (ô nhiễm nhất, trung tâm, sạch nhất lúc này). Đổi trạm hoặc chỉ số rồi bấm “So sánh ngay”.`);
+  }).catch(() => dat(stations.slice(0, 3).map(s => s.id), '💡 Đang hiển thị sẵn 3 trạm đầu danh sách. Đổi trạm hoặc chỉ số rồi bấm “So sánh ngay”.'));
+}
+
+function chiSoDangChon() {
+  const dsChon = Array.from(document.querySelectorAll('#chonNhieuChiSo input:checked')).map(el => el.value);
+  if (dsChon.length === 0) {
+    // Không chặn lỗi - tự động mặc định PM2.5 nếu người dùng quên tick
+    const pm25Box = document.querySelector('#chonNhieuChiSo input[value="pm25"]');
+    if (pm25Box) { pm25Box.checked = true; return ['pm25']; }
+  }
+  return dsChon;
+}
+
+function soSanh() {
+  const dsChiSo = chiSoDangChon(); // không còn trường hợp rỗng nhờ tự động mặc định ở trên
+
+  const ids = ['chon1', 'chon2', 'chon3']
+    .map(id => document.getElementById(id).value)
+    .filter(v => v !== '');
+  if (ids.length === 0) { alert('Vui lòng chọn ít nhất 1 trạm!'); return; }
+
+  const soSanhKyTruoc = document.getElementById('toggleKyTruoc').checked;
+  const chosen = ids.map(id => danhSachTram.find(s => s.id == id));
+  const soNgayCanLay = soSanhKyTruoc ? 180 : 90;
+
+  const boBieuDo = document.getElementById('ketQuaBieuDo');
+  boBieuDo.innerHTML = '';
+  Object.keys(chartInstances).forEach(k => { chartInstances[k]?.destroy(); delete chartInstances[k]; });
+
+  Promise.all(
+    chosen.map(s => fetch(`http://localhost:8000/api/v1/tram/${s.id}/day-du-lieu?so_ngay=${soNgayCanLay}`).then(r => r.json()))
+  ).then(allData => {
+
+    dsChiSo.forEach((chiSo) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'card chart-wrap';
+      wrap.innerHTML = `<h4>${tenChiSo[chiSo]} (${donViChiSo[chiSo]})</h4><canvas id="canvas_${chiSo}" height="90"></canvas>`;
+      boBieuDo.appendChild(wrap);
+
+      const tapNgay = new Set();
+      allData.forEach(d => d.lich_su[chiSo].slice(-90).forEach(item => tapNgay.add(item.ngay)));
+      const labels = Array.from(tapNgay).sort();
+
+      const datasets = [];
+      chosen.forEach((s, i) => {
+        const toanBo = allData[i].lich_su[chiSo];
+        const kyHienTai = toanBo.slice(-90);
+        const map1 = {};
+        kyHienTai.forEach(item => { map1[item.ngay] = item.gia_tri; });
+        datasets.push({
+          label: `${s.ma_tram} - Hiện tại`,
+          data: labels.map(ngay => map1[ngay] ?? null),
+          borderColor: mauSac[i], backgroundColor: mauSac[i] + '15',
+          fill: false, tension: 0.3, spanGaps: true
+        });
+
+        if (soSanhKyTruoc) {
+          const kyTruoc = toanBo.slice(0, Math.max(0, toanBo.length - 90));
+          const giaTriKyTruoc = labels.map((_, pos) => kyTruoc[pos]?.gia_tri ?? null);
+          datasets.push({
+            label: `${s.ma_tram} - 90 ngày trước`,
+            data: giaTriKyTruoc,
+            borderColor: mauSac[i], backgroundColor: 'transparent',
+            borderDash: [6, 4], fill: false, tension: 0.3, spanGaps: true, borderWidth: 1.5
+          });
+        }
+      });
+
+      const ctx = document.getElementById(`canvas_${chiSo}`).getContext('2d');
+      chartInstances[chiSo] = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true, position: 'bottom' } },
+          scales: { y: { title: { display: true, text: donViChiSo[chiSo] } } }
+        }
+      });
+    });
+
+    const chiSoChinh = dsChiSo[0];
+    const bangCard = document.getElementById('bangTomTatCard');
+    const bang = document.getElementById('bangTomTat');
+    let html = `<tr><th>Trạm</th><th>${tenChiSo[chiSoChinh]} mới nhất</th></tr>`;
+    chosen.forEach((s, idx) => {
+      const m = allData[idx].moi_nhat[chiSoChinh];
+      const giaTri = m !== null && m !== undefined ? (Math.abs(m) < 0.01 ? m.toExponential(2) : m.toFixed(2)) : '--';
+      html += `<tr><td>${s.ma_tram} - ${s.ten_tram}</td><td><b>${giaTri}</b></td></tr>`;
+    });
+    bang.innerHTML = html;
+    bangCard.style.display = 'block';
+
+    const nxCard = document.getElementById('nhanXetCard');
+    const nxBox = document.getElementById('nhanXetNoiDung');
+    const giaTriMoiNhat = chosen.map((s, idx) => ({ ten: s.ten_tram, gt: allData[idx].moi_nhat[chiSoChinh] }))
+      .filter(x => x.gt !== null && x.gt !== undefined);
+
+    if (giaTriMoiNhat.length >= 2) {
+      const caoNhat = giaTriMoiNhat.reduce((a, b) => a.gt > b.gt ? a : b);
+      const thapNhat = giaTriMoiNhat.reduce((a, b) => a.gt < b.gt ? a : b);
+      nxBox.innerHTML = `
+        <div class="nhan-xet-item">📈 <b>${caoNhat.ten}</b> đang có ${tenChiSo[chiSoChinh]} cao nhất (${caoNhat.gt.toFixed(2)}).</div>
+        <div class="nhan-xet-item">📉 <b>${thapNhat.ten}</b> đang có ${tenChiSo[chiSoChinh]} thấp nhất (${thapNhat.gt.toFixed(2)}).</div>
+      `;
+      nxCard.style.display = 'block';
+    } else {
+      nxCard.style.display = 'none';
+    }
+  });
+}
+
+// ============ SO SÁNH THEO KHU VỰC PHƯỜNG/XÃ ============
+const NGUON_RANH_GIOI = 'https://api.github.com/repos/thanglequoc/vietnamese-provinces-database/contents/json/geojson/79_ho_chi_minh/wards';
+let danhSachPhuongXa = [];
+
+function noiSuyTai(lat, lon, stations) {
+  const valid = stations.filter(p => Number.isFinite(Number(p.gia_tri)));
+  if (!valid.length) return null;
+  const nearby = valid.map(p => {
+    const dx = (Number(p.lon) - lon) * Math.cos(lat * Math.PI / 180);
+    const dy = Number(p.lat) - lat;
+    return { ...p, d2: dx * dx + dy * dy };
+  }).sort((a, b) => a.d2 - b.d2).slice(0, 4);
+  const weights = nearby.map(p => 1 / Math.max(p.d2, 1e-8));
+  return nearby.reduce((sum, p, i) => sum + Number(p.gia_tri) * weights[i], 0) / weights.reduce((a, b) => a + b, 0);
+}
+
+function toaDoGiuaDonGian(coords) {
+  // Tính trung bình tọa độ thô (đủ dùng để nội suy, không cần chính xác tuyệt đối centroid hình học)
+  let sumLat = 0, sumLon = 0, n = 0;
+  function duyet(mang) {
+    if (typeof mang[0] === 'number') { sumLon += mang[0]; sumLat += mang[1]; n++; }
+    else mang.forEach(duyet);
+  }
+  duyet(coords);
+  return n ? { lat: sumLat / n, lon: sumLon / n } : null;
+}
+
+async function taiDanhSachKhuVuc() {
+  const cacheKey = 'ranhGioiPhuongXa_v1';
+  let geoData;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try { geoData = JSON.parse(cached); } catch (e) { geoData = null; }
+  }
+
+  if (!geoData) {
+    ['chonKhuVuc1','chonKhuVuc2','chonKhuVuc3','chonKhuVuc4'].forEach(id => {
+      document.getElementById(id).innerHTML = '<option value="">-- Đang tải danh sách khu vực... --</option>';
+    });
+    try {
+      const response = await fetch(NGUON_RANH_GIOI);
+      const files = await response.json();
+      const wardFiles = files.filter(f => f.name.endsWith('.geojson'));
+      const features = [];
+      for (let i = 0; i < wardFiles.length; i += 12) {
+        const batch = await Promise.all(wardFiles.slice(i, i + 12).map(async f => {
+          const res = await fetch(f.download_url);
+          if (!res.ok) return [];
+          const geo = await res.json();
+          return (geo.features || []).map(feature => ({ ...feature, properties: { ...feature.properties, __label: feature.properties?.fullName || feature.properties?.name || f.name.replace('.geojson', '') } }));
+        }));
+        features.push(...batch.flat());
+      }
+      geoData = { type: 'FeatureCollection', features };
+      try { localStorage.setItem(cacheKey, JSON.stringify(geoData)); } catch (e) {}
+    } catch (err) {
+      ['chonKhuVuc1','chonKhuVuc2','chonKhuVuc3','chonKhuVuc4'].forEach(id => {
+        document.getElementById(id).innerHTML = '<option value="">-- Lỗi tải dữ liệu, thử lại sau --</option>';
+      });
+      return;
+    }
+  }
+
+  danhSachPhuongXa = geoData.features.map(f => {
+    const coords = f.geometry?.coordinates;
+    if (!coords) return null;
+    const center = toaDoGiuaDonGian(coords);
+    if (!center) return null;
+    return { ten: f.properties.__label, lat: center.lat, lon: center.lon };
+  }).filter(Boolean).sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
+
+  const optionsHtml = '<option value="">-- Chọn khu vực --</option>' +
+    danhSachPhuongXa.map((p, i) => `<option value="${i}">${p.ten}</option>`).join('');
+  ['chonKhuVuc1','chonKhuVuc2','chonKhuVuc3','chonKhuVuc4'].forEach(id => {
+    document.getElementById(id).innerHTML = optionsHtml;
+  });
+}
+
+function soSanhKhuVuc() {
+  const ids = ['chonKhuVuc1','chonKhuVuc2','chonKhuVuc3','chonKhuVuc4']
+    .map(id => document.getElementById(id).value)
+    .filter(v => v !== '');
+  if (ids.length < 2) { alert('Vui lòng chọn ít nhất 2 khu vực để so sánh!'); return; }
+
+  const khuVucChon = ids.map(i => danhSachPhuongXa[i]);
+
+  fetch('http://localhost:8000/api/v1/heatmap?chi_so=pm25')
+    .then(r => r.json())
+    .then(readings => {
+      const ketQuaCard = document.getElementById('ketQuaKhuVuc');
+      const grid = document.getElementById('khuVucGrid');
+
+      const ketQua = khuVucChon.map(p => ({
+        ten: p.ten,
+        gt: noiSuyTai(p.lat, p.lon, readings)
+      }));
+
+      // nồng độ PM2.5 → AQI thành phần (QĐ 1459) rồi mới lấy màu, không so nồng độ với ngưỡng AQI
+      const mau = (gt) => gt == null ? '#999' : AQI_VN.mauDam(AQI_VN.aqiTuPM25(gt));
+
+      grid.innerHTML = ketQua.map(k => `
+        <div class="khu-vuc-card">
+          <div class="ten">${k.ten}</div>
+          <div class="gia-tri" style="color:${mau(k.gt)};">${k.gt != null ? k.gt.toFixed(1) : '--'}</div>
+          <div style="font-size:11px; color:#999;">µg/m³ PM2.5 (ước tính)</div>
+          ${k.gt != null ? `<div style="margin-top:6px">${AQI_VN.huyHieu(AQI_VN.aqiTuPM25(k.gt))}</div>` : ''}
+        </div>
+      `).join('');
+      ketQuaCard.style.display = 'block';
+    });
+}
+</script>
+
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

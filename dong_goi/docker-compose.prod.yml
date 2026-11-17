@@ -1,0 +1,108 @@
+# AirHCM trên máy chủ công khai chạy 24/7 (Oracle Cloud Always Free hoặc VPS bất kỳ, x86-64 hoặc ARM64).
+# Hướng dẫn từng bước: docs/TRIEN_KHAI_ORACLE.md   ·   Cài tự động: bash dong_goi/trien_khai/cai_dat_may_chu.sh
+#   docker compose -f dong_goi/docker-compose.prod.yml up -d --build
+# Cần trong .env: DB_PASS, JWT_SECRET_KEY, TEN_MIEN, EMAIL_ACME, ADMIN_EMAILS (xem .env.example)
+name: airhcm
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    image: airhcm-db:17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASS:?Hãy đặt DB_PASS trong .env}
+      POSTGRES_DB: air_quality_db
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # khôi phục dữ liệu cũ: bash dong_goi/trien_khai/khoi_phuc.sh backup.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d air_quality_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: ${DB_RAM:-2g}
+    shm_size: 256m
+    logging: &nhat_ky
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }   # nhật ký không làm đầy ổ đĩa
+
+  backend:
+    build:
+      context: ..
+      dockerfile: dong_goi/Dockerfile
+    image: airhcm:latest
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASS}@db:5432/air_quality_db
+      MOI_TRUONG: production
+      COOKIE_SECURE: "1"
+      DIA_CHI_CONG_KHAI: https://${TEN_MIEN}
+      CORS_ORIGINS: https://${TEN_MIEN}
+      GEE_KEY_FILE: /app/bi_mat_ngoai/gee-key.json
+    expose:
+      - "8000"                      # chỉ Caddy truy cập được, không mở ra Internet
+    volumes:
+      - models:/app/models
+      - bimat:/app/bi_mat
+      - ../bi_mat_may_chu:/app/bi_mat_ngoai:ro   # gee-key.json (tùy chọn) đặt trong bi_mat_may_chu/
+    mem_limit: ${APP_RAM:-3g}
+    cpus: ${APP_CPU:-2}
+    logging: *nhat_ky
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"               # HTTP/3
+    environment:
+      TEN_MIEN: ${TEN_MIEN:?Hãy đặt TEN_MIEN trong .env (vd. airhcm.duckdns.org)}
+      EMAIL_ACME: ${EMAIL_ACME:?Hãy đặt EMAIL_ACME trong .env (email nhận thông báo chứng chỉ HTTPS)}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data             # chứng chỉ HTTPS (giữ lại khi khởi động lại)
+      - caddy_config:/config
+    mem_limit: 256m
+    logging: *nhat_ky
+
+  # Sao lưu CSDL mỗi ngày lúc 02:30, giữ 14 bản gần nhất trong thư mục sao_luu/ của máy chủ
+  sao_luu:
+    image: airhcm-db:17
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${DB_PASS}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - ../sao_luu:/sao_luu
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        while true; do
+          sleep $$(( ( $$(date -d 'tomorrow 02:30' +%s) - $$(date +%s) ) % 86400 + 1 ))
+          f=/sao_luu/airhcm_$$(date +%Y%m%d_%H%M).sql.gz
+          pg_dump -h db -U postgres -d air_quality_db --no-owner | gzip > "$$f" && echo "Sao lưu: $$f"
+          ls -1t /sao_luu/airhcm_*.sql.gz | tail -n +15 | xargs -r rm -f
+        done
+    mem_limit: 256m
+    logging: *nhat_ky
+
+volumes:
+  pgdata:
+  models:
+  bimat:
+  caddy_data:
+  caddy_config:

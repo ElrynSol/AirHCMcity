@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Chính sách quyền riêng tư của AirHCM: dữ liệu thu thập khi đăng nhập bằng email, Google, Facebook, Zalo; cách dùng, lưu trữ và yêu cầu xóa dữ liệu.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Chính sách quyền riêng tư</title>
+<style>
+  .van-ban { max-width: 820px; }
+  .van-ban h3 { margin-top: 26px; }
+  .van-ban li { margin: 4px 0; }
+  .van-ban table { box-shadow: none; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="header">
+  <div><a href="index.html">🗺️ Bản đồ</a></div>
+  <div id="userBox"></div>
+</div>
+<div id="content">
+  <div class="hero">
+    <h2>🔒 Chính sách quyền riêng tư</h2>
+    <div class="sub">Áp dụng cho website và ứng dụng AirHCM — hệ thống giám sát chất lượng không khí TP.HCM (đồ án học thuật). Cập nhật: 11/2026.</div>
+  </div>
+  <section class="card van-ban">
+    <h3>1. Dữ liệu chúng tôi thu thập</h3>
+    <ul>
+      <li><b>Không đăng nhập:</b> xem bản đồ, dự báo, thống kê không cần cung cấp thông tin cá nhân.</li>
+      <li><b>Tài khoản:</b> họ tên, email, mật khẩu (chỉ lưu bản băm Argon2id, không ai đọc được mật khẩu gốc).</li>
+      <li><b>Đăng nhập bằng Google / Facebook / Zalo:</b> chỉ nhận <i>mã định danh</i> tài khoản tại nhà cung cấp, <i>họ tên</i>
+        và <i>email</i> (Zalo không cung cấp email). Chúng tôi <b>không</b> nhận mật khẩu, danh sách bạn bè, bài đăng hay tin nhắn của bạn,
+        và không đăng gì lên tài khoản mạng xã hội của bạn.</li>
+      <li><b>Bảo mật phiên:</b> địa chỉ IP, loại trình duyệt/thiết bị và thời điểm đăng nhập, để bạn xem và đăng xuất từ xa các thiết bị lạ.</li>
+      <li><b>Phản ánh ô nhiễm:</b> loại hiện tượng, vị trí bạn chấm trên bản đồ, thời điểm và mô tả bạn nhập. Tên và email của bạn
+        <b>không</b> hiển thị công khai (chỉ quản trị viên thấy để xác minh); bạn tự xóa được phản ánh của mình.</li>
+      <li><b>Cảnh báo:</b> email và ngưỡng AQI bạn đăng ký nhận cảnh báo; địa chỉ nhận thông báo đẩy của trình duyệt nếu bạn bật.</li>
+    </ul>
+    <h3>2. Mục đích sử dụng</h3>
+    <p>Chỉ để đăng nhập, bảo vệ tài khoản và gửi cảnh báo chất lượng không khí bạn đã yêu cầu. Không bán, không chia sẻ dữ liệu cho bên thứ ba,
+      không dùng cho quảng cáo.</p>
+    <h3>3. Lưu trữ và bảo vệ</h3>
+    <p>Dữ liệu lưu trên máy chủ của hệ thống, truyền qua HTTPS; mật khẩu, mã OTP và mã dự phòng chỉ lưu dạng băm;
+      bí mật xác thực 2 lớp được mã hóa. Nhật ký bảo mật được giữ có thời hạn để phát hiện truy cập bất thường.</p>
+    <h3 id="xoa-du-lieu">4. Yêu cầu xóa dữ liệu</h3>
+    <ol>
+      <li>Ngắt kết nối mạng xã hội: vào <a href="tai-khoan.html">Tài khoản &amp; bảo mật</a> → mục <i>Đăng nhập bằng mạng xã hội</i> → <b>Gỡ</b>.
+        Bạn cũng có thể gỡ ứng dụng AirHCM trong phần cài đặt quyền riêng tư của Google, Facebook hoặc Zalo.</li>
+      <li>Xóa toàn bộ tài khoản: gửi yêu cầu tới quản trị viên hệ thống (email ghi ở trang <a href="gioi-thieu.html">Giới thiệu</a>) từ email
+        của tài khoản hoặc kèm tên mạng xã hội đã liên kết. Dữ liệu sẽ được xóa trong vòng 30 ngày.</li>
+    </ol>
+    <h3>5. Liên hệ</h3>
+    <p>Đồ án chuyên ngành của sinh viên Lê Ngọc Ánh Dương, GVHD TS. Dương Thị Thúy Nga. Mọi câu hỏi về quyền riêng tư xin gửi qua trang
+      <a href="gioi-thieu.html">Giới thiệu</a>.</p>
+  </section>
+</div>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Caddy: reverse proxy + HTTPS tự động (Let's Encrypt, tự gia hạn) cho AirHCM.
+# TEN_MIEN và EMAIL_ACME lấy từ .env (vd. TEN_MIEN=airhcm.duckdns.org).
+{
+	email {$EMAIL_ACME}
+	servers {
+		protocols h1 h2 h3
+	}
+}
+
+{$TEN_MIEN} {
+	# Luồng sự kiện trực tiếp (SSE) và trợ lý AI trả lời theo luồng: KHÔNG nén, KHÔNG đệm — gửi ngay từng sự kiện
+	@luong path /api/v1/su-kien* /api/v1/tro-ly*
+	handle @luong {
+		reverse_proxy backend:8000 {
+			flush_interval -1
+		}
+	}
+
+	handle {
+		encode zstd gzip
+		reverse_proxy backend:8000 {
+			health_uri /api/v1/health
+			health_interval 30s
+		}
+	}
+
+	# Tệp tĩnh có tên cố định: cho trình duyệt lưu 1 giờ (service worker vẫn kiểm tra bản mới)
+	@tinh path *.png *.svg *.ico *.webmanifest
+	header @tinh Cache-Control "public, max-age=3600"
+	header -Server
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Truy cập bằng địa chỉ www. → chuyển về tên miền chính
+www.{$TEN_MIEN} {
+	redir https://{$TEN_MIEN}{uri} permanent
+}

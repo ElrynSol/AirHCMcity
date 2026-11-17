@@ -1,0 +1,8 @@
+# PostgreSQL 17 + PostGIS 3 chạy được trên cả amd64 và ARM64.
+# (Image postgis/postgis chính thức chỉ có bản amd64 → không chạy trên Oracle Ampere A1 / Apple Silicon.)
+FROM postgres:17-bookworm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends postgresql-17-postgis-3 postgresql-17-postgis-3-scripts \
+    && rm -rf /var/lib/apt/lists/*
+# Bật PostGIS cho CSDL tạo lần đầu
+RUN printf 'CREATE EXTENSION IF NOT EXISTS postgis;\n' > /docker-entrypoint-initdb.d/00-postgis.sql

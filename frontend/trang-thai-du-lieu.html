@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Trạng thái dữ liệu – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<script src="song-truc-tiep.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Trạng thái dữ liệu</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
+  .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
+  .kpi .l { font-size:11.5px; color:var(--text-muted); } .kpi .v { font-size:24px; font-weight:800; margin-top:4px; font-variant-numeric: tabular-nums; } .kpi .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } #content { padding:12px; } }
+  .luu-y { color:#888; font-size:12px; font-style:italic; margin:10px 0; }
+  .tag { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; }
+  .tag.ok { background:#e6f4ea; color:#137333; } .tag.warn { background:#fff4e5; color:#b45309; } .tag.bad { background:#fde7e9; color:#b3261e; } .tag.info { background:#e8f0fe; color:#1557b0; }
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar select { width:auto; min-width:150px; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:13px; }
+  
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html"><b>🛰️ Dữ liệu</b></a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+
+  <div class="hero"><h2>🛰️ Trạng thái &amp; nguồn dữ liệu</h2><div class="sub">Minh bạch dữ liệu nào là mô hình, vệ tinh, hay ước tính, và cập nhật tới ngày nào</div></div>
+  <div id="thongBaoLoi"></div>
+
+  <div class="card" id="theDongBo">
+    <h3>🔄 Đồng bộ dữ liệu tự động</h3>
+    <div class="db-o" id="dbTomTat"><div class="trong">Đang tải…</div></div>
+    <p class="db-ghi">Không cần chạy lệnh bằng tay: <b>Windows Task Scheduler</b> chạy lúc 7:30 mỗi ngày (máy tắt thì chạy ngay khi bật lại), và <b>máy chủ</b> kiểm tra mỗi 10 phút. Nếu thiếu ngày hôm qua, máy chủ tự lấy bù mọi ngày còn thiếu. Các bước ghi dữ liệu không tạo bản trùng; ngày nguồn chưa có số liệu (thời tiết lưu trữ trễ vài ngày, vệ tinh trễ khoảng 1 tuần) sẽ được tự lấy lại ở lần sau.</p>
+    <div id="dbQuanTri" style="display:none;margin:10px 0">
+      <button class="btn" id="nutDongBo">🔄 Đồng bộ ngay</button>
+      <button class="btn" id="nutLog" style="background:#fff;color:var(--primary-dark);border:1px solid #c9d6ea;box-shadow:none;margin-left:6px">Xem log</button>
+      <span id="dbThongBao" style="margin-left:10px;font-size:13px;color:var(--text-2)"></span>
+      <pre id="dbLog" style="display:none;max-height:320px;overflow:auto;background:#0b2545;color:#d6e4ff;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:10px;white-space:pre-wrap"></pre>
+    </div>
+    <div id="dbLichSu" style="overflow-x:auto"></div>
+  </div>
+  <style>
+    .db-o { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin-bottom:10px; }
+    .db-o .o { background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+    .db-o .l { font-size:11.5px; color:var(--text-muted); } .db-o .v { font-size:17px; font-weight:700; margin-top:2px; }
+    .db-o .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+    .db-ghi { font-size:12.5px; color:var(--text-2); line-height:1.6; margin:0 0 6px; }
+    .db-tt { display:inline-block; font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:999px; }
+    .db-tt.thanh_cong { background:#e6f4ea; color:#137333; } .db-tt.mot_phan { background:#fff4e5; color:#b45309; }
+    .db-tt.loi { background:#fde7e9; color:#b3261e; } .db-tt.dang_chay { background:#e8f0fe; color:#1557b0; }
+  </style>
+
+  <div class="card"><h3>📚 Phân loại nguồn dữ liệu</h3>
+    <table><thead><tr><th>Chỉ số</th><th>Nguồn</th><th>Bản chất</th><th>Độ phân giải</th><th>Độ trễ</th><th>Kiểm chứng đo đạc</th></tr></thead><tbody>
+      <tr><td>PM2.5, PM10, O₃</td><td>Open-Meteo Air Quality (mô hình CAMS)</td><td><span class="tag info">Mô hình</span></td><td>~45 km (0,4°)</td><td>Gần thời gian thực</td><td><span class="tag bad">Chưa</span></td></tr>
+      <tr><td>Nhiệt độ, độ ẩm, gió, mưa</td><td>Open-Meteo Weather</td><td><span class="tag info">Mô hình/tái phân tích</span></td><td>~9–25 km</td><td>Gần thời gian thực</td><td><span class="tag warn">Chưa</span></td></tr>
+      <tr><td>NO₂, CO, SO₂</td><td>Sentinel-5P TROPOMI qua Google Earth Engine</td><td><span class="tag info">Vệ tinh (cột khí, mol/m²)</span></td><td>~1–7 km</td><td>2–3 tuần</td><td><span class="tag bad">Không phải nồng độ mặt đất</span></td></tr>
+      <tr><td>Giá trị theo trạm (đã hiệu chỉnh)</td><td>Mô hình hiệu chỉnh không gian (Random Forest)</td><td><span class="tag warn">Ước tính</span></td><td>Theo trạm</td><td>—</td><td><span class="tag bad">Chưa chứng minh</span></td></tr>
+      <tr><td>Giá trị theo phường/xã</td><td>Nội suy IDW từ ≤ 4 trạm gần nhất</td><td><span class="tag warn">Ước tính</span></td><td>Theo phường/xã</td><td>—</td><td><span class="tag bad">Không</span></td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="card"><h3>🌫️ Dữ liệu PM/thời tiết theo trạm</h3><div id="bangMatDat">Đang tải…</div></div>
+    <div class="card"><h3>🛰️ Dữ liệu vệ tinh theo trạm</h3><div id="bangVeTinh">Đang tải…</div></div>
+  </div>
+
+  <div class="card"><h3>🧪 Chất lượng &amp; hiệu chỉnh</h3><div id="hieuChinh">Đang tải…</div></div>
+  <div class="card"><h3>🤖 Mô hình dự báo</h3><div id="moHinh">Đang tải…</div></div>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
+const hoTen = localStorage.getItem('ho_ten');
+const userBox = document.getElementById('userBox');
+userBox.innerHTML = token
+  ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function goiApi(path, opt = {}) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const r = await fetch(API + path, { signal: ctl.signal, ...opt });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+    return d;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Máy chủ phản hồi quá lâu, vui lòng thử lại.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.');
+    throw e;
+  } finally { clearTimeout(to); }
+}
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+</script>
+
+<script>
+function tagTre(n, nguong) { if (n == null) return '<span class="tag bad">Không có</span>'; return `<span class="tag ${n <= nguong ? 'ok' : n <= nguong * 3 ? 'warn' : 'bad'}">${n} ngày</span>`; }
+function bang(d, nguong) {
+  return `<div style="font-size:12.5px;color:#555;margin-bottom:8px;">${d.so_dong.toLocaleString('vi-VN')} dòng · ${d.so_tram} trạm · ${d.tu_ngay || '--'} → ${d.den_ngay || '--'}</div>
+  <table><thead><tr><th>Trạm</th><th>Số dòng</th><th>Mới nhất</th><th>Trễ</th></tr></thead><tbody>` +
+  d.tung_tram.map(t => `<tr><td>${esc(t.ma_tram)} · ${esc(t.ten_tram)}</td><td>${t.so_dong}</td><td>${t.den_ngay || '--'}</td><td>${tagTre(t.tre_ngay, nguong)}</td></tr>`).join('') + '</tbody></table>';
+}
+goiApi('/trang-thai-du-lieu').then(d => {
+  const m = d.mat_dat, v = d.ve_tinh, h = d.hieu_chinh || {};
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="l">Kiểm tra lúc</div><div class="v" style="font-size:18px">${d.ngay_kiem_tra}</div></div>
+    <div class="kpi"><div class="l">PM/thời tiết mới nhất</div><div class="v" style="font-size:18px">${m.den_ngay || '--'}</div><div class="s">${tagTre(m.tre_ngay, 3)}</div></div>
+    <div class="kpi"><div class="l">Vệ tinh mới nhất</div><div class="v" style="font-size:18px">${v.den_ngay || '--'}</div><div class="s">${tagTre(v.tre_ngay, 25)}</div></div>
+    <div class="kpi"><div class="l">Tổng số dòng</div><div class="v" style="font-size:18px">${(m.so_dong + v.so_dong).toLocaleString('vi-VN')}</div></div>`;
+  document.getElementById('bangMatDat').innerHTML = bang(m, 3);
+  document.getElementById('bangVeTinh').innerHTML = bang(v, 25);
+  document.getElementById('hieuChinh').innerHTML = h.loi ? `<div class="loi">${esc(h.loi)}</div>` : `
+    <ul style="margin:0;padding-left:18px;line-height:1.8;font-size:13.5px;">
+      <li>Số dòng đã hiệu chỉnh không gian: <b>${(h.so_dong_da_hieu_chinh || 0).toLocaleString('vi-VN')}</b> / ${(h.tong_dong || 0).toLocaleString('vi-VN')}.</li>
+      <li>Ngày mới nhất có <b>${h.ngay_moi_nhat_so_tram}</b> trạm nhưng chỉ <b>${h.ngay_moi_nhat_so_gia_tri_pm25_khac_nhau}</b> giá trị PM2.5 thô khác nhau. Các trạm cùng một ô lưới ~45 km của mô hình nhận cùng một giá trị.</li>
+      <li>Hiệu chỉnh không gian <b>chưa được kiểm chứng</b> bằng trạm đo thật (xem phần mô hình bên dưới và báo cáo).</li>
+    </ul>`;
+  const mh = d.mo_hinh || {};
+  document.getElementById('moHinh').innerHTML = mh.loi ? `<div class="loi">${esc(mh.loi)}</div>` :
+    '<table><tbody>' + Object.entries(mh).map(([k, val]) => `<tr><td style="width:40%;color:#555">${esc(k)}</td><td><b>${esc(typeof val === 'number' ? Math.round(val * 10000) / 10000 : val)}</b></td></tr>`).join('') + '</tbody></table>' +
+    '<p class="luu-y">* Chỉ số mô hình lấy từ file metadata khi huấn luyện, đánh giá theo thời gian trên dữ liệu mô hình, không phải so với số đo thật.</p>';
+}).catch(e => { document.getElementById('thongBaoLoi').innerHTML = `<div class="loi">${esc(e.message)}</div>`; });
+</script>
+<script>
+/* Thẻ "Đồng bộ dữ liệu tự động": trạng thái công khai; nút Đồng bộ ngay / Xem log chỉ hiện với admin */
+(function () {
+  const A = (window.API_ORIGIN || '') + '/api/v1';
+  const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const TT = { thanh_cong: 'Thành công', mot_phan: 'Một phần', loi: 'Lỗi', dang_chay: 'Đang chạy' };
+  const NGUON = { lich_windows: 'Lịch Windows', may_chu: 'Máy chủ tự động', admin: 'Admin', tay: 'Chạy tay' };
+  const ngay = v => v ? v.slice(8, 10) + '/' + v.slice(5, 7) + '/' + v.slice(0, 4) : '--';
+  const gio = v => v ? v.slice(11, 16) + ' ' + v.slice(8, 10) + '/' + v.slice(5, 7) : '--';
+  let hen = null;
+  try { if (localStorage.getItem('vai_tro') === 'admin') document.getElementById('dbQuanTri').style.display = ''; } catch (x) {}
+
+  function ve(d) {
+    const g = d.lich_su[0], dl = d.du_lieu;
+    document.getElementById('dbTomTat').innerHTML =
+      `<div class="o"><div class="l">PM, O₃, thời tiết (Open-Meteo)</div><div class="v">${ngay(dl.openmeteo_den)} ${dl.openmeteo_du ? '✅' : '⚠️'}</div><div class="s">${dl.openmeteo_du ? 'đã có tới hôm qua' : 'đang thiếu ngày gần đây'} · cập nhật ${gio(dl.openmeteo_cap_nhat)}</div></div>` +
+      `<div class="o"><div class="l">Khí vệ tinh (Sentinel-5P)</div><div class="v">${ngay(dl.gee_den)}</div><div class="s">vệ tinh trễ khoảng 1 tuần · cập nhật ${gio(dl.gee_cap_nhat)}</div></div>` +
+      `<div class="o"><div class="l">Lần đồng bộ gần nhất</div><div class="v">${g ? `<span class="db-tt ${e(g.trang_thai)}">${TT[g.trang_thai] || e(g.trang_thai)}</span>` : '--'}</div><div class="s">${g ? gio(g.bat_dau) + ' · ' + (NGUON[g.nguon] || e(g.nguon)) : 'chưa có'}</div></div>` +
+      `<div class="o"><div class="l">Lịch tự động</div><div class="v">${d.dang_chay ? '⏳ Đang đồng bộ…' : '7:30 hằng ngày'}</div><div class="s">${d.lich_may_chu_bat ? 'máy chủ kiểm tra mỗi 10 phút · lần hẹn kế ' + gio(d.lan_hen_ke) : 'lịch máy chủ đang tắt (DONG_BO_BAT=0)'}</div></div>`;
+    document.getElementById('dbLichSu').innerHTML = d.lich_su.length ? `<table><thead><tr><th>#</th><th>Bắt đầu</th><th>Kích hoạt</th><th>Kết quả</th><th>Open-Meteo</th><th>Vệ tinh</th><th>Ghi chú</th></tr></thead><tbody>` +
+      d.lich_su.map(r => `<tr><td>${r.id}</td><td>${gio(r.bat_dau)}</td><td>${NGUON[r.nguon] || e(r.nguon)}</td><td><span class="db-tt ${e(r.trang_thai)}">${TT[r.trang_thai] || e(r.trang_thai)}</span></td>` +
+        `<td>${e(r.openmeteo || '--')}${r.so_dong_openmeteo != null ? ' · ' + r.so_dong_openmeteo + ' dòng' : ''}</td><td>${e(r.gee || '--')}${r.so_dong_gee != null ? ' · ' + r.so_dong_gee + ' dòng' : ''}</td><td>${e(r.ghi_chu || '')}</td></tr>`).join('') + '</tbody></table>' : '';
+    document.getElementById('nutDongBo').disabled = d.dang_chay;
+    clearTimeout(hen); hen = setTimeout(tai, d.dang_chay ? 8000 : 60000);
+  }
+  function tai() { fetch(A + '/dong-bo/trang-thai', { credentials: 'include', cache: 'no-store' }).then(r => r.json()).then(ve).catch(() => {}); }
+  document.getElementById('nutDongBo').onclick = () => {
+    const tb = document.getElementById('dbThongBao');
+    fetch(A + '/admin/dong-bo', { method: 'POST', credentials: 'include' }).then(r => r.json().then(j => ({ ok: r.ok, j })))
+      .then(({ ok, j }) => { tb.textContent = ok ? j.thong_bao : (j.detail || 'Không thực hiện được'); setTimeout(tai, 1500); })
+      .catch(() => { tb.textContent = 'Không kết nối được máy chủ'; });
+  };
+  document.getElementById('nutLog').onclick = () => {
+    const pre = document.getElementById('dbLog');
+    if (pre.style.display !== 'none') { pre.style.display = 'none'; return; }
+    fetch(A + '/admin/dong-bo/log?dong=120', { credentials: 'include' }).then(r => r.json())
+      .then(j => { pre.textContent = j.log || j.detail || '(trống)'; pre.style.display = ''; pre.scrollTop = pre.scrollHeight; });
+  };
+  tai();
+  AirLive.nghe('dong_bo.xong', () => setTimeout(tai, 800));     // máy chủ đẩy sự kiện khi đồng bộ xong (SSE)
+})();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

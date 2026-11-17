@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Kịch bản dự báo – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Kịch bản dự báo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  .luu-y { color: #888; font-size: 12px; font-style: italic; margin-top: 10px; line-height: 1.5; }
+  .canh-bao { background:#f4f7fb; border-left:4px solid #1b63d6; padding:8px 12px; font-size:12.5px; color:#344054; margin:10px 0; border-radius:4px; line-height:1.5; }
+  .loi { color:#c62828; font-size:13px; }
+  .btn { padding: 9px 16px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+  .btn.phu { background: #fff; color: #1a73e8; border: 1px solid #1a73e8; }
+  select { padding: 8px; border-radius: 7px; border: 1px solid #ddd; font-size: 13px; background: #fff; max-width: 100%; }
+  .luoi-2 { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+  @media (max-width: 720px) { .luoi-2 { grid-template-columns: 1fr; } }
+  .slider-row { margin: 12px 0; }
+  .slider-row .top { display:flex; justify-content:space-between; font-size:13px; gap:8px; flex-wrap:wrap; }
+  .slider-row .top b { font-variant-numeric: tabular-nums; }
+  .slider-row input[type=range] { width:100%; }
+  .slider-row .moc { font-size:11px; color:#667085; display:flex; justify-content:space-between; }
+  .kq-o { border-radius:12px; padding:14px; border:1px solid #eee; }
+  .kq-o .t { font-size:12px; color:#667085; } .kq-o .g { font-size:30px; font-weight:800; font-variant-numeric: tabular-nums; line-height:1.15; }
+  .kq-o .d { font-size:13px; font-weight:700; margin-top:2px; }
+  .preset { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+  .chip { padding:6px 12px; border-radius:16px; border:1px solid #1a73e8; color:#1a73e8; background:#fff; cursor:pointer; font-size:12.5px; }
+  .chip:hover { background:#eef4ff; }
+  canvas { max-width:100%; }
+
+  .danh-gia { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+  @media (max-width:760px) { .danh-gia { grid-template-columns:1fr; } }
+  .dg-cot { background:#f7f9fc; border:1px solid #e4e8ef; border-radius:12px; padding:12px 14px; min-width:0; }
+  .dg-cot h4 { margin:0 0 6px; font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .dg-cot ul { margin:0; padding-left:18px; } .dg-cot li { font-size:13.5px; line-height:1.6; margin:4px 0; color:#344054; }
+  .dg-kn { font-size:13px; line-height:1.6; color:#344054; margin-top:10px; padding-top:8px; border-top:1px dashed #d0d5dd; }
+  .dg-the { font-size:11.5px; font-weight:700; padding:2px 10px; border-radius:999px; }
+  .dg-cham { display:inline-block; width:11px; height:11px; border-radius:50%; border:1px solid #999; margin-right:5px; vertical-align:-1px; }
+  table.bang-kb { width:100%; border-collapse:collapse; font-size:13px; box-shadow:none; }
+  table.bang-kb th { text-align:left; font-size:12px; color:#667085; font-weight:600; padding:7px 8px; border-bottom:1px solid #e4e8ef; background:none; white-space:nowrap; }
+  table.bang-kb td { padding:8px; border-bottom:1px solid #f0f2f5; vertical-align:middle; } table.bang-kb .r { text-align:right; white-space:nowrap; }
+  table.bang-kb .nho { font-size:12px; color:#667085; min-width:150px; }
+</style>
+</head>
+<body>
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html"><b>🎛️ Kịch bản</b></a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <div class="hero-card">
+    <h2>🎛️ Kịch bản: nếu đầu vào thay đổi thì PM2.5 thay đổi ra sao?</h2>
+    <div class="sub">Kéo các thanh trượt để thay đổi NO₂, CO, SO₂, O₃, nhiệt độ, độ ẩm, gió, mưa · xem phản ứng của hồi quy tuyến tính và Random Forest</div>
+  </div>
+  <div class="canh-bao">⚠️ Đây là <b>độ nhạy của mô hình thống kê</b> học từ số liệu mô hình CAMS và vệ tinh, <b>không phải quan hệ nhân quả</b> (ví dụ giảm NO₂ vệ tinh không có nghĩa là giảm phát thải). Mỗi lần chỉ đổi biến của chính ngày đó; PM2.5 các ngày trước giữ nguyên nên phản ứng thường nhỏ. Giá trị được giới hạn trong khoảng đã gặp khi huấn luyện.</div>
+  <div id="trangThai" class="card">Đang tải…</div>
+  <div id="vung" style="display:none;">
+    <div class="card">
+      <h3>1. Ngày nền</h3>
+      <div id="ngayNen" style="font-size:13px;color:#555;"></div>
+      <div class="luoi-2" style="margin-top:10px;" id="nenKq"></div>
+    </div>
+    <div class="card">
+      <h3>2. Thay đổi đầu vào</h3>
+      <div class="preset" id="preset"></div>
+      <div id="sliders"></div>
+      <div style="margin-top:8px;"><button class="btn phu" onclick="datLai()">↺ Về giá trị nền</button></div>
+    </div>
+    <div class="card">
+      <h3>3. Kết quả kịch bản</h3>
+      <div id="canhBaoKq"></div>
+      <div class="luoi-2" id="kbKq"></div>
+      <div class="danh-gia" id="danhGia"></div>
+    </div>
+    <div class="card">
+      <h3>So sánh các kịch bản mẫu</h3>
+      <div style="font-size:12.5px;color:#667085;margin-bottom:8px;">Cùng ngày nền, mỗi kịch bản chỉ đổi các biến ghi trong mô tả. Cột là trung bình hai mô hình; vạch mờ là khoảng dự báo 80% của Random Forest.</div>
+      <canvas id="cvSoSanh" height="120"></canvas>
+      <div style="overflow-x:auto;margin-top:12px"><table class="bang-kb" id="bangSoSanh"></table></div>
+    </div>
+    <div class="card">
+      <h3>4. Đường nhạy của một biến (các biến khác giữ nguyên)</h3>
+      <select id="chonBien" onchange="veDuongNhay()"></select>
+      <div style="margin-top:10px;"><canvas id="cvNhay" height="140"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>5. Biến nào làm PM2.5 ước lượng thay đổi nhiều nhất?</h3>
+      <div style="font-size:12.5px;color:#667085;margin-bottom:6px;">Chênh lệch dự báo khi đưa từng biến từ mức thấp (1%) đến mức cao (99%) đã gặp, các biến khác giữ nguyên.</div>
+      <canvas id="cvTornado" height="150"></canvas>
+    </div>
+    <p class="luu-y" id="ghiChu"></p>
+  </div>
+</div>
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+async function goiApi(path, opt) {
+  let r;
+  try { r = await fetch(API + path, opt); }
+  catch (e) { throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.'); }
+  const data = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((data && (data.detail || data.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+  return data;
+}
+const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
+const userBox = document.getElementById('userBox');
+if (hoTen) userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+else userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} try { localStorage.clear(); } catch (e) {} location.reload(); }
+const MUC_AQI = [[50, 'Tốt', '#00e400', '#e8f5e9'], [100, 'Trung bình', '#ffff00', '#fff8e1'], [150, 'Kém', '#ff7e00', '#fff3e0'],
+                 [200, 'Xấu', '#ff0000', '#ffebee'], [300, 'Rất xấu', '#8f3f97', '#f3e5f5'], [1e9, 'Nguy hại', '#7e0023', '#ede7f6']];
+function mucAqi(a) { if (a == null) return ['--', '#98a2b3', '#f7f8fa']; const m = MUC_AQI.find(x => a <= x[0]); return [m[1], m[2], m[3]]; }
+
+let MD = null, giaTri = {}, hen = null, chartNhay = null, chartTor = null;
+
+const f1 = (x, n = 2) => x == null ? '--' : Number(x).toFixed(n);
+
+function dungSlider() {
+  const box = document.getElementById('sliders'); box.innerHTML = '';
+  MD.bien.forEach(b => {
+    const buoc = (b.max - b.min) / 200;
+    const d = document.createElement('div'); d.className = 'slider-row';
+    d.innerHTML = `<div class="top"><span>${b.ten}</span><span><b id="v_${b.ma}"></b> ${b.don_vi} <span id="p_${b.ma}" style="color:#667085;"></span></span></div>
+      <input type="range" id="s_${b.ma}" min="${b.min}" max="${b.max}" step="${buoc}" value="${b.nen}">
+      <div class="moc"><span>${f1(b.min * b.he_so)}</span><span>nền ${f1(b.nen_hien_thi)}</span><span>${f1(b.max * b.he_so)}</span></div>`;
+    box.appendChild(d);
+    document.getElementById('s_' + b.ma).addEventListener('input', e => { giaTri[b.ma] = parseFloat(e.target.value); capNhatNhan(b); lenLich(); });
+    giaTri[b.ma] = b.nen; capNhatNhan(b);
+  });
+}
+function khacNen(b) { return Math.abs(giaTri[b.ma] - b.nen) > 1e-9 * (Math.abs(b.nen) || 1); }
+function capNhatNhan(b) {
+  const v = giaTri[b.ma];
+  document.getElementById('v_' + b.ma).textContent = f1(v * b.he_so);
+  const dl = b.nen !== 0 ? (v - b.nen) / Math.abs(b.nen) * 100 : 0;
+  document.getElementById('p_' + b.ma).textContent = khacNen(b) ? `(${dl >= 0 ? '+' : ''}${f1(dl, 0)}% so với nền)` : '';
+}
+function datLai() { MD.bien.forEach(b => { giaTri[b.ma] = b.nen; document.getElementById('s_' + b.ma).value = b.nen; capNhatNhan(b); }); chay(); }
+function lenLich() { clearTimeout(hen); hen = setTimeout(chay, 250); }
+
+function thePM(ten, nen, kb, dl, aqiNen, aqiKb) {
+  const [mN] = mucAqi(aqiNen), [mK, cK, nK] = mucAqi(aqiKb);
+  const mui = dl > 0.05 ? '▲' : dl < -0.05 ? '▼' : '＝';
+  return `<div class="kq-o" style="background:${nK};"><div class="t">${ten}</div>
+    <div class="g">${f1(kb, 1)} <span style="font-size:14px;">µg/m³</span></div>
+    <div class="d" style="color:${dl > 0.05 ? '#c62828' : dl < -0.05 ? '#2e7d32' : '#667085'};">${mui} ${dl >= 0 ? '+' : ''}${f1(dl, 2)} so với nền (${f1(nen, 1)})</div>
+    <div style="margin-top:6px;font-size:12.5px;"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${cK};border:1px solid #999;vertical-align:-1px;"></span> AQI ${aqiKb ?? '--'} · ${mK}${mN !== mK ? ` <span style="color:#667085;">(nền: ${mN})</span>` : ''}</div></div>`;
+}
+function hienKq(r, nen) {
+  const ten = { random_forest: 'Random Forest', tuyen_tinh: 'Hồi quy tuyến tính' };
+  document.getElementById(nen ? 'nenKq' : 'kbKq').innerHTML = ['random_forest', 'tuyen_tinh'].map(k =>
+    thePM(ten[k], r.nen[k], r.kich_ban[k], r.chenh_lech[k], (r.nen_aqi || {})[k], (r.kich_ban_aqi || {})[k])).join('');
+  if (nen) return;
+  const cb = [];
+  if (r.bien_bi_gioi_han.length) cb.push('Có biến vượt khoảng đã gặp khi huấn luyện và đã bị giới hạn: ' + r.bien_bi_gioi_han.join(', ') + '.');
+  if (r.hai_mo_hinh_trai_chieu) cb.push('Hai mô hình cho kết quả <b>trái chiều</b>: độ nhạy với thay đổi này không chắc chắn.');
+  document.getElementById('canhBaoKq').innerHTML = cb.map(t => `<div class="canh-bao">${t}</div>`).join('');
+  veDanhGia(r.danh_gia);
+}
+const TIN_CAY = { cao: ['Cao', '#137333', '#e6f4ea'], trung_binh: ['Trung bình', '#8a6d00', '#fff8e1'], thap: ['Thấp', '#b3261e', '#fde7e9'] };
+const escH = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+function veDanhGia(d) {
+  const o = document.getElementById('danhGia');
+  if (!d) { o.innerHTML = ''; return; }
+  const tc = TIN_CAY[d.tin_cay.muc] || TIN_CAY.thap, k = d.tin_cay.khoang_80;
+  o.innerHTML = `<div class="dg-cot"><h4>Đánh giá kết quả</h4><ul>${d.nhan_xet.map(t => `<li>${escH(t)}</li>`).join('')}</ul>
+      <div class="dg-kn"><b>Khuyến nghị (mức “${escH(d.muc_kich_ban)}”)</b><br>Người bình thường: ${escH(d.khuyen_nghi.nguoi_binh_thuong || '--')}<br>
+      Nhóm nhạy cảm: ${escH(d.khuyen_nghi.nhom_nhay_cam || '--')}</div></div>
+    <div class="dg-cot"><h4>Độ tin cậy <span class="dg-the" style="color:${tc[1]};background:${tc[2]}">${tc[0]}</span></h4>
+      <ul>${d.tin_cay.ly_do.map(t => `<li>${escH(t)}</li>`).join('')}</ul>
+      ${k ? `<div class="dg-kn">Khoảng dự báo 80% (Random Forest): <b>${f1(k.thap, 1)} – ${f1(k.cao, 1)} µg/m³</b> — 8 trên 10 ngày thật có PM2.5 nằm trong khoảng này khi mô hình dự đoán như trên.</div>` : ''}</div>`;
+}
+async function veSoSanh() {
+  const d = await goiApi('/kich-ban/so-sanh');
+  const ds = d.kich_ban, nen = ds.length ? ds[0].pm25_nen : null;
+  new Chart(document.getElementById('cvSoSanh').getContext('2d'), {
+    data: { labels: ds.map(x => x.ten), datasets: [
+      { type: 'bar', label: 'Khoảng 80%', data: ds.map(x => x.khoang_80 ? [x.khoang_80.thap, x.khoang_80.cao] : null), backgroundColor: 'rgba(152,162,179,.28)', barPercentage: .9, grouped: false, order: 2 },
+      { type: 'bar', label: 'PM2.5 kịch bản (µg/m³)', data: ds.map(x => x.pm25_kich_ban), backgroundColor: ds.map(x => mucAqi(x.aqi_kich_ban)[1]), borderColor: '#344054', borderWidth: 1, barPercentage: .45, grouped: false, order: 1 },
+      { type: 'line', label: 'Ngày nền', data: ds.map(() => nen), borderColor: '#1a73e8', borderDash: [6, 4], pointRadius: 0, order: 0 }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'PM2.5 ước lượng (µg/m³)' } } } }
+  });
+  document.getElementById('bangSoSanh').innerHTML = '<tr><th>Kịch bản</th><th>Thay đổi</th><th class="r">PM2.5</th><th class="r">So với nền</th><th>AQI</th><th>Hai mô hình</th><th>Tin cậy</th><th></th></tr>' +
+    ds.map(x => { const tc = TIN_CAY[x.tin_cay] || TIN_CAY.thap, [mK, cK] = mucAqi(x.aqi_kich_ban);
+      return `<tr><td><b>${escH(x.ten)}</b></td><td class="nho">${escH(x.mo_ta)}</td><td class="r"><b>${f1(x.pm25_kich_ban, 1)}</b></td>
+        <td class="r" style="color:${x.chenh_lech > 0.05 ? '#c62828' : x.chenh_lech < -0.05 ? '#2e7d32' : '#667085'}">${x.chenh_lech >= 0 ? '+' : ''}${f1(x.chenh_lech, 1)} (${x.phan_tram >= 0 ? '+' : ''}${f1(x.phan_tram, 0)}%)</td>
+        <td><span class="dg-cham" style="background:${cK}"></span>${x.aqi_kich_ban} · ${mK}</td>
+        <td class="nho">${x.hai_mo_hinh_trai_chieu ? '⚠️ trái chiều' : 'cùng chiều'} (RF ${f1(x.random_forest, 1)}, TT ${f1(x.tuyen_tinh, 1)})</td>
+        <td><span class="dg-the" style="color:${tc[1]};background:${tc[2]}">${tc[0]}</span></td>
+        <td><button class="chip" onclick="apMau('${x.ma}')">Áp dụng</button></td></tr>`; }).join('');
+}
+function apMau(ma) {
+  const m = MD.kich_ban_mau.find(x => x.ma === ma); if (!m) return;
+  MD.bien.forEach(b => { giaTri[b.ma] = b.nen; });
+  Object.entries(m.thay_doi).forEach(([k, v]) => { giaTri[k] = v; });
+  MD.bien.forEach(b => { document.getElementById('s_' + b.ma).value = giaTri[b.ma]; capNhatNhan(b); });
+  chay(); document.getElementById('kbKq').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+async function chay() {
+  const thay = {}; MD.bien.forEach(b => { if (khacNen(b)) thay[b.ma] = giaTri[b.ma]; });
+  try {
+    const r = await goiApi('/kich-ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ thay_doi: thay }) });
+    hienKq(r, false);
+  } catch (e) { document.getElementById('kbKq').innerHTML = `<p class="loi">${e.message}</p>`; }
+}
+function veDuongNhay() {
+  const ma = document.getElementById('chonBien').value, b = MD.bien.find(x => x.ma === ma), pts = MD.duong_nhay[ma];
+  const xs = pts.map(p => p.x_hien_thi.toFixed(2));
+  if (chartNhay) chartNhay.destroy();
+  chartNhay = new Chart(document.getElementById('cvNhay').getContext('2d'), {
+    type: 'line',
+    data: { labels: xs, datasets: [
+      { label: 'Random Forest', data: pts.map(p => p.random_forest), borderColor: '#1a73e8', backgroundColor: '#1a73e8', tension: .2 },
+      { label: 'Hồi quy tuyến tính', data: pts.map(p => p.tuyen_tinh), borderColor: '#e65100', backgroundColor: '#e65100', borderDash: [6, 4], tension: 0 }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } },
+      scales: { x: { title: { display: true, text: `${b.ten} (${b.don_vi}) · nền = ${f1(b.nen_hien_thi)}` } }, y: { title: { display: true, text: 'PM2.5 ước lượng (µg/m³)' } } } }
+  });
+}
+function veTornado() {
+  const m = MD.bien.map(b => { const p = MD.duong_nhay[b.ma]; return { ten: b.ten, rf: p[p.length - 1].random_forest - p[0].random_forest, tt: p[p.length - 1].tuyen_tinh - p[0].tuyen_tinh }; })
+    .sort((a, b) => Math.abs(b.rf) - Math.abs(a.rf));
+  if (chartTor) chartTor.destroy();
+  chartTor = new Chart(document.getElementById('cvTornado').getContext('2d'), {
+    type: 'bar',
+    data: { labels: m.map(x => x.ten), datasets: [
+      { label: 'Random Forest', data: m.map(x => +x.rf.toFixed(2)), backgroundColor: '#1a73e8' },
+      { label: 'Hồi quy tuyến tính', data: m.map(x => +x.tt.toFixed(2)), backgroundColor: '#e65100' }] },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { x: { title: { display: true, text: 'Δ PM2.5 khi đổi từ mức thấp → cao (µg/m³)' } } } }
+  });
+}
+(async function () {
+  try {
+    MD = await goiApi('/kich-ban/mac-dinh');
+    document.getElementById('trangThai').style.display = 'none';
+    document.getElementById('vung').style.display = '';
+    document.getElementById('ngayNen').innerHTML = `Ngày nền: <b>${MD.ngay_nen}</b> (ngày gần nhất có đủ số liệu vệ tinh NO₂/CO/SO₂, vốn trễ vài tuần). Các biến lag (PM2.5 hôm qua, …) lấy theo ngày này và giữ nguyên.`;
+    hienKq(MD.du_doan_nen, true);
+    document.getElementById('preset').innerHTML = MD.kich_ban_mau.map(k => `<button class="chip" title="${escH(k.mo_ta)}" onclick="apMau('${k.ma}')">${escH(k.ten)}</button>`).join('');
+    dungSlider();
+    document.getElementById('chonBien').innerHTML = MD.bien.map(b => `<option value="${b.ma}">${b.ten}</option>`).join('');
+    veDuongNhay(); veTornado(); chay();
+    veSoSanh().catch(e => { document.getElementById('bangSoSanh').innerHTML = `<tr><td class="loi">${escH(e.message)}</td></tr>`; });
+    document.getElementById('ghiChu').textContent = MD.ghi_chu;
+  } catch (e) { document.getElementById('trangThai').innerHTML = `<p class="loi">${e.message}</p>`; }
+})();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

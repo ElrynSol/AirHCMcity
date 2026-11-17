@@ -1,0 +1,56 @@
+# Bí mật — KHÔNG BAO GIỜ đưa lên kho mã
+.env
+.env.*
+!.env.example
+gee-key.json
+*.pem
+*.key
+backup.sql
+*.sql.gz
+bi_mat/
+bi_mat_may_chu/
+sao_luu/
+
+# Môi trường / bộ nhớ đệm
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.idea/
+.vscode/
+
+# Dữ liệu: kho mã nguồn mở KÈM bộ dữ liệu mở (du_lieu/) và mô hình đã huấn luyện (models/).
+# Không đưa: tệp người dùng tải lên; số liệu đo thật tải từ OpenAQ (theo điều khoản từng nhà cung cấp)
+uploads/
+du_lieu/tram_that/
+*.docx
+
+# Hệ điều hành
+Thumbs.db
+.DS_Store
+
+# App Android (tạo lại bằng npm install / npx cap add android)
+mobile/node_modules/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/AirHCM.apk
+
+# Firmware ESP32 biên dịch cho Wokwi VS Code (tạo lại bằng iot/build_firmware.bat)
+iot/*/build/
+
+# Nhật ký và lịch sử huấn luyện (tạo lại khi chạy)
+log_dong_bo.txt
+*.log
+mlruns/
+mlflow.db
+
+# Công cụ cũ dùng một lần (chỉ giữ ở máy, không nộp)
+tools/cu/
+
+# Notebook: dữ liệu tự tạo lại, điểm lưu tạm của Jupyter
+ml/notebooks/data/
+.ipynb_checkpoints/
+data_pipeline/.dong_bo.lock

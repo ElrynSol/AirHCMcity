@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Nhật ký hệ thống – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Nhật ký hệ thống</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="chart-theme.js"></script>
+<style>
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
+  .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
+  .kpi .l { font-size:11.5px; color:var(--text-muted); } .kpi .v { font-size:24px; font-weight:800; margin-top:4px; font-variant-numeric: tabular-nums; } .kpi .s { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:760px) { .grid2 { grid-template-columns:1fr; } #content { padding:12px; } }
+  .luu-y { color:#888; font-size:12px; font-style:italic; margin:10px 0; }
+  .tag { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; }
+  .tag.ok { background:#e6f4ea; color:#137333; } .tag.warn { background:#fff4e5; color:#b45309; } .tag.bad { background:#fde7e9; color:#b3261e; } .tag.info { background:#e8f0fe; color:#1557b0; }
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar select { width:auto; min-width:150px; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:13px; }
+  .list li { margin-bottom:6px; } ul.list { margin:0; padding-left:20px; line-height:1.7; font-size:14px; }
+</style>
+
+<style>
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+  .tile { background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow); }
+  .tile .l { font-size:11.5px; color:var(--text-muted); } .tile .v { font-size:24px; font-weight:800; font-variant-numeric: tabular-nums; margin-top:2px; }
+  .tbl-wrap { overflow-x:auto; } table.nk { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.nk th, table.nk td { padding:6px 9px; border-bottom:1px solid #eee; text-align:left; vertical-align:top; }
+  table.nk th { background:#f7f8fa; font-size:11.5px; color:#555; position:sticky; top:0; }
+  .toolbar input[type=text], .toolbar input:not([type]) { width:auto; min-width:190px; }
+  .toolbar label { display:flex; gap:6px; align-items:center; }
+  .toolbar input[type=checkbox] { width:auto; min-width:0; }
+  .bus { font-size:12px; color:#555; line-height:1.7; }
+  .bus code { background:#f1f3f4; padding:1px 6px; border-radius:5px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <a href="index.html">🗺️ Bản đồ</a>
+    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="so-sanh.html">📊 So sánh</a>
+    <a href="canh-bao.html">⚠️ Cảnh báo</a>
+    <a href="du-bao.html">🔮 Dự báo</a>
+    <a href="kich-ban.html">🎛️ Kịch bản</a>
+    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
+    <a href="thong-ke.html">📈 Thống kê</a>
+    <a href="bao-cao.html">📄 Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy"><b>🧾 Nhật ký</b></a>
+    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+  </div>
+  <div id="userBox"></div>
+</div>
+<script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
+
+<div id="content">
+  <div class="hero"><h2>🧾 Nhật ký hệ thống</h2><div class="sub"><a href="luong-canh-bao.html" style="color:#fff;text-decoration:underline">🔔 Luồng cảnh báo &amp; Hộp thư đã gửi</a> · Nhật ký tập trung: đăng nhập, thao tác quản trị, sự kiện CDC, nạp dữ liệu, gửi email, lỗi máy chủ (chỉ quản trị viên)</div></div>
+  <div id="khung"></div>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+const hoTen = localStorage.getItem('ho_ten');
+const laAdmin = localStorage.getItem('vai_tro') === 'admin';
+const userBox = document.getElementById('userBox');
+userBox.innerHTML = hoTen
+  ? `<span>👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
+async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} localStorage.clear(); location.reload(); }
+async function goiApi(path, opt = {}) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const r = await fetch(API + path, { signal: ctl.signal, credentials: 'include', ...opt });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) throw new Error((d && (d.detail || d.error)) || `Lỗi máy chủ (HTTP ${r.status})`);
+    return d;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Máy chủ phản hồi quá lâu, vui lòng thử lại.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra backend đã chạy chưa.');
+    throw e;
+  } finally { clearTimeout(to); }
+}
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const khung = document.getElementById('khung');
+let timer = null;
+
+if (!laAdmin) {
+  khung.innerHTML = '<div class="loi">Trang này chỉ dành cho quản trị viên. Vui lòng <a href="login.html">đăng nhập bằng tài khoản admin</a>.</div>';
+} else {
+  khung.innerHTML = `
+    <div class="tiles" id="tiles"></div>
+    <div class="card">
+      <div class="toolbar">
+        <select id="fGio"><option value="1">1 giờ qua</option><option value="24" selected>24 giờ qua</option><option value="168">7 ngày qua</option><option value="2160">90 ngày qua</option></select>
+        <select id="fMuc"><option value="">Mọi mức</option><option>INFO</option><option>WARN</option><option>ERROR</option></select>
+        <select id="fNguon"><option value="">Mọi nguồn</option><option>auth</option><option>tram</option><option>cdc</option><option>du_lieu</option><option>canh_bao</option><option>mail</option><option>api</option><option>event_bus</option><option>he_thong</option></select>
+        <input id="fQ" placeholder="Tìm theo nội dung, email...">
+        <button onclick="taiNhatKy()">Làm mới</button>
+        <label style="font-size:12.5px"><input type="checkbox" id="tuDong" checked style="width:auto"> Tự làm mới 15 giây</label>
+      </div>
+      <div class="tbl-wrap"><table class="nk"><thead><tr><th>Thời gian</th><th>Mức</th><th>Nguồn</th><th>Sự kiện</th><th>Nội dung</th><th>Người dùng</th></tr></thead><tbody id="rows"><tr><td colspan="6">Đang tải...</td></tr></tbody></table></div>
+      <p class="luu-y" id="dem"></p>
+    </div>
+    <div class="card"><h3>🔁 Bus sự kiện</h3><div class="bus" id="bus">Đang tải...</div></div>`;
+  ['fGio','fMuc','fNguon'].forEach(i => document.getElementById(i).addEventListener('change', taiNhatKy));
+  document.getElementById('fQ').addEventListener('keydown', e => { if (e.key === 'Enter') taiNhatKy(); });
+  document.getElementById('tuDong').addEventListener('change', datTimer);
+  taiNhatKy(); datTimer();
+}
+function datTimer() { clearInterval(timer); if (document.getElementById('tuDong').checked) timer = setInterval(taiNhatKy, 15000); }
+const tagMuc = m => `<span class="tag ${m === 'ERROR' ? 'bad' : m === 'WARN' ? 'warn' : 'info'}">${m}</span>`;
+async function taiNhatKy() {
+  const g = document.getElementById('fGio').value, p = new URLSearchParams({ gio: g, limit: 300 });
+  const muc = document.getElementById('fMuc').value, nguon = document.getElementById('fNguon').value, q = document.getElementById('fQ').value.trim();
+  if (muc) p.set('muc', muc); if (nguon) p.set('nguon', nguon); if (q) p.set('q', q);
+  try {
+    const [ds, th] = await Promise.all([goiApi('/admin/nhat-ky?' + p), goiApi('/admin/nhat-ky/tong-hop?gio=' + g)]);
+    const m = th.theo_muc || {};
+    document.getElementById('tiles').innerHTML =
+      `<div class="tile"><div class="l">Tổng sự kiện</div><div class="v">${Object.values(m).reduce((a, b) => a + b, 0)}</div></div>` +
+      `<div class="tile"><div class="l">INFO</div><div class="v">${m.INFO || 0}</div></div>` +
+      `<div class="tile"><div class="l">WARN</div><div class="v" style="color:#b45309">${m.WARN || 0}</div></div>` +
+      `<div class="tile"><div class="l">ERROR</div><div class="v" style="color:#b3261e">${m.ERROR || 0}</div></div>` +
+      `<div class="tile"><div class="l">Hàng đợi bus</div><div class="v">${th.bus_su_kien.cho_xu_ly}</div></div>`;
+    document.getElementById('rows').innerHTML = ds.length ? ds.map(r =>
+      `<tr><td style="white-space:nowrap">${esc(r.thoi_gian)}</td><td>${tagMuc(r.muc)}</td><td>${esc(r.nguon)}</td><td>${esc(r.su_kien)}</td><td>${esc(r.noi_dung)}</td><td>${esc(r.nguoi_dung || '')}</td></tr>`).join('')
+      : '<tr><td colspan="6">Không có bản ghi phù hợp.</td></tr>';
+    document.getElementById('dem').textContent = `Hiển thị ${ds.length} bản ghi mới nhất (tối đa 300). Nhật ký giữ 90 ngày.`;
+    const sk = th.bus_su_kien.so_su_kien || {}, ct = th.bus_su_kien.chu_de || {};
+    document.getElementById('bus').innerHTML = Object.keys(ct).length
+      ? Object.keys(ct).map(k => `<div><code>${esc(k)}</code> · ${ct[k]} consumer · ${sk[k] || 0} sự kiện từ lúc khởi động máy chủ</div>`).join('')
+      : 'Chưa có consumer nào đăng ký.';
+  } catch (e) {
+    document.getElementById('rows').innerHTML = `<tr><td colspan="6"><div class="loi">${esc(e.message)}</div></td></tr>`;
+  }
+}
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

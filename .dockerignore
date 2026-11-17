@@ -1,0 +1,40 @@
+# Không đưa vào image Docker: bí mật, môi trường ảo, dữ liệu lớn, công cụ phát triển
+.git
+.gitattributes
+venv
+.venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+
+# Bí mật — truyền vào lúc chạy bằng env_file / volume, KHÔNG nằm trong image
+.env
+.env.*
+!.env.example
+gee-key.json
+bi_mat
+*.pem
+*.key
+backup.sql
+*.sql.gz
+
+# Dữ liệu, nhật ký, lịch sử huấn luyện
+**/*.csv
+du_lieu
+!du_lieu/ranh_gioi/phuong_xa_hcm.geojson
+log_dong_bo.txt
+**/*.log
+mlruns
+mlflow.db
+data_pipeline/.dong_bo.lock
+
+# Không cần trên máy chủ
+tests
+dong_goi
+mobile
+!mobile/AirHCM.apk
+iot
+tools
+ml/notebooks
+*.docx
+*.ipynb
