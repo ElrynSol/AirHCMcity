@@ -19,6 +19,19 @@ curl -s -o nul http://127.0.0.1:8000/ || (
   timeout /t 15 /nobreak >nul
 )
 
+REM Đã tạo đường hầm cố định (tên "airhcm", cấu hình ở %USERPROFILE%\.cloudflared\config.yml) thì dùng tên miền riêng
+if exist "%USERPROFILE%\.cloudflared\config.yml" (
+  echo.
+  echo ================================================================================
+  echo  Link cong khai CO DINH:  https://airhcmcity.asia
+  echo  Dong cua so nay de tat link.
+  echo ================================================================================
+  echo.
+  "%CF%" tunnel --no-autoupdate run airhcm
+  pause
+  exit /b
+)
+
 echo.
 echo ================================================================================
 echo  Tim dong co chu  https://....trycloudflare.com  ben duoi: do la link cong khai.

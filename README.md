@@ -196,6 +196,16 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 - Đã thử: trình duyệt máy tính, khổ điện thoại, **app trên máy ảo Android** (GPS máy ảo, chỉ đường). App: thêm quyền vị trí,
   tăng thời gian dò máy chủ 3 → 6 giây và tự thử lại 1 lần (lần mở đầu trên máy ảo trước đây báo không thấy máy chủ). 142 kiểm thử.
 
+## v6.6 — Trình bày dễ hiểu cho người không chuyên
+
+- **Kịch bản** (`kich-ban.html`): chọn tình huống bằng thẻ có biểu tượng (mưa lớn, gió lặng, nắng nóng, khí thải tăng…);
+  kết quả là một câu tóm tắt "bụi mịn tăng/giảm bao nhiêu %, mức không khí có đổi không", kèm lời khuyên sức khỏe (QĐ 1459)
+  và độ chắc chắn bằng lời. So sánh các tình huống và các yếu tố ảnh hưởng bằng thanh ngang có nhãn. Thanh trượt và số liệu
+  từng mô hình chuyển vào mục "nâng cao" / "chi tiết kỹ thuật".
+- **Bản đồ nhiệt** (`ban-do-nhiet.html`): chọn "Hôm nay / Ngày mai / Ngày kia"; câu tóm tắt toàn thành phố so với chuẩn Việt Nam
+  và WHO; ô "Phường/xã của bạn" (gõ tên hoặc dùng vị trí GPS → PostGIS `ST_Contains`) hiện 3 ngày và lời khuyên; bấm phường trên
+  bản đồ hoặc trong bảng xếp hạng để xem. Tùy chọn hiển thị và chỉ số kỹ thuật thu gọn.
+
 ## Mã nguồn mở và bộ dữ liệu
 
 - Mã nguồn: giấy phép **MIT** (tệp `LICENSE`). Tự do dùng, sửa, phân phối; giữ lại thông báo bản quyền.
