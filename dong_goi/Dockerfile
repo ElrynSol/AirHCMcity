@@ -32,7 +32,10 @@ COPY --chown=app:app docs ./docs
 COPY --chown=app:app README.md ./
 # Ranh giới 168 phường/xã (máy chủ tự nạp vào PostGIS khi CSDL trống) + tệp cài app Android cho trang tai-app.html
 COPY --chown=app:app du_lieu/ranh_gioi/phuong_xa_hcm.geojson ./du_lieu/ranh_gioi/
-COPY --chown=app:app mobile/AirHCM.apk ./mobile/
+# Bộ dữ liệu mở (nạp bằng: python ../data_pipeline/du_lieu_mo.py --nhap)
+COPY --chown=app:app du_lieu/mo ./du_lieu/mo
+# APK không có trong kho GitHub: mẫu [k] + README giúp lệnh COPY không lỗi khi thiếu APK
+COPY --chown=app:app mobile/README_MOBILE.md mobile/AirHCM.ap[k] ./mobile/
 USER app
 
 WORKDIR /app/backend

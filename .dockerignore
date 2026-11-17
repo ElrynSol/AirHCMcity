@@ -22,6 +22,8 @@ backup.sql
 **/*.csv
 du_lieu
 !du_lieu/ranh_gioi/phuong_xa_hcm.geojson
+!du_lieu/mo
+!du_lieu/mo/*.csv
 log_dong_bo.txt
 **/*.log
 mlruns
@@ -33,6 +35,7 @@ tests
 dong_goi
 mobile
 !mobile/AirHCM.apk
+!mobile/README_MOBILE.md
 iot
 tools
 ml/notebooks
