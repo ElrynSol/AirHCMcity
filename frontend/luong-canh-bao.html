@@ -67,7 +67,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -84,7 +84,7 @@
 <script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
 
 <div id="content">
-  <div class="hero"><h2>🔔 Luồng cảnh báo AQI từng giai đoạn</h2><div class="sub">Chạy lại luồng: dữ liệu mới → tính AQI → so ngưỡng → sự kiện → soạn và gửi thư. Dùng dữ liệu thật mới nhất của trạm; không cần mở hộp thư vẫn xem được nội dung thư ngay trên web.</div></div>
+  <div class="hero"><h2>🔔 Luồng cảnh báo AQI từng giai đoạn</h2><div class="sub">Chạy lại luồng: dữ liệu mới → tính AQI → so ngưỡng → sự kiện → soạn và gửi thư. Dùng dữ liệu thật mới nhất của điểm; không cần mở hộp thư vẫn xem được nội dung thư ngay trên web.</div></div>
   <div id="khung"></div>
 </div>
 
@@ -120,7 +120,7 @@ if (!laAdmin) {
   khung.innerHTML = `
     <div class="card">
       <div class="form">
-        <div><label>Trạm</label><select id="tram"></select></div>
+        <div><label>Điểm</label><select id="tram"></select></div>
         <div><label>Ngưỡng AQI thử (hạ thấp để chắc chắn vượt ngưỡng)</label><input id="nguong" type="number" min="0" max="500" value="50"></div>
         <div class="chk"><input type="checkbox" id="guiThat"><label for="guiThat" style="margin:0">Gửi email thật tới ${esc(hoTen || 'tôi')} (cần SMTP trong .env)</label></div>
         <div><button id="btnChay" onclick="chay()">▶ Chạy luồng cảnh báo</button></div>
@@ -129,7 +129,7 @@ if (!laAdmin) {
     </div>
     <div id="cacBuoc"></div>
     <div class="card"><h3>📬 Hộp thư đã gửi</h3>
-      <div class="tbl-wrap"><table class="nk"><thead><tr><th>Thời gian</th><th>Người nhận</th><th>Trạm</th><th>AQI</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="thuRows"><tr><td colspan="6">Đang tải...</td></tr></tbody></table></div>
+      <div class="tbl-wrap"><table class="nk"><thead><tr><th>Thời gian</th><th>Người nhận</th><th>Điểm</th><th>AQI</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="thuRows"><tr><td colspan="6">Đang tải...</td></tr></tbody></table></div>
       <div id="thuCT"></div>
       <p class="luu-y">Bấm một dòng để xem nội dung thư. Thư do hệ thống tự gửi (loại "canh_bao") và thư trình diễn (loại "demo") đều được lưu tại đây.</p>
     </div>`;

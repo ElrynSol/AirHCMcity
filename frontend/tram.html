@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Quản lý Trạm Quan Trắc – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
+<meta name="description" content="Quản lý Điểm Quan Trắc – giám sát, cảnh báo và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT).">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<title>Quản lý Trạm Quan Trắc</title>
+<title>Quản lý Điểm Quan Trắc</title>
 <style>
   :root { --accent: #1a73e8; }
   * { box-sizing: border-box; }
@@ -68,7 +68,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html"><b>📋 Danh sách trạm</b></a>
+    <a href="tram.html"><b>📋 Danh sách điểm ước tính</b></a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -85,19 +85,19 @@
 <script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
 
 <div id="content">
-  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
   <div class="hero-card">
-    <h2>📋 Danh sách trạm quan trắc</h2>
+    <h2>📋 Danh sách điểm ước tính</h2>
     <div class="sub" id="tongSoTram">Đang tải dữ liệu...</div>
   </div>
 
   <div class="card">
-    <input type="text" id="oTimKiem" placeholder="🔍 Tìm theo tên hoặc mã trạm..." onkeyup="locTram()">
+    <input type="text" id="oTimKiem" placeholder="🔍 Tìm theo tên hoặc mã điểm..." onkeyup="locTram()">
   </div>
 
   <div id="adminActions" class="card">
-    <h3>➕ Thêm trạm mới</h3>
-    <p class="map-hint">⚡ Cách nhanh: chọn phường/xã bên dưới để tự điền vị trí trung tâm (✅ = đã có trạm, ⭕ = chưa có trạm):</p>
+    <h3>➕ Thêm điểm mới</h3>
+    <p class="map-hint">⚡ Cách nhanh: chọn phường/xã bên dưới để tự điền vị trí trung tâm (✅ = đã có điểm, ⭕ = chưa có điểm):</p>
     <select id="chonPhuongXaThem" onchange="chonPhuongXa()" style="width:100%; padding:10px; margin-bottom:12px;">
       <option value="">-- Đang tải danh sách phường/xã... --</option>
     </select>
@@ -111,8 +111,8 @@
       </div>
     </div>
     <div class="form-row">
-      <input id="newMaTram" placeholder="Mã trạm (VD: T13)">
-      <input id="newTenTram" placeholder="Tên trạm">
+      <input id="newMaTram" placeholder="Mã điểm (VD: T13)">
+      <input id="newTenTram" placeholder="Tên điểm">
     </div>
     <div class="form-row">
       <input id="newViDo" placeholder="Vĩ độ (tự điền)" type="number" step="0.000001" readonly style="background:#f5f5f5;">
@@ -122,14 +122,14 @@
         <option value="Ngung">Ngưng</option>
       </select>
     </div>
-    <button class="btn btn-success" onclick="themTram()">Thêm trạm</button>
+    <button class="btn btn-success" onclick="themTram()">Thêm điểm</button>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th onclick="sapXep('ma_tram')" style="cursor:pointer;">Mã trạm <span id="icon_ma_tram"></span></th>
-        <th onclick="sapXep('ten_tram')" style="cursor:pointer;">Tên trạm <span id="icon_ten_tram"></span></th>
+        <th onclick="sapXep('ma_tram')" style="cursor:pointer;">Mã điểm <span id="icon_ma_tram"></span></th>
+        <th onclick="sapXep('ten_tram')" style="cursor:pointer;">Tên điểm <span id="icon_ten_tram"></span></th>
         <th onclick="sapXep('aqi')" style="cursor:pointer;">AQI <span id="icon_aqi"></span></th>
         <th>Tọa độ</th>
         <th>Trạng thái</th>
@@ -140,10 +140,10 @@
   </table>
 </div>
 
-<!-- Modal xem nhanh trạm - KHÔNG rời trang -->
+<!-- Modal xem nhanh điểm - KHÔNG rời trang -->
 <div id="quickViewOverlay">
   <div id="quickViewBox">
-    <h3 id="quickViewTitle">📍 Trạm</h3>
+    <h3 id="quickViewTitle">📍 Điểm</h3>
     <div id="miniMapXem" class="map-box"></div>
     <div id="quickViewStats" class="quick-stats"></div>
     <button class="btn" onclick="dongQuickView()" style="width:100%; margin-top:14px;">Đóng</button>
@@ -152,9 +152,9 @@
 
 <div id="modalOverlay">
   <div id="modalBox">
-    <h3>✏️ Sửa thông tin trạm</h3>
+    <h3>✏️ Sửa thông tin điểm</h3>
     <input type="hidden" id="editId">
-    <p class="map-hint">📍 Bấm vào bản đồ để đổi vị trí trạm (chỉ nhận vị trí trong phạm vi TP.HCM):</p>
+    <p class="map-hint">📍 Bấm vào bản đồ để đổi vị trí điểm (chỉ nhận vị trí trong phạm vi TP.HCM):</p>
     <div class="map-wrap">
       <div id="miniMapSua" class="map-box"></div>
       <div class="map-layer-panel">
@@ -162,8 +162,8 @@
         <label><input type="checkbox" id="toggleRanhGioiSua" checked onchange="doiRanhGioiSua()"> 🗺️ Ranh giới phường/xã</label>
       </div>
     </div>
-    <div class="form-row"><input id="editMaTram" placeholder="Mã trạm"></div>
-    <div class="form-row"><input id="editTenTram" placeholder="Tên trạm"></div>
+    <div class="form-row"><input id="editMaTram" placeholder="Mã điểm"></div>
+    <div class="form-row"><input id="editTenTram" placeholder="Tên điểm"></div>
     <div class="form-row">
       <input id="editViDo" placeholder="Vĩ độ" type="number" step="0.000001" readonly style="background:#f5f5f5;">
       <input id="editKinhDo" placeholder="Kinh độ" type="number" step="0.000001" readonly style="background:#f5f5f5;">
@@ -306,7 +306,7 @@ async function layDuLieuRanhGioi(ghiChuElId) {
 
   if (ghiChuElId) {
     const el = document.getElementById(ghiChuElId);
-    if (el) el.innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các trạm gần nhất';
+    if (el) el.innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các điểm gần nhất';
   }
   return duLieuRanhGioiTram;
 }
@@ -328,7 +328,7 @@ function khoiTaoMiniMapThem() {
   veRanhGioiCoMau(miniMapThem).then(layer => {
     lopRanhGioiThem = layer;
     if (document.getElementById('toggleRanhGioiThem').checked) lopRanhGioiThem.addTo(miniMapThem);
-    document.getElementById('ghiChuRanhGioiThem').innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các trạm gần nhất';
+    document.getElementById('ghiChuRanhGioiThem').innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các điểm gần nhất';
     dienDanhSachPhuongXa();
   }).catch(err => {
     document.getElementById('ghiChuRanhGioiThem').innerText = '⚠️ Không tải được ranh giới phường/xã (lỗi mạng).';
@@ -336,7 +336,7 @@ function khoiTaoMiniMapThem() {
     console.error(err);
   });
 
-  // Hiện sẵn marker các trạm ĐÃ CÓ, để thấy trước và né khi chọn vị trí mới
+  // Hiện sẵn marker các điểm ĐÃ CÓ, để thấy trước và né khi chọn vị trí mới
   hienCacTramDaCoLenBanDo(miniMapThem);
 
   miniMapThem.on('click', (e) => {
@@ -373,7 +373,7 @@ async function dienDanhSachPhuongXa() {
     if (!center) return null;
     const tenPhuong = f.properties.__label;
 
-    // Tìm trạm gần nhất với tâm phường này (bán kính 3km coi là "đã có trạm")
+    // Tìm điểm gần nhất với tâm phường này (bán kính 3km coi là "đã có điểm")
     let tramGanNhat = null, khoangCachGanNhat = Infinity;
     danhSachTramGoc.forEach(s => {
       if (!s.vi_do || !s.kinh_do) return;
@@ -389,8 +389,8 @@ async function dienDanhSachPhuongXa() {
   select.innerHTML = '<option value="">-- Chọn phường/xã --</option>' +
     danhSachPhuongXaThem.map((p, i) => {
       const nhan = p.daCoTram
-        ? `✅ ${p.ten} (gần trạm ${p.tramGanNhat.ma_tram}, ~${p.khoangCach.toFixed(1)}km)`
-        : `⭕ ${p.ten} (chưa có trạm)`;
+        ? `✅ ${p.ten} (gần điểm ${p.tramGanNhat.ma_tram}, ~${p.khoangCach.toFixed(1)}km)`
+        : `⭕ ${p.ten} (chưa có điểm)`;
       return `<option value="${i}">${nhan}</option>`;
     }).join('');
 }
@@ -401,7 +401,7 @@ function chonPhuongXa() {
   const p = danhSachPhuongXaThem[idx];
 
   if (p.daCoTram) {
-    const xacNhan = confirm(`⚠️ Khu vực "${p.ten}" đã có trạm gần đó (${p.tramGanNhat.ma_tram} - ${p.tramGanNhat.ten_tram}, cách ~${p.khoangCach.toFixed(1)}km).\n\nBạn vẫn muốn đặt trạm mới tại trung tâm khu vực này?`);
+    const xacNhan = confirm(`⚠️ Khu vực "${p.ten}" đã có điểm gần đó (${p.tramGanNhat.ma_tram} - ${p.tramGanNhat.ten_tram}, cách ~${p.khoangCach.toFixed(1)}km).\n\nBạn vẫn muốn đặt điểm mới tại trung tâm khu vực này?`);
     if (!xacNhan) return;
   }
 
@@ -426,7 +426,7 @@ function datToaDo(lat, lng, boQuaCanhBaoTrung) {
   if (!boQuaCanhBaoTrung) {
     const trungVoiTram = danhSachTramGoc.find(s => s.vi_do && s.kinh_do && khoangCachKm(lat, lng, s.vi_do, s.kinh_do) < 0.3);
     if (trungVoiTram) {
-      alert(`⚠️ Vị trí này cách trạm "${trungVoiTram.ma_tram} - ${trungVoiTram.ten_tram}" chưa tới 300m.\nVui lòng chọn vị trí khác để tránh trùng lặp dữ liệu quan trắc.`);
+      alert(`⚠️ Vị trí này cách điểm "${trungVoiTram.ma_tram} - ${trungVoiTram.ten_tram}" chưa tới 300m.\nVui lòng chọn vị trí khác để tránh trùng lặp dữ liệu quan trắc.`);
       return;
     }
   }
@@ -525,7 +525,7 @@ function taiDanhSachTram() {
     danhSachTramGoc = stations;
     banDoAQI = {};
     aqiList.forEach(a => { banDoAQI[a.ma_tram] = a; });
-    document.getElementById('tongSoTram').innerText = `${stations.length} trạm quan trắc · Cập nhật: ${new Date().toLocaleString('vi-VN')}`;
+    document.getElementById('tongSoTram').innerText = `${stations.length} điểm ước tính · Cập nhật: ${new Date().toLocaleString('vi-VN')}`;
     hienThiTram(stations);
     // Cập nhật lại marker + dropdown phường/xã trên bản đồ nhỏ (nếu đã khởi tạo), tránh thiếu do tải song song
     if (miniMapThem) {
@@ -610,15 +610,15 @@ function themTram() {
     alert('Vui lòng điền đầy đủ thông tin, và bấm vào bản đồ để chọn vị trí!'); return;
   }
 
-  // Chặn trùng mã trạm hoặc tên trạm với trạm đã có (phân biệt hoa/thường, bỏ khoảng trắng thừa)
+  // Chặn trùng mã điểm hoặc tên điểm với điểm đã có (phân biệt hoa/thường, bỏ khoảng trắng thừa)
   const maTrungLap = danhSachTramGoc.find(s => s.ma_tram.trim().toLowerCase() === body.ma_tram.trim().toLowerCase());
   if (maTrungLap) {
-    alert(`⚠️ Mã trạm "${body.ma_tram}" đã tồn tại (trùng với "${maTrungLap.ten_tram}"). Vui lòng đặt mã khác.`);
+    alert(`⚠️ Mã điểm "${body.ma_tram}" đã tồn tại (trùng với "${maTrungLap.ten_tram}"). Vui lòng đặt mã khác.`);
     return;
   }
   const tenTrungLap = danhSachTramGoc.find(s => s.ten_tram.trim().toLowerCase() === body.ten_tram.trim().toLowerCase());
   if (tenTrungLap) {
-    if (!confirm(`⚠️ Đã có trạm tên "${body.ten_tram}" (mã ${tenTrungLap.ma_tram}). Bạn có chắc muốn thêm trạm trùng tên không?`)) {
+    if (!confirm(`⚠️ Đã có điểm tên "${body.ten_tram}" (mã ${tenTrungLap.ma_tram}). Bạn có chắc muốn thêm điểm trùng tên không?`)) {
       return;
     }
   }
@@ -635,7 +635,7 @@ function themTram() {
   })
   .then(data => {
     if (data.id) {
-      alert('Đã thêm trạm thành công!');
+      alert('Đã thêm điểm thành công!');
       document.getElementById('newMaTram').value = '';
       document.getElementById('newTenTram').value = '';
       document.getElementById('newViDo').value = '';
@@ -691,12 +691,12 @@ function luuSuaTram() {
     return res.json();
   })
   .then(data => {
-    if (data.id) { alert('Đã cập nhật trạm!'); dongModal(); taiDanhSachTram(); }
+    if (data.id) { alert('Đã cập nhật điểm!'); dongModal(); taiDanhSachTram(); }
     else { alert('Lỗi: ' + JSON.stringify(data.detail)); }
   })
   .catch(err => {
     if (err.message === 'TOKEN_HET_HAN') {
-      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng xuất và đăng nhập lại rồi thử sửa trạm lại.');
+      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng xuất và đăng nhập lại rồi thử sửa điểm lại.');
     } else {
       alert('Lỗi kết nối. Vui lòng thử lại.');
     }
@@ -704,7 +704,7 @@ function luuSuaTram() {
 }
 
 function xoaTram(id, maTram) {
-  if (!confirm(`Bạn chắc chắn muốn xóa trạm ${maTram}?`)) return;
+  if (!confirm(`Bạn chắc chắn muốn xóa điểm ${maTram}?`)) return;
   if (!token) { alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'); return; }
 
   fetch(`http://localhost:8000/api/v1/tram/${id}`, {

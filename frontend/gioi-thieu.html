@@ -40,7 +40,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -70,7 +70,7 @@
   <div class="card"><h3>🧩 Chức năng chính</h3>
     <ul class="list">
       <li><a href="index.html">Bản đồ</a>: màu theo phường/xã (ước tính), bản đồ nhiệt, số liệu theo giờ, vị trí của tôi.</li>
-      <li><a href="tram.html">Danh sách trạm</a> và <a href="so-sanh.html">So sánh</a>: quản lý trạm (admin), so sánh các trạm.</li>
+      <li><a href="tram.html">Danh sách điểm ước tính</a> và <a href="so-sanh.html">So sánh</a>: quản lý điểm (admin), so sánh các điểm.</li>
       <li><a href="canh-bao.html">Cảnh báo</a>: AQI theo giờ, khuyến cáo theo nhóm đối tượng, đăng ký nhận cảnh báo qua email.</li>
       <li><a href="du-bao.html">Dự báo</a>: dự báo PM2.5/AQI ngày tới và nhiều ngày bằng Random Forest, lời khuyên cá nhân hóa.</li>
       <li><a href="thong-ke.html">Thống kê</a>: xu hướng, phân bố mức AQI, số ngày vượt ngưỡng QCVN.</li>
@@ -80,10 +80,10 @@
     </ul></div>
 
   <div class="card"><h3>🏗️ Kiến trúc hệ thống</h3>
-    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm trạm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung.</p>
+    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm điểm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung.</p>
     <img src="kien_truc_hien_tai.svg" alt="Sơ đồ kiến trúc hiện tại" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff">
-    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">Hướng mở rộng quy mô lớn: nhiều cảm biến thật + Apache Kafka (chưa triển khai; hiện đã có module MQTT với trạm mô phỏng)</summary>
-      <p style="font-size:12.5px;color:#666;margin:8px 0">Với 13 trạm và dữ liệu theo ngày, Kafka là không cần thiết nên đồ án dùng bản gọn tương đương. Giao diện publish/subscribe được giữ nguyên để có thể thay bằng Kafka khi dữ liệu lên đến mức giây/phút.</p>
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">Hướng mở rộng quy mô lớn: nhiều cảm biến thật + Apache Kafka (chưa triển khai; hiện đã có module MQTT với điểm mô phỏng)</summary>
+      <p style="font-size:12.5px;color:#666;margin:8px 0">Với 13 điểm và dữ liệu theo ngày, Kafka là không cần thiết nên đồ án dùng bản gọn tương đương. Giao diện publish/subscribe được giữ nguyên để có thể thay bằng Kafka khi dữ liệu lên đến mức giây/phút.</p>
       <img src="kien_truc_mo_rong.svg" alt="Sơ đồ kiến trúc mở rộng" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff"></details>
   </div>
 
@@ -91,7 +91,7 @@
     <div class="card"><h3>🛠️ Công nghệ</h3>
       <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest (theo ngày) – scikit-learn</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
     <div class="card"><h3>⚖️ Cam kết &amp; giới hạn dữ liệu</h3>
-      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo trạm/phường/xã là <b>ước tính</b>, chưa kiểm chứng bằng đo đạc mặt đất.</li><li>Hướng phát triển: lắp cảm biến bụi thật (ví dụ PMS5003) vào đúng firmware hiện có, đối chiếu với trạm quan trắc chính thức.</li></ul></div>
+      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo điểm/phường/xã là <b>ước tính</b>, chưa kiểm chứng bằng đo đạc mặt đất.</li><li>Hướng phát triển: lắp cảm biến bụi thật (ví dụ PMS5003) vào đúng firmware hiện có, đối chiếu với điểm ước tính chính thức.</li></ul></div>
   </div>
   <p class="luu-y">* Hệ thống phục vụ mục đích học thuật, không thay thế số liệu công bố chính thức của cơ quan quản lý.</p>
 </div>

@@ -2,7 +2,7 @@
 
 Các phép toán không gian làm NGAY TRONG CSDL (có chỉ mục GiST), không tải hình học về Python:
 - ST_PointOnSurface: điểm đại diện luôn nằm TRONG phường (khác tâm hình học có thể rơi ra ngoài phường hình chữ C).
-- Toán tử KNN `<->` + ST_Distance(geography): trạm quan trắc gần nhất và khoảng cách thật (mét) trên mặt cầu.
+- Toán tử KNN `<->` + ST_Distance(geography): điểm ước tính gần nhất và khoảng cách thật (mét) trên mặt cầu.
 - ST_Contains: điểm (điểm ước tính, phản ánh) thuộc phường nào.
 - ST_Union + ST_SimplifyPreserveTopology: đường bao toàn thành phố để cắt bản đồ nhiệt.
 - ST_AsGeoJSON: xuất hình học cho Leaflet.

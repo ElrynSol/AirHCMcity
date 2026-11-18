@@ -57,7 +57,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html"><b>⚠️ Cảnh báo</b></a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -87,7 +87,7 @@
       <span class="gio-hien-tai-badge" id="gioHienTaiBadge"></span>
     </div>
     <canvas id="bieuDoHomNay" height="110"></canvas>
-    <p class="luu-y" style="margin-top:10px;">* Chỉ hiển thị từ 00:00 đến giờ hiện tại; mặc định là trung tâm TP.HCM, bấm "Dùng vị trí hiện tại" để xem theo vị trí của bạn. Để xem chi tiết theo từng trạm và các ngày trước, vào trang Bản đồ.</p>
+    <p class="luu-y" style="margin-top:10px;">* Chỉ hiển thị từ 00:00 đến giờ hiện tại; mặc định là trung tâm TP.HCM, bấm "Dùng vị trí hiện tại" để xem theo vị trí của bạn. Để xem chi tiết theo từng điểm và các ngày trước, vào trang Bản đồ.</p>
   </div>
 
   <div class="card">
@@ -96,25 +96,25 @@
   </div>
 
   <div class="card">
-    <h3>📍 Tìm trạm gần vị trí của bạn</h3>
+    <h3>📍 Tìm điểm gần vị trí của bạn</h3>
     <button class="btn" onclick="timViTri()">🎯 Dùng vị trí hiện tại</button>
-    <p style="font-size:11.5px; color:#999; margin:6px 0 0;">Hiển thị 3 trạm có khoảng cách gần vị trí bạn nhất (tính theo đường chim bay).</p>
+    <p style="font-size:11.5px; color:#999; margin:6px 0 0;">Hiển thị 3 điểm có khoảng cách gần vị trí bạn nhất (tính theo đường chim bay).</p>
     <div id="ketQuaViTri" style="margin-top:12px;"></div>
   </div>
 
   <div class="card" id="cardEmail">
     <h3>📧 Nhận cảnh báo qua email</h3>
-    <div id="emailChuaDangNhap" style="display:none;font-size:13.5px;">Đăng nhập để đăng ký nhận email khi AQI của trạm bạn chọn đạt ngưỡng. <button class="btn" onclick="window.location.href='login.html'" style="margin-left:8px;">Đăng nhập</button></div>
+    <div id="emailChuaDangNhap" style="display:none;font-size:13.5px;">Đăng nhập để đăng ký nhận email khi AQI của điểm bạn chọn đạt ngưỡng. <button class="btn" onclick="window.location.href='login.html'" style="margin-left:8px;">Đăng nhập</button></div>
     <div id="emailForm" style="display:none;">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-        <div style="flex:2;min-width:180px;"><label style="font-size:12px;color:#666;">Trạm</label><select id="emTram" style="width:100%;"></select></div>
+        <div style="flex:2;min-width:180px;"><label style="font-size:12px;color:#666;">Điểm</label><select id="emTram" style="width:100%;"></select></div>
         <div style="flex:1;min-width:120px;"><label style="font-size:12px;color:#666;">Ngưỡng AQI</label>
           <select id="emNguong" style="width:100%;"><option value="51">&ge; 51 (Trung bình)</option><option value="101" selected>&ge; 101 (Kém)</option><option value="151">&ge; 151 (Xấu)</option><option value="201">&ge; 201 (Rất xấu)</option></select></div>
         <button class="btn" onclick="dangKyEmail()">Đăng ký</button>
       </div>
       <div id="emThongBao" style="font-size:12.5px;margin-top:8px;"></div>
       <div id="emDanhSach" style="margin-top:10px;"></div>
-      <p style="font-size:11.5px;color:#999;margin:8px 0 0;">Email gửi tới địa chỉ tài khoản của bạn, tối đa 1 thư/ngày cho mỗi trạm. Số liệu là ước tính từ mô hình, chỉ mang tính tham khảo.</p>
+      <p style="font-size:11.5px;color:#999;margin:8px 0 0;">Email gửi tới địa chỉ tài khoản của bạn, tối đa 1 thư/ngày cho mỗi điểm. Số liệu là ước tính từ mô hình, chỉ mang tính tham khảo.</p>
     </div>
   </div>
 
@@ -136,11 +136,11 @@
   </div>
 
   <table>
-    <thead><tr><th>Trạm</th><th>AQI</th><th>Chất gây ô nhiễm chính</th><th>Mức độ</th><th>Dữ liệu ngày</th></tr></thead>
+    <thead><tr><th>Điểm</th><th>AQI</th><th>Chất gây ô nhiễm chính</th><th>Mức độ</th><th>Dữ liệu ngày</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 
-  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
   <p class="luu-y">* Chỉ số AQI được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) dựa trên PM2.5, PM10, O3. Dữ liệu NO2, CO, SO2 từ vệ tinh Sentinel-5P được hiển thị riêng để tham khảo, không đưa vào công thức AQI do khác đơn vị đo. Dữ liệu mang tính chất minh họa/tham khảo học thuật, không thay thế nguồn công bố chính thức.</p>
   <p class="luu-y">* Dữ liệu quan trắc có độ trễ tự nhiên 1-2 ngày do thời gian xử lý từ nguồn dữ liệu vệ tinh và trạm mặt đất.</p>
 </div>
@@ -264,17 +264,17 @@ function timViTri() {
         .filter(d => d.lat && d.lon)
         .map(d => ({ ...d, khoangCach: tinhKhoangCach(latitude, longitude, d.lat, d.lon) }))
         .sort((a, b) => a.khoangCach - b.khoangCach);
-      if (tatCa.length === 0) { box.innerHTML = '<p style="color:#999;">Chưa có dữ liệu tọa độ trạm.</p>'; return; }
-      // Chỉ lấy trạm trong bán kính NGUONG_KM; trạm xa hơn không đại diện cho vị trí của bạn
+      if (tatCa.length === 0) { box.innerHTML = '<p style="color:#999;">Chưa có dữ liệu tọa độ điểm.</p>'; return; }
+      // Chỉ lấy điểm trong bán kính NGUONG_KM; điểm xa hơn không đại diện cho vị trí của bạn
       const cacTramCoKhoangCach = tatCa.filter(d => d.khoangCach <= NGUONG_KM).slice(0, 3);
       if (cacTramCoKhoangCach.length === 0) {
         const gan = tatCa[0];
         box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">
-          Bạn đang ở xa khu vực quan trắc: trạm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
+          Bạn đang ở xa khu vực quan trắc: điểm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
         return;
       }
       taiDienBienHomNay(latitude, longitude);
-      box.innerHTML = `<b>Trạm trong bán kính ${NGUONG_KM} km quanh bạn (tối đa 3 trạm):</b>` + cacTramCoKhoangCach.map(d => `
+      box.innerHTML = `<b>Điểm trong bán kính ${NGUONG_KM} km quanh bạn (tối đa 3 điểm):</b>` + cacTramCoKhoangCach.map(d => `
         <div style="padding:14px; background:${mauNen[d.muc_do] || '#f9f9f9'}; border-left:4px solid ${mauVien[d.muc_do] || '#999'}; border-radius:8px; margin-top:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <b style="font-size:14px;">📍 ${d.ma_tram} - ${d.ten_tram}</b>
@@ -398,7 +398,7 @@ taiDienBienHomNay();
   }
   window.dangKyEmail = async function () {
     const tram_id = document.getElementById('emTram').value, nguong_aqi = document.getElementById('emNguong').value;
-    if (!tram_id) { tb('Chưa có trạm để chọn.', false); return; }
+    if (!tram_id) { tb('Chưa có điểm để chọn.', false); return; }
     try {
       const d = await goi('/canh-bao/dang-ky', { method: 'POST', headers: hd(), body: JSON.stringify({ tram_id: +tram_id, nguong_aqi: +nguong_aqi }) });
       tb(d.message, true); taiDs();
@@ -406,7 +406,7 @@ taiDienBienHomNay();
   };
   fetch(API_EM + '/tram').then(r => r.json()).then(ds => {
     document.getElementById('emTram').innerHTML = ds.filter(t => t.trang_thai === 'Hoat Dong').map(t => `<option value="${t.id}">${esc2(t.ma_tram)} - ${esc2(t.ten_tram)}</option>`).join('');
-  }).catch(() => tb('Không tải được danh sách trạm.', false));
+  }).catch(() => tb('Không tải được danh sách điểm.', false));
   taiDs();
 })();
 </script>

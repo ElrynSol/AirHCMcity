@@ -51,6 +51,8 @@ def bi_bo(rel: Path, khong_mo_hinh: bool, khong_apk: bool) -> bool:
     ten = rel.name
     if ten in TEP_BO or (ten.startswith(".env.") and ten != ".env.example") or rel.suffix.lower() in DUOI_BO:
         return True
+    if rel.parts[0] == "models" and ten.startswith("downscale_"):
+        return True   # mô hình thử nghiệm cũ, máy chủ không dùng
     if khong_mo_hinh and rel.parts[0] == "models":
         return True
     return khong_apk and rel.suffix.lower() == ".apk"

@@ -70,6 +70,7 @@ Mở `http://localhost:8000`. Kiểm tra máy có đủ điều kiện chạy (P
   Quên mật khẩu không lộ email nào đã đăng ký; OTP chỉ lưu bản băm, tự hủy sau 5 lần sai.
 - Header bảo mật (CSP, chống iframe, HSTS…), chống CSRF bằng kiểm tra Origin; dữ liệu cá nhân không lưu cache/offline; mọi sự kiện bảo mật ghi nhật ký.
 - Quyền admin qua `ADMIN_EMAILS`; không đưa `.env`, `gee-key.json`, `backup.sql`, `bi_mat/` lên kho mã hoặc bản nộp.
+  Khóa Google (`gee-key.json`) và bản sao lưu CSDL đặt ở `%USERPROFILE%\.airhcm\` (ngoài thư mục đồng bộ đám mây như OneDrive), `.env` trỏ tới bằng `GEE_KEY_FILE`.
 
 ## Giới hạn đã biết
 - Chưa đối chiếu với trạm đo mặt đất; giá trị theo trạm/phường-xã là ước tính.

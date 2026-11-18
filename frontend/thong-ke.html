@@ -69,7 +69,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -89,6 +89,10 @@
   <div class="hero"><h2>📈 Không khí TP.HCM thời gian qua</h2>
     <div class="sub">Bao nhiêu ngày không khí tốt, bao nhiêu ngày ô nhiễm, tháng nào và nơi nào bụi mịn nhiều nhất.</div></div>
 
+  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
+    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
+    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
+    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
   <div class="thanh-cong-cu">
     <div class="ky" id="chonKy" role="tablist">
       <button data-ky="30">30 ngày</button><button data-ky="90" class="on">3 tháng</button><button data-ky="180">6 tháng</button><button data-ky="365">1 năm</button>
@@ -130,12 +134,12 @@
   <div class="card" id="cardTram">
     <h3>🏁 Nơi nào bụi mịn nhiều nhất?</h3>
     <p class="goi-y">Xếp theo bụi mịn trung bình trong khoảng thời gian đã chọn, nhiều nhất ở trên.</p>
-    <div style="overflow-x:auto"><table class="xh"><thead><tr><th>#</th><th>Điểm đo</th><th class="r">Bụi mịn TB</th><th>Mức</th><th class="r an-dt">Ngày vượt chuẩn VN</th><th class="an-dt" style="width:22%"></th></tr></thead><tbody id="bangTram"></tbody></table></div>
+    <div style="overflow-x:auto"><table class="xh"><thead><tr><th>#</th><th>Điểm ước tính</th><th class="r">Bụi mịn TB</th><th>Mức</th><th class="r an-dt">Ngày vượt chuẩn VN</th><th class="an-dt" style="width:22%"></th></tr></thead><tbody id="bangTram"></tbody></table></div>
   </div>
 
   <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
     <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ là cột khí đo từ
-      vệ tinh Sentinel-5P (trễ 2–3 tuần). Giá trị theo từng điểm đo là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất.
+      vệ tinh Sentinel-5P (trễ 2–3 tuần). Giá trị theo từng điểm ước tính là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất.
       Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT), tính từ PM2.5, PM10, O₃. Chuẩn Việt Nam: PM2.5 trung bình 24 giờ ≤ 45 µg/Nm³ từ 01/01/2026 (QCVN 05:2023/BTNMT; trước đó 50); ngày năm 2025 được so với ngưỡng 50;
       khuyến nghị WHO 2021: ≤ 15 µg/m³. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
   </details>

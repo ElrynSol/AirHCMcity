@@ -41,7 +41,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -90,16 +90,16 @@
       <tr><td>PM2.5, PM10, O₃</td><td>Open-Meteo Air Quality (mô hình CAMS)</td><td><span class="tag info">Mô hình</span></td><td>~45 km (0,4°)</td><td>Gần thời gian thực</td><td><span class="tag bad">Chưa</span></td></tr>
       <tr><td>Nhiệt độ, độ ẩm, gió, mưa</td><td>Open-Meteo Weather</td><td><span class="tag info">Mô hình/tái phân tích</span></td><td>~9–25 km</td><td>Gần thời gian thực</td><td><span class="tag warn">Chưa</span></td></tr>
       <tr><td>NO₂, CO, SO₂</td><td>Sentinel-5P TROPOMI qua Google Earth Engine</td><td><span class="tag info">Vệ tinh (cột khí, mol/m²)</span></td><td>~1–7 km</td><td>2–3 tuần</td><td><span class="tag bad">Không phải nồng độ mặt đất</span></td></tr>
-      <tr><td>Giá trị theo trạm (đã hiệu chỉnh)</td><td>Mô hình hiệu chỉnh không gian (Random Forest)</td><td><span class="tag warn">Ước tính</span></td><td>Theo trạm</td><td>—</td><td><span class="tag bad">Chưa chứng minh</span></td></tr>
-      <tr><td>Giá trị theo phường/xã</td><td>Nội suy IDW từ ≤ 4 trạm gần nhất</td><td><span class="tag warn">Ước tính</span></td><td>Theo phường/xã</td><td>—</td><td><span class="tag bad">Không</span></td></tr>
+      <tr><td>Giá trị theo điểm (đã hiệu chỉnh)</td><td>Mô hình hiệu chỉnh không gian (Random Forest)</td><td><span class="tag warn">Ước tính</span></td><td>Theo điểm</td><td>—</td><td><span class="tag bad">Chưa chứng minh</span></td></tr>
+      <tr><td>Giá trị theo phường/xã</td><td>Nội suy IDW từ ≤ 4 điểm gần nhất</td><td><span class="tag warn">Ước tính</span></td><td>Theo phường/xã</td><td>—</td><td><span class="tag bad">Không</span></td></tr>
     </tbody></table>
   </div>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="grid2">
-    <div class="card"><h3>🌫️ Dữ liệu PM/thời tiết theo trạm</h3><div id="bangMatDat">Đang tải…</div></div>
-    <div class="card"><h3>🛰️ Dữ liệu vệ tinh theo trạm</h3><div id="bangVeTinh">Đang tải…</div></div>
+    <div class="card"><h3>🌫️ Dữ liệu PM/thời tiết theo điểm</h3><div id="bangMatDat">Đang tải…</div></div>
+    <div class="card"><h3>🛰️ Dữ liệu vệ tinh theo điểm</h3><div id="bangVeTinh">Đang tải…</div></div>
   </div>
 
   <div class="card"><h3>🧪 Chất lượng &amp; hiệu chỉnh</h3><div id="hieuChinh">Đang tải…</div></div>
@@ -134,8 +134,8 @@ const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 <script>
 function tagTre(n, nguong) { if (n == null) return '<span class="tag bad">Không có</span>'; return `<span class="tag ${n <= nguong ? 'ok' : n <= nguong * 3 ? 'warn' : 'bad'}">${n} ngày</span>`; }
 function bang(d, nguong) {
-  return `<div style="font-size:12.5px;color:#555;margin-bottom:8px;">${d.so_dong.toLocaleString('vi-VN')} dòng · ${d.so_tram} trạm · ${d.tu_ngay || '--'} → ${d.den_ngay || '--'}</div>
-  <table><thead><tr><th>Trạm</th><th>Số dòng</th><th>Mới nhất</th><th>Trễ</th></tr></thead><tbody>` +
+  return `<div style="font-size:12.5px;color:#555;margin-bottom:8px;">${d.so_dong.toLocaleString('vi-VN')} dòng · ${d.so_tram} điểm · ${d.tu_ngay || '--'} → ${d.den_ngay || '--'}</div>
+  <table><thead><tr><th>Điểm</th><th>Số dòng</th><th>Mới nhất</th><th>Trễ</th></tr></thead><tbody>` +
   d.tung_tram.map(t => `<tr><td>${esc(t.ma_tram)} · ${esc(t.ten_tram)}</td><td>${t.so_dong}</td><td>${t.den_ngay || '--'}</td><td>${tagTre(t.tre_ngay, nguong)}</td></tr>`).join('') + '</tbody></table>';
 }
 goiApi('/trang-thai-du-lieu').then(d => {
@@ -150,7 +150,7 @@ goiApi('/trang-thai-du-lieu').then(d => {
   document.getElementById('hieuChinh').innerHTML = h.loi ? `<div class="loi">${esc(h.loi)}</div>` : `
     <ul style="margin:0;padding-left:18px;line-height:1.8;font-size:13.5px;">
       <li>Số dòng đã hiệu chỉnh không gian: <b>${(h.so_dong_da_hieu_chinh || 0).toLocaleString('vi-VN')}</b> / ${(h.tong_dong || 0).toLocaleString('vi-VN')}.</li>
-      <li>Ngày mới nhất có <b>${h.ngay_moi_nhat_so_tram}</b> trạm nhưng chỉ <b>${h.ngay_moi_nhat_so_gia_tri_pm25_khac_nhau}</b> giá trị PM2.5 thô khác nhau. Các trạm cùng một ô lưới ~45 km của mô hình nhận cùng một giá trị.</li>
+      <li>Ngày mới nhất có <b>${h.ngay_moi_nhat_so_tram}</b> điểm nhưng chỉ <b>${h.ngay_moi_nhat_so_gia_tri_pm25_khac_nhau}</b> giá trị PM2.5 thô khác nhau. Các điểm cùng một ô lưới ~45 km của mô hình nhận cùng một giá trị.</li>
       <li>Hiệu chỉnh không gian <b>chưa được kiểm chứng</b> bằng trạm đo thật (xem phần mô hình bên dưới và báo cáo).</li>
     </ul>`;
   const mh = d.mo_hinh || {};

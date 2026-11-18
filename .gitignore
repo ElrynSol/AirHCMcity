@@ -54,3 +54,6 @@ tools/cu/
 ml/notebooks/data/
 .ipynb_checkpoints/
 data_pipeline/.dong_bo.lock
+
+# Mô hình thử nghiệm cũ, máy chủ không dùng (tạo lại: python ml/train_downscale_model.py)
+models/downscale_*.pkl

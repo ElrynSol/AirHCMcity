@@ -1,4 +1,4 @@
-"""Quản lý trạm quan trắc (CRUD) và dữ liệu theo trạm."""
+"""Quản lý điểm ước tính (CRUD) và dữ liệu theo trạm."""
 
 from core import config  # noqa: F401  (nạp .env và đường dẫn dự án trước)
 from database import get_db

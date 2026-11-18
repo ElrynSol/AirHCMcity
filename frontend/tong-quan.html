@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Tổng quan chất lượng không khí TP.HCM: AQI hiện tại theo VN_AQI (QĐ 1459/QĐ-TCMT), khuyến nghị sức khỏe, dự báo 24 giờ, xếp hạng trạm.">
+<meta name="description" content="Tổng quan chất lượng không khí TP.HCM: AQI hiện tại theo VN_AQI (QĐ 1459/QĐ-TCMT), khuyến nghị sức khỏe, dự báo 24 giờ, xếp hạng điểm.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
@@ -145,7 +145,7 @@
       <div class="cot-bd" id="cot14"><span class="khung-cho" style="height:120px;width:100%"></span></div>
     </div>
     <div class="card">
-      <div class="tieu-de-the"><h3>📍 Các điểm đo lúc này</h3><a class="lk" href="ban-do-nhiet.html">Phường của bạn →</a></div>
+      <div class="tieu-de-the"><h3>📍 Các điểm ước tính lúc này</h3><a class="lk" href="ban-do-nhiet.html">Phường của bạn →</a></div>
       <div id="phanBo"><span class="khung-cho" style="height:18px"></span></div>
       <div class="cuc" id="cucTri"></div>
     </div>
@@ -158,7 +158,7 @@
   </div>
 
   <div class="loi-tat">
-    <a href="index.html"><span class="bt">🗺️</span><b>Bản đồ</b><small>Trạm, phường/xã, bản đồ nhiệt</small></a>
+    <a href="index.html"><span class="bt">🗺️</span><b>Bản đồ</b><small>Điểm, phường/xã, bản đồ nhiệt</small></a>
     <a href="du-bao.html"><span class="bt">🔮</span><b>Dự báo</b><small>24 giờ và 7 ngày tới</small></a>
     <a href="ban-do-nhiet.html"><span class="bt">🏘️</span><b>Phường của bạn</b><small>Bản đồ màu 168 phường/xã</small></a>
     <a href="kich-ban.html"><span class="bt">🎛️</span><b>Nếu… thì sao?</b><small>Mưa, gió, khí thải thay đổi</small></a>
@@ -167,7 +167,7 @@
   </div>
 
   <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) theo giờ, PM trung bình 24 giờ trượt, O₃ trung bình 8 giờ; thời tiết Open-Meteo. <span class="xem">Chi tiết</span></summary>
-    <div style="margin-top:6px">AQI toàn thành phố được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) từ nồng độ trung bình của các trạm đang hoạt động. Giá trị theo trạm được nội suy từ lưới mô hình (~45 km), chưa hiệu chỉnh bằng số đo trạm mặt đất. Dùng cho nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div>
+    <div style="margin-top:6px">AQI toàn thành phố được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) từ nồng độ trung bình của các điểm đang hoạt động. Giá trị theo điểm được nội suy từ lưới mô hình (~45 km), chưa hiệu chỉnh bằng số đo trạm mặt đất. Dùng cho nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div>
   </details>
   <div id="capNhat" style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:8px"></div>
 </div>
@@ -268,8 +268,8 @@ function veXuHuong(ds) {
 function vePhanBo(d) {
   const tong = d.xep_hang.length || 1, pb = d.phan_bo;
   document.getElementById('phanBo').innerHTML =
-    `<div style="font-size:13px;color:var(--text-2)"><b>${d.xep_hang.length}</b> điểm đo đang hoạt động, chia theo mức không khí:</div>` +
-    `<div class="phan-bo">${AQI_VN.THANG.map(m => `<span title="${m.ten}: ${pb[m.ten] || 0} trạm" style="width:${(pb[m.ten] || 0) / tong * 100}%;background:${m.mau}"></span>`).join('')}</div>` +
+    `<div style="font-size:13px;color:var(--text-2)"><b>${d.xep_hang.length}</b> điểm ước tính đang hoạt động, chia theo mức không khí:</div>` +
+    `<div class="phan-bo">${AQI_VN.THANG.map(m => `<span title="${m.ten}: ${pb[m.ten] || 0} điểm" style="width:${(pb[m.ten] || 0) / tong * 100}%;background:${m.mau}"></span>`).join('')}</div>` +
     `<div class="pb-chu">${AQI_VN.THANG.filter(m => pb[m.ten]).map(m => `<span><i style="background:${m.mau}"></i>${m.ten}: <b>${pb[m.ten]}</b></span>`).join('')}</div>`;
   const s = d.xep_hang[0], o = d.xep_hang[d.xep_hang.length - 1];
   document.getElementById('cucTri').innerHTML = s ? `<div>🌿 Trong lành nhất<b>${e(s.ten)}</b>${AQI_VN.huyHieu(s.aqi)}</div><div>🏭 Nhiều bụi nhất<b>${e(o.ten)}</b>${AQI_VN.huyHieu(o.aqi)}</div>` : '';
@@ -279,7 +279,7 @@ function veXepHang() {
   if (!D) return;
   const ds = [...D.xep_hang]; if (xep === 'giam') ds.reverse();
   const max = Math.max(150, ...ds.map(x => x.aqi));
-  document.getElementById('xepHang').innerHTML = `<table class="xh"><thead><tr><th>#</th><th>Điểm đo</th><th>Mức không khí (AQI)</th><th class="an-dt">Bụi mịn (µg/m³)</th><th class="an-dt" style="width:30%"></th></tr></thead><tbody>` +
+  document.getElementById('xepHang').innerHTML = `<table class="xh"><thead><tr><th>#</th><th>Điểm ước tính</th><th>Mức không khí (AQI)</th><th class="an-dt">Bụi mịn (µg/m³)</th><th class="an-dt" style="width:30%"></th></tr></thead><tbody>` +
     ds.map((x, i) => `<tr><td class="hang">${i + 1}</td><td><b>${e(x.ten)}</b> <span style="color:var(--text-muted);font-size:12px">${e(x.ma)}</span></td><td>${AQI_VN.huyHieu(x.aqi)}</td>
       <td class="an-dt" style="font-variant-numeric:tabular-nums">${so(x.pm25)}</td>
       <td class="an-dt"><div class="thanh"><span style="width:${(x.aqi / max * 100).toFixed(1)}%;background:${AQI_VN.mau(x.aqi)}"></span></div></td></tr>`).join('') + '</tbody></table>';

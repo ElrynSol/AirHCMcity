@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Tra cứu không gian chất lượng không khí TP.HCM: định vị, quét vùng tròn/khung/đa giác, khoảng cách và chỉ đường tới trạm quan trắc gần nhất.">
+<meta name="description" content="Tra cứu không gian chất lượng không khí TP.HCM: định vị, quét vùng tròn/khung/đa giác, khoảng cách và chỉ đường tới điểm ước tính gần nhất.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
@@ -92,7 +92,7 @@
       <div id="noiDung" style="display:none">
         <div class="tom" id="tom"></div>
         <div class="duong" id="duong" style="display:none"></div>
-        <h4>Trạm quan trắc (gần cột mốc nhất trước)</h4><ul class="ds" id="dsTram"></ul>
+        <h4>Điểm ước tính (gần cột mốc nhất trước)</h4><ul class="ds" id="dsTram"></ul>
         <h4>Phản ánh của người dân (7 ngày)</h4><ul class="ds" id="dsPa"></ul>
         <h4>Phường/xã bị vùng quét cắt qua</h4><ul class="ds" id="dsPhuong"></ul>
       </div>
@@ -211,14 +211,14 @@ function veKq(d) {
   const t = d.tom_tat, m = t.aqi_tb != null ? AQI_VN.muc(t.aqi_tb) : null;
   $('tom').innerHTML = `<div>Diện tích<b>${String(d.vung.dien_tich_km2.toFixed(1)).replace('.', ',')} km²</b></div>
     <div>Điểm ước tính<b>${t.so_tram}</b></div>
-    <div>AQI trung bình<b style="color:${m ? m.dam : 'inherit'}">${t.aqi_tb ?? '--'}</b>${m ? m.ten : 'không có trạm'}</div>
+    <div>AQI trung bình<b style="color:${m ? m.dam : 'inherit'}">${t.aqi_tb ?? '--'}</b>${m ? m.ten : 'không có điểm'}</div>
     <div>Phường/xã<b>${t.so_phuong}</b></div><div>Phản ánh<b>${t.so_phan_anh}</b></div>
     <div>Đo từ<b style="font-size:13px">${d.cot_moc.la_vi_tri_nguoi_dung ? '📌 cột mốc' : 'tâm vùng'}</b>${esc(d.cot_moc.la_vi_tri_nguoi_dung ? nguonMoc : '')}</div>`;
   lopKq.clearLayers();
   const li = (html, nut) => { const e = document.createElement('li'); e.innerHTML = html; if (nut) e.append(nut); return e; };
   const nutDuong = (lat, lon, ten) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = '🚗 Chỉ đường'; b.onclick = () => chiDuong(lat, lon, ten); return b; };
   const dsT = $('dsTram'); dsT.textContent = '';
-  if (!d.tram.length) dsT.append(li('<div class="tt"><small>Không có trạm nào trong vùng — thử mở rộng vùng quét.</small></div>'));
+  if (!d.tram.length) dsT.append(li('<div class="tt"><small>Không có điểm nào trong vùng — thử mở rộng vùng quét.</small></div>'));
   d.tram.forEach(x => {
     const mm = x.aqi != null ? AQI_VN.muc(x.aqi) : null;
     dsT.append(li(`<span class="aqi" style="background:${mm ? mm.mau : '#eee'};color:${mm ? mm.chu : '#333'}">${x.aqi ?? '--'}</span>

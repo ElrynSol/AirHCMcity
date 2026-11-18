@@ -183,7 +183,7 @@
 <div id="header">
   <div>
     <a href="index.html"><b>🗺️ Bản đồ</b></a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -256,21 +256,21 @@
       <option value="co">CO</option>
       <option value="so2">SO2</option>
     </select>
-    <label class="toggle-row" title="Giá trị ước tính bằng nội suy từ dữ liệu các trạm lân cận">
+    <label class="toggle-row" title="Giá trị ước tính bằng nội suy từ dữ liệu các điểm lân cận">
       <input type="checkbox" id="toggleRanhGioi" checked onchange="toggleRanhGioi()"> Tô màu theo phường/xã mới
     </label>
-    <div style="font-size:10px;color:#777;line-height:1.4;margin:-5px 0 8px 24px;">Màu là giá trị <b>ước tính</b> nội suy từ các trạm hiện có.</div>
+    <div style="font-size:10px;color:#777;line-height:1.4;margin:-5px 0 8px 24px;">Màu là giá trị <b>ước tính</b> nội suy từ các điểm hiện có.</div>
     <label class="toggle-row" title="PM2.5/PM10 = trung bình 24 giờ gần nhất, O3 = 8 giờ gần nhất, từ mô hình Open-Meteo (cache 30 phút)">
       <input type="checkbox" id="toggleTheoGio" onchange="doiCheDoGio()"> ⏱️ Số liệu theo giờ (mô hình)
     </label>
-    <div style="font-size:10px;color:#777;line-height:1.4;margin:-5px 0 8px 24px;">Chỉ PM2.5, PM10, O₃. NO₂/CO/SO₂ vệ tinh không có theo giờ. Các trạm cùng ô lưới ~45 km sẽ có giá trị giống nhau.</div>
+    <div style="font-size:10px;color:#777;line-height:1.4;margin:-5px 0 8px 24px;">Chỉ PM2.5, PM10, O₃. NO₂/CO/SO₂ vệ tinh không có theo giờ. Các điểm cùng ô lưới ~45 km sẽ có giá trị giống nhau.</div>
     <button id="toggleHeatmap" class="btn" onclick="toggleHeatmap()" style="width:100%; padding:9px; background:var(--accent); color:white; border:none; border-radius:7px; cursor:pointer; font-size:12.5px;">
       Hiện bản đồ nhiệt
     </button>
   </div>
 
   <div id="legendFloat">
-    <div class="lg-top"><span class="lg-title" id="legendLabel"></span><span class="lg-badge" title="Giá trị nội suy không gian từ các trạm (IDW)">NỘI SUY</span></div>
+    <div class="lg-top"><span class="lg-title" id="legendLabel"></span><span class="lg-badge" title="Giá trị nội suy không gian từ các điểm (IDW)">NỘI SUY</span></div>
     <div class="lg-words" id="legendWords"><span>Thấp</span><span>Trung bình</span><span>Cao</span><span>Rất cao</span></div>
     <div class="lg-bar" id="legendBar"></div>
     <div class="lg-ticks" id="legendTicks"></div>
@@ -310,7 +310,7 @@
         <h3>🏘️ Phường/xã (ước tính)</h3>
         <input id="timPhuong" type="search" placeholder="Tìm phường/xã…" oninput="veXepHangPhuong()" style="width:100%;padding:8px 10px;border:1px solid #d0d5dd;border-radius:7px;font-size:13px;margin-bottom:8px;">
         <div id="xepHangPhuong" style="max-height:260px;overflow-y:auto;"><div style="font-size:12px;color:#667085;">Đang tải…</div></div>
-        <div style="font-size:10.5px;color:#667085;margin-top:6px;line-height:1.4;">Mỗi phường/xã là một “trạm ảo”: giá trị nội suy từ tối đa 4 trạm gần nhất, không phải đo tại chỗ.</div>
+        <div style="font-size:10.5px;color:#667085;margin-top:6px;line-height:1.4;">Mỗi phường/xã là một “điểm ảo”: giá trị nội suy từ tối đa 4 điểm gần nhất, không phải đo tại chỗ.</div>
       </div>
 
       <div class="card" style="text-align:center;">
@@ -318,7 +318,7 @@
         <div id="duBaoNoiDung">Đang tải...</div>
       </div>
 
-      <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+      <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
     </div>
 
     <div class="tab-panel" id="tab-bieudo">
@@ -342,7 +342,7 @@
 
     <div class="tab-panel" id="tab-chitiet">
       <div class="card">
-        <h3 id="tenTramChon" style="text-transform:none; letter-spacing:0;">📍 Chọn 1 trạm trên bản đồ</h3>
+        <h3 id="tenTramChon" style="text-transform:none; letter-spacing:0;">📍 Chọn 1 điểm trên bản đồ</h3>
         <div id="chiSoDayDu" class="chi-so-grid"></div>
         <canvas id="bieuDo" height="200" style="margin-top:14px;"></canvas>
       </div>
@@ -457,11 +457,11 @@ async function hienThongTinViTri(lat, lon) {
       const km = Math.sqrt(dx * dx + dy * dy);
       if (!best || km < best.km) best = { s, km };
     });
-    if (!best) { box.textContent = 'Chưa có trạm nào.'; return; }
+    if (!best) { box.textContent = 'Chưa có điểm nào.'; return; }
     const a = list.find(x => x.ten_tram === best.s.ten_tram);
-    box.innerHTML = `Trạm gần nhất: <b>${best.s.ma_tram} · ${best.s.ten_tram}</b> (${best.km.toFixed(1)} km)<br>` +
+    box.innerHTML = `Điểm gần nhất: <b>${best.s.ma_tram} · ${best.s.ten_tram}</b> (${best.km.toFixed(1)} km)<br>` +
       (a ? `AQI: <b>${a.aqi ?? '--'}</b> · ${a.muc_do ?? ''}` : 'Chưa có AQI') +
-      `<div style="font-size:11px;color:#667085;margin-top:4px;">Số liệu của trạm gần nhất, không phải đo trực tiếp tại vị trí của bạn.</div>`;
+      `<div style="font-size:11px;color:#667085;margin-top:4px;">Số liệu của điểm gần nhất, không phải đo trực tiếp tại vị trí của bạn.</div>`;
   } catch (e) { box.textContent = e.message; }
 }
 function dinhViToi() {
@@ -534,10 +534,10 @@ function capNhatLegend(maxValue, soTram, loai) {
     ? ['0', '50', '100', '150', '200', '300', '500'].map(t => `<span>${t}</span>`).join('')
     : [0, .2, .4, .6, .8, 1].map(r => `<span>${dinhDangSo(maxValue * r, chiSo)}</span>`).join('');
   document.getElementById('legendNote').textContent = TL.mo
-    ? (laAqi ? 'AQI theo thang cố định; màu trạm và phường/xã thay đổi theo thời điểm đang xem.' : 'Thang màu cố định theo giá trị lớn nhất trong khoảng thời gian đang xem (so sánh được giữa các thời điểm), không phải ngưỡng AQI.')
+    ? (laAqi ? 'AQI theo thang cố định; màu điểm và phường/xã thay đổi theo thời điểm đang xem.' : 'Thang màu cố định theo giá trị lớn nhất trong khoảng thời gian đang xem (so sánh được giữa các thời điểm), không phải ngưỡng AQI.')
     : (loai === 'ward'
-      ? (laAqi ? 'Nội suy từ tối đa 4 trạm gần nhất · màu theo thang AQI.' : 'Nội suy từ tối đa 4 trạm gần nhất · thang màu tương đối theo giá trị cao nhất hiện tại, không phải ngưỡng AQI.')
-      : `Bản đồ nhiệt từ ${soTram} trạm quan trắc · thang màu tương đối.`);
+      ? (laAqi ? 'Nội suy từ tối đa 4 điểm gần nhất · màu theo thang AQI.' : 'Nội suy từ tối đa 4 điểm gần nhất · thang màu tương đối theo giá trị cao nhất hiện tại, không phải ngưỡng AQI.')
+      : `Bản đồ nhiệt từ ${soTram} điểm ước tính · thang màu tương đối.`);
   document.getElementById('legendFloat').classList.add('show');
 }
 function anLegendNeuTrong() {
@@ -574,7 +574,7 @@ async function duLieuGeeTaiPhuong(layer, feature, center) {
     const rows = [
       ['NO₂ GEE', data.gee_no2, 'mol/m²'], ['CO GEE', data.gee_co, 'mol/m²'], ['SO₂ GEE', data.gee_so2, 'mol/m²']
     ].map(([label, value, unit]) => `<div style="display:flex;justify-content:space-between;gap:16px;padding:4px 0"><span>${label}</span><b>${value == null ? '--' : `${Number(value).toExponential(3)} ${unit}`}</b></div>`).join('');
-    layer.setPopupContent(`<b>📍 ${ten}</b><div style="margin-top:8px"><div style="font-size:12px;color:#667085">Dự báo PM2.5 ngày ${data.ngay_du_bao}</div><div style="font-size:25px;font-weight:700;color:#1a73e8;margin:3px 0">${data.pm25_du_bao} µg/m³</div><b>${data.muc_do}</b><div style="font-size:12px;color:#667085;margin-top:3px">Khoảng dao động mô hình: ±${data.khoang_dao_dong} µg/m³</div><hr style="border:0;border-top:1px solid #eee;margin:8px 0"><b>Chỉ số GEE dùng cho dự báo</b>${rows}<small style="display:block;color:#667085;margin-top:7px">Dự báo từ mô hình PM2.5 hiện có; NO₂, CO, SO₂ GEE được nội suy từ tối đa 4 trạm gần nhất.${data.gee_ngay_moi_nhat ? ` Dữ liệu GEE mới nhất: ${data.gee_ngay_moi_nhat}.` : ''}</small></div>`);
+    layer.setPopupContent(`<b>📍 ${ten}</b><div style="margin-top:8px"><div style="font-size:12px;color:#667085">Dự báo PM2.5 ngày ${data.ngay_du_bao}</div><div style="font-size:25px;font-weight:700;color:#1a73e8;margin:3px 0">${data.pm25_du_bao} µg/m³</div><b>${data.muc_do}</b><div style="font-size:12px;color:#667085;margin-top:3px">Khoảng dao động mô hình: ±${data.khoang_dao_dong} µg/m³</div><hr style="border:0;border-top:1px solid #eee;margin:8px 0"><b>Chỉ số GEE dùng cho dự báo</b>${rows}<small style="display:block;color:#667085;margin-top:7px">Dự báo từ mô hình PM2.5 hiện có; NO₂, CO, SO₂ GEE được nội suy từ tối đa 4 điểm gần nhất.${data.gee_ngay_moi_nhat ? ` Dữ liệu GEE mới nhất: ${data.gee_ngay_moi_nhat}.` : ''}</small></div>`);
     layer.openPopup();
   } catch (error) {
     layer.setPopupContent(`<b>${ten}</b><br>${error.message}`);
@@ -618,7 +618,7 @@ function htmlPopupPhuong(i) {
   const f = phuongGeo.features[i], v = giaTriPhuong[i], sel = document.getElementById('chonChiSoHeatmap');
   return `<b>${f.properties.__label}</b><br>${sel.selectedOptions[0].text}: ${v == null ? 'Chưa có dữ liệu' : dinhDangSo(v, chiSoPhuong) + ' ' + donVi(chiSoPhuong)}` +
     (TL.mo && TL.data ? `<br><small>${nhanThoiDiem(true)}</small>` : '') +
-    `<br><small>Ước tính nội suy từ tối đa 4 trạm gần nhất</small><br><small>Bấm vào khu vực để xem số liệu GEE gần nhất</small>`;
+    `<br><small>Ước tính nội suy từ tối đa 4 điểm gần nhất</small><br><small>Bấm vào khu vực để xem số liệu GEE gần nhất</small>`;
 }
 async function layReadings(chiSo) {
   if (chiSo !== 'aqi') return goiApi(`/heatmap?chi_so=${chiSo}&${qGio()}`, { ttl: 120000 });
@@ -706,7 +706,7 @@ function noiDungPopupTram(marker) {
     return `<b>${s.ma_tram}</b><br>${s.ten_tram}<br>${ten}: <b>${v == null ? 'không có dữ liệu' : dinhDangSo(v, d.chi_so) + ' ' + (d.chi_so === 'aqi' ? '· ' + mucAQI(v) : d.don_vi)}</b><br><small>${nhanThoiDiem(true)}</small>`;
   }
   const a = aqiTheoTram[s.ten_tram];
-  return `<b>${s.ma_tram}</b><br>${s.ten_tram}${a ? `<br>AQI: <b>${a.aqi ?? '--'}</b> · ${a.muc_do ?? ''}<br><small>${a.chua_co_du_lieu_db ? 'Trạm mới, chưa có dữ liệu lưu trữ · tạm dùng số liệu mô hình tại tọa độ trạm · ' : ''}${a.theo_gio ? 'Theo giờ · ' + String(a.ngay_do).replace('T', ' ') : 'Trung bình ngày ' + a.ngay_do}</small>` : ''}`;
+  return `<b>${s.ma_tram}</b><br>${s.ten_tram}${a ? `<br>AQI: <b>${a.aqi ?? '--'}</b> · ${a.muc_do ?? ''}<br><small>${a.chua_co_du_lieu_db ? 'Điểm mới, chưa có dữ liệu lưu trữ · tạm dùng số liệu mô hình tại tọa độ điểm · ' : ''}${a.theo_gio ? 'Theo giờ · ' + String(a.ngay_do).replace('T', ' ') : 'Trung bình ngày ' + a.ngay_do}</small>` : ''}`;
 }
 function veMarkerTram() {
   Promise.all([goiApi('/tram', { ttl: 300000 }), goiApi('/aqi-tat-ca-tram?' + qGio(), { ttl: 60000 }).catch(() => [])])
@@ -880,7 +880,7 @@ function hienKhuyenNghi(aqi) {
 }
 AQI_VN.chuThich('chuThichAQI');
 
-// ============ TỔNG QUAN AQI (trạm cao nhất) ============
+// ============ TỔNG QUAN AQI (điểm cao nhất) ============
 function capNhatTongQuan() {
   goiApi('/aqi-tat-ca-tram?' + qGio(), { ttl: 60000 })
     .then(data => {

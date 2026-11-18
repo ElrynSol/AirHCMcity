@@ -52,7 +52,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html"><b>📊 So sánh</b></a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -74,12 +74,16 @@
     <div class="sub">Chọn tối đa 3 nơi để xem nơi nào bụi mịn nhiều hơn, chênh nhau bao nhiêu và trong 3 tháng qua ra sao.</div>
   </div>
 
+  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
+    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
+    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
+    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
   <div class="che-do" role="tablist">
-    <button class="on" data-che-do="tram" role="tab" aria-selected="true">📍 Theo điểm đo (3 tháng qua)</button>
+    <button class="on" data-che-do="tram" role="tab" aria-selected="true">📍 Theo điểm ước tính (3 tháng qua)</button>
     <button data-che-do="phuong" role="tab" aria-selected="false">🏘️ Theo phường/xã (hôm nay)</button>
   </div>
 
-  <!-- ===== Theo điểm đo ===== -->
+  <!-- ===== Theo điểm ước tính ===== -->
   <div id="pTram">
     <div class="card">
       <div class="chon">
@@ -130,14 +134,14 @@
     <div class="card">
       <div class="tom-tat" id="pCau">Đang tải số liệu các phường/xã…</div>
       <div class="the-noi" id="pThe"></div>
-      <p class="luu-y" style="margin-top:12px">Giá trị mỗi phường/xã là <b>ước tính</b> từ các điểm đo xung quanh (nội suy theo khoảng cách), không phải máy đo đặt tại phường.
+      <p class="luu-y" style="margin-top:12px">Giá trị mỗi phường/xã là <b>ước tính</b> từ các điểm ước tính xung quanh (nội suy theo khoảng cách), không phải máy đo đặt tại phường.
         Xem bản đồ màu đầy đủ và 2 ngày tới ở <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>.</p>
     </div>
   </div>
 
   <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
     <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ từ vệ tinh Sentinel-5P.
-      Giá trị theo từng điểm đo / phường là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất; hai nơi chênh nhau vài µg/m³ nên coi là như nhau.
+      Giá trị theo từng điểm ước tính / phường là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất; hai nơi chênh nhau vài µg/m³ nên coi là như nhau.
       Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT). <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
   </details>
 </div>
@@ -167,13 +171,13 @@ const CHAT = {
 };
 let TRAM = [], chart = null, lanGoi = 0;
 
-// ================= Theo điểm đo =================
+// ================= Theo điểm ước tính =================
 async function khoiDong() {
   try { TRAM = await goiApi('/tram'); } catch (e) { document.getElementById('loiTram').innerHTML = `<div class="loi">${esc(e.message)}</div>`; return; }
   const opt = TRAM.map(t => `<option value="${t.id}">${esc(t.ten_tram)} (${esc(t.ma_tram)})</option>`).join('');
   ['t1', 't2', 't3'].forEach((id, i) => { const s = document.getElementById(id); s.innerHTML = (i === 2 ? '<option value="">— Không chọn —</option>' : '') + opt; s.addEventListener('change', soSanh); });
   // Mặc định: nơi ô nhiễm nhất – trung tâm (T01) – sạch nhất lúc này
-  let ds = TRAM.slice(0, 3), ghiChu = 'Đang so sánh sẵn 3 điểm đo đầu danh sách. Chọn nơi khác ở trên để đổi.';
+  let ds = TRAM.slice(0, 3), ghiChu = 'Đang so sánh sẵn 3 điểm ước tính đầu danh sách. Chọn nơi khác ở trên để đổi.';
   try {
     const xh = ((await goiApi('/tong-quan')).xep_hang || []).filter(x => TRAM.some(t => t.id === x.id));
     if (xh.length >= 2) {
@@ -211,7 +215,7 @@ async function soSanh() {
     document.getElementById('ttPhu').innerHTML = (nayCao ? `Số liệu mới nhất: ${esc(nayCao.t.ten_tram)} đang cao nhất với ${so(nayCao.nay)} µg/m³ ${theMuc(AQI_VN.aqiTuPM25(nayCao.nay))}. ` : '') +
       'Hai nơi chênh nhau chỉ vài µg/m³ thì nên coi là như nhau, vì số liệu là ước tính.';
   } else { document.getElementById('ttCau').textContent = 'Chọn ít nhất 2 nơi để so sánh.'; document.getElementById('ttPhu').textContent = ''; }
-  document.getElementById('theNoi').innerHTML = kq.map(x => `<div style="--mau-dong:${x.mau}"><div class="ten">${esc(x.t.ten_tram)}</div><div class="ma">Điểm đo ${esc(x.t.ma_tram)}</div>
+  document.getElementById('theNoi').innerHTML = kq.map(x => `<div style="--mau-dong:${x.mau}"><div class="ten">${esc(x.t.ten_tram)}</div><div class="ma">Điểm ước tính ${esc(x.t.ma_tram)}</div>
       <div class="gt">${so(x.nay)} <small>µg/m³ hôm nay</small></div>${theMuc(AQI_VN.aqiTuPM25(x.nay))}
       <div class="ct">Trung bình 3 tháng: <b>${so(x.tb)} µg/m³</b><br>Ngày tốt: <b>${x.tot}/${x.n}</b> · Ngày vượt chuẩn VN: <b style="color:${x.vuot ? '#b42318' : 'inherit'}">${x.vuot}</b></div></div>`).join('');
 
@@ -246,7 +250,7 @@ async function khoiDongPhuong() {
   const ds = BDN.ranh_gioi.phuong || [];
   if (!ds.length) { document.getElementById('pCau').textContent = 'Chưa có ranh giới phường/xã trong cơ sở dữ liệu.'; return; }
   document.getElementById('dsPhuong').innerHTML = ds.map(p => `<option value="${esc(p.ten_day_du)}">${esc(p.khu_vuc)}</option>`).join('');
-  // Mặc định: phường nhiều bụi nhất và ít bụi nhất (trong số phường gần điểm đo) + Phường Sài Gòn
+  // Mặc định: phường nhiều bụi nhất và ít bụi nhất (trong số phường gần điểm ước tính) + Phường Sài Gòn
   const gt = {}; BDN.anh[0].phuong.forEach(p => gt[p.ma] = p);
   const tin = ds.filter(p => p.do_tin_cay !== 'thap' && gt[p.ma]).sort((a, b) => gt[b.ma].pm25 - gt[a.ma].pm25);
   const sg = ds.find(p => /Sài Gòn/.test(p.ten_day_du));
@@ -261,7 +265,7 @@ function timPhuong(v) {
 function soSanhPhuong() {
   const gt = {}; BDN.anh[0].phuong.forEach(p => gt[p.ma] = p);
   const chon = ['p1', 'p2', 'p3'].map((id, i) => ({ p: timPhuong(document.getElementById(id).value), mau: MAU[i] })).filter(x => x.p && gt[x.p.ma]);
-  const TIN = { cao: 'gần điểm đo, khá tin cậy', trung_binh: 'cách điểm đo vừa phải', thap: 'xa điểm đo, chỉ là ước đoán' };
+  const TIN = { cao: 'gần điểm lấy mẫu, sai số nội suy nhỏ', trung_binh: 'cách điểm lấy mẫu vừa phải, sai số nội suy lớn hơn', thap: 'xa điểm lấy mẫu, chỉ là ngoại suy' };
   const sx = [...chon].sort((a, b) => gt[b.p.ma].pm25 - gt[a.p.ma].pm25);
   if (sx.length >= 2) {
     const cao = sx[0], thap = sx[sx.length - 1], chenh = gt[cao.p.ma].pm25 - gt[thap.p.ma].pm25;
@@ -271,7 +275,7 @@ function soSanhPhuong() {
   document.getElementById('pThe').innerHTML = chon.map(x => { const v = gt[x.p.ma];
     return `<div style="--mau-dong:${x.mau}"><div class="ten">${esc(x.p.ten_day_du)}</div><div class="ma">${esc(x.p.khu_vuc)}</div>
       <div class="gt">${so(v.pm25)} <small>µg/m³</small></div>${theMuc(v.aqi)}
-      <div class="ct">Điểm đo gần nhất cách ${so(x.p.km_tram_gan_nhat)} km: ${TIN[x.p.do_tin_cay] || 'chưa rõ độ tin cậy'}.</div></div>`; }).join('');
+      <div class="ct">Điểm ước tính gần nhất cách ${so(x.p.km_tram_gan_nhat)} km: ${TIN[x.p.do_tin_cay] || 'chưa rõ độ tin cậy'}.</div></div>`; }).join('');
 }
 
 // ================= Chuyển chế độ =================

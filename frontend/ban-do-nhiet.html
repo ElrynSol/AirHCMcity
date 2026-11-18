@@ -84,7 +84,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -106,6 +106,10 @@
     <div class="sub">Bản đồ tô màu 168 phường/xã TP.HCM theo mức không khí: <b>xanh lá là tốt</b>, vàng là trung bình, <b>cam, đỏ, tím là ô nhiễm</b>.
       Chọn ngày, tìm phường của bạn để xem lời khuyên.</div>
   </div>
+  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
+    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
+    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
+    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
   <div id="trangThai" class="card">Đang tính bản đồ, vui lòng chờ vài giây…</div>
   <div id="vung" style="display:none;">
     <div class="card">
@@ -134,8 +138,8 @@
           <label>Kiểu tô <select id="kieu">
             <option value="phuong">Theo từng phường/xã</option><option value="muc">Lưới theo mức</option><option value="muot">Lưới chuyển màu mịn</option></select></label>
           <label>Độ đậm màu <input type="range" id="doMo" min="20" max="100" value="75" style="vertical-align:middle;"></label>
-          <label><input type="checkbox" id="hienTram" checked> Hiện điểm đo</label>
-          <label><input type="checkbox" id="hienXa" checked> Làm mờ nơi xa điểm đo (&gt; 15 km)</label>
+          <label><input type="checkbox" id="hienTram" checked> Hiện điểm ước tính</label>
+          <label><input type="checkbox" id="hienXa" checked> Làm mờ nơi xa điểm ước tính (&gt; 15 km)</label>
         </div>
       </details>
     </div>
@@ -144,11 +148,11 @@
       <h3>🏙️ So sánh các khu vực</h3>
       <div class="luoi-kv" id="khuVuc"></div>
       <div class="hai-cot">
-        <div><b>😷 5 nơi bụi mịn nhiều nhất</b><table class="bang-nho" id="topCao"></table></div>
-        <div><b>🌿 5 nơi không khí trong lành nhất</b><table class="bang-nho" id="topThap"></table></div>
+        <div><b>😷 5 nơi ước tính bụi mịn nhiều nhất</b><table class="bang-nho" id="topCao"></table></div>
+        <div><b>🌿 5 nơi ước tính trong lành nhất</b><table class="bang-nho" id="topThap"></table></div>
       </div>
       <div style="margin-top:16px"><b>Bao nhiêu phường/xã ở mỗi mức?</b><div class="thanh-muc" id="thanhMuc"></div><div class="chu-giai" id="chuMuc"></div></div>
-      <p class="luu-y">Bảng xếp hạng chỉ tính các phường/xã cách điểm đo gần nhất không quá 15 km, để tránh xếp hạng nơi chỉ có số liệu ước đoán.</p>
+      <p class="luu-y">Xếp hạng chỉ tính các phường/xã cách điểm ước tính gần nhất không quá 15 km. <b>Chênh lệch giữa các phường trong cùng khu vực thường nhỏ hơn sai số nội suy</b> (xem mục "chính xác đến đâu"), nên chỉ nên đọc xếp hạng giữa các khu vực lớn (TP.HCM cũ, Bình Dương cũ, Bà Rịa – Vũng Tàu cũ).</p>
     </div>
 
     <div class="card">
@@ -174,8 +178,8 @@ async function goiApi(path, opt) {
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const f1 = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
 const theMuc = aqi => { const m = AQI_VN.muc(aqi); return `<span class="muc" style="background:${m.mau};color:${m.chu}">${m.bieuTuong || ''} ${esc(m.ten)}</span>`; };
-const TIN = { cao: 'gần điểm đo — số liệu khá tin cậy', trung_binh: 'cách điểm đo vừa phải — số liệu tham khảo được',
-  thap: 'xa điểm đo — chỉ là ước đoán, nên dè dặt', khong_ro: 'chưa rõ độ tin cậy' };
+const TIN = { cao: 'gần điểm lấy mẫu nên sai số nội suy nhỏ (vẫn là số liệu mô hình, chưa phải đo thật)', trung_binh: 'cách điểm lấy mẫu vừa phải — sai số nội suy lớn hơn',
+  thap: 'xa điểm lấy mẫu — chỉ là ngoại suy, không nên dùng', khong_ro: 'chưa rõ độ tin cậy' };
 
 let D = null, ngayChon = 0, ban = null, lopAnh = null, lopPhuong = null, lopBao = null, lopTram = L.layerGroup(), GEO = null, TT_PHUONG = {}, phuongChon = null, LOP_THEO_MA = {};
 
@@ -266,7 +270,7 @@ function chonPhuong(ma, zoom) {
     <div class="ba-ngay">${o}</div>
     <div class="khoi loi-khuyen"><b>${m.bieuTuong || ''} ${nhanNgay(D.ngay[ngayChon]).ten} ở đây nên làm gì?</b><br>
       👤 ${esc(m.binhThuong || '--')}<br>👶👴 ${esc(m.nhayCam || '--')}</div>
-    <p class="goi-y" style="margin:10px 0 0">Điểm đo gần nhất cách <b>${f1(tt.km_tram_gan_nhat)} km</b>: ${TIN[tt.do_tin_cay] || TIN.khong_ro}.</p>`;
+    <p class="goi-y" style="margin:10px 0 0">Điểm ước tính gần nhất cách <b>${f1(tt.km_tram_gan_nhat)} km</b>: ${TIN[tt.do_tin_cay] || TIN.khong_ro}.</p>`;
   if (lopPhuong) lopPhuong.eachLayer(l => lopPhuong.resetStyle(l));
   const l = LOP_THEO_MA[ma];
   if (l) { l.setStyle({ weight: 3, color: '#0b2545' }); l.bringToFront(); if (zoom) ban.fitBounds(l.getBounds(), { maxZoom: 12 }); }
@@ -320,7 +324,7 @@ function ve() {
   D.tram.forEach(t => {
     const aq = t.aqi[ngayChon], m = AQI_VN.muc(aq);
     L.circleMarker([t.lat, t.lon], { radius: 7, color: '#222', weight: 1.5, fillColor: mauMuc(aq == null ? 0 : aq), fillOpacity: 1 })
-      .bindTooltip(`📍 Điểm đo ${esc(t.ma_tram || '')} · ${esc(t.ten_tram || '')}<br>${m.bieuTuong || ''} ${esc(m.ten)} · ${f1(t.pm25[ngayChon])} µg/m³`).addTo(lopTram);
+      .bindTooltip(`📍 Điểm ước tính ${esc(t.ma_tram || '')} · ${esc(t.ten_tram || '')}<br>${m.bieuTuong || ''} ${esc(m.ten)} · ${f1(t.pm25[ngayChon])} µg/m³`).addTo(lopTram);
   });
   if (document.getElementById('hienTram').checked) lopTram.addTo(ban); else ban.removeLayer(lopTram);
   veTomTat(a); veDanhGiaVung(a); veDoTinCay(a);
@@ -353,7 +357,7 @@ function veDoTinCay(a) {
   const y = [];
   y.push(`<li><b>Số liệu lấy từ mô hình khí quyển châu Âu (CAMS)</b>, chưa phải máy đo đặt tại từng phường. Bản đồ cho biết <b>xu hướng chung</b> của cả vùng,
     chưa đủ chi tiết để kết luận cho từng con phố.</li>`);
-  y.push(`<li><b>Càng gần điểm đo càng đáng tin.</b> ${dem.cao}/${tong} phường/xã cách điểm đo dưới 5 km; ${dem.thap} phường/xã ở xa (trên 15 km,
+  y.push(`<li><b>Càng gần điểm ước tính càng đáng tin.</b> ${dem.cao}/${tong} phường/xã cách điểm ước tính dưới 5 km; ${dem.thap} phường/xã ở xa (trên 15 km,
     như Côn Đảo và các xã ven biển) được tô mờ vì chỉ là ước đoán.</li>`);
   if (so) y.push(`<li><b>Sai số giữa các nơi khoảng ±${f1(so.RMSE_idw)} µg/m³.</b> Hai phường chỉ chênh nhau vài đơn vị thì nên coi là <b>như nhau</b>.
     ${a.chenh_max_min < so.RMSE_idw * 1.5 ? 'Hôm nay các khu vực khá giống nhau, màu khác nhau chủ yếu do cách tính.' : 'Hôm nay có khác biệt rõ giữa các khu vực.'}</li>`);
@@ -362,8 +366,8 @@ function veDoTinCay(a) {
     : '<li><b>Dự báo cho các ngày tới chỉ nên tham khảo:</b> độ chính xác hiện ngang với cách đoán “mai giống hôm nay”. Hãy xem lại bản đồ mỗi ngày.</li>');
   document.getElementById('dienGiai').innerHTML = '<ul>' + y.join('') + '</ul>';
   document.getElementById('soKt').innerHTML = `
-    <div>Sai số nội suy (che từng trạm, đoán lại)<b>RMSE ± ${so ? f1(so.RMSE_idw) : '--'}</b>${so ? `so với lấy trung bình các trạm ±${f1(so.RMSE_trung_binh_cac_tram_con_lai)}` : ''}</div>
-    <div>Chênh lệch cao nhất – thấp nhất giữa các trạm<b>${f1(a.chenh_max_min)} µg/m³</b></div>
+    <div>Sai số nội suy (che từng điểm, đoán lại)<b>RMSE ± ${so ? f1(so.RMSE_idw) : '--'}</b>${so ? `so với lấy trung bình các điểm ±${f1(so.RMSE_trung_binh_cac_tram_con_lai)}` : ''}</div>
+    <div>Chênh lệch cao nhất – thấp nhất giữa các điểm<b>${f1(a.chenh_max_min)} µg/m³</b></div>
     <div>Phường ≤ 5 km / 5–15 km / &gt; 15 km<b>${dem.cao} / ${dem.trung_binh} / ${dem.thap}</b></div>
     <div>Kỹ năng dự báo so với “mai = hôm nay”<b>${md.ky_nang != null ? (md.ky_nang > 0 ? '+' : '') + f1(md.ky_nang * 100) + '%' : '--'}</b>${ci ? `KTC 95%: ${f1(ci.thap * 100)}% … ${f1(ci.cao * 100)}%` : ''}</div>`;
 }
@@ -393,11 +397,11 @@ function chonNgay(i) { ngayChon = i; dungTab(); ve(); }
     if (D.ranh_gioi.duong_bao) lopBao = L.geoJSON(D.ranh_gioi.duong_bao, { style: { color: '#0b2545', weight: 2, fill: false }, interactive: false }).addTo(ban);
     ban.fitBounds(lopBao ? lopBao.getBounds() : [[D.luoi.lat0, D.luoi.lon0], [D.luoi.lat1, D.luoi.lon1]], { padding: [10, 10] });
     document.getElementById('chuGiai').innerHTML = D.thang_mau.map(m => `<span><i style="background:${m.mau}"></i>${(AQI_VN.theoTen(m.muc) || {}).bieuTuong || ''} ${esc(m.muc)}</span>`).join('') +
-      '<span><i style="background:repeating-linear-gradient(45deg,#ccc 0 2px,#fff 2px 5px)"></i>Xa điểm đo (ước đoán)</span><span>⚫ Điểm đo</span>';
+      '<span><i style="background:repeating-linear-gradient(45deg,#ccc 0 2px,#fff 2px 5px)"></i>Xa điểm ước tính (ước đoán)</span><span>⚫ Điểm ước tính</span>';
     const md = D.mo_hinh;
     document.getElementById('luuY').innerHTML = D.luu_y.map(esc).join('<br>') +
-      `<br>Bước 1: dự báo theo thời gian cho ${md.so_tram} trạm (Random Forest, kiểm tra từ ${esc(md.kiem_tra_tu)}). Bước 2: nội suy theo không gian bằng IDW (nghịch đảo bình phương khoảng cách).` +
-      '<br>Giá trị mỗi phường lấy tại điểm đại diện nằm trong phường (PostGIS ST_PointOnSurface); khoảng cách tới trạm tính bằng ST_Distance trên mặt cầu, trạm gần nhất tìm bằng KNN.' +
+      `<br>Bước 1: dự báo theo thời gian cho ${md.so_tram} điểm (Random Forest, kiểm tra từ ${esc(md.kiem_tra_tu)}). Bước 2: nội suy theo không gian bằng IDW (nghịch đảo bình phương khoảng cách).` +
+      '<br>Giá trị mỗi phường lấy tại điểm đại diện nằm trong phường (PostGIS ST_PointOnSurface); khoảng cách tới điểm tính bằng ST_Distance trên mặt cầu, điểm gần nhất tìm bằng KNN.' +
       '<br>Thang màu: AQI Việt Nam (QĐ 1459/QĐ-TCMT); PM2.5 quy đổi sang AQI theo bảng ngưỡng của QĐ 1459.';
     ['doMo', 'hienTram', 'kieu', 'hienXa'].forEach(id => document.getElementById(id).addEventListener('input', ve));
     dungTab(); ve();

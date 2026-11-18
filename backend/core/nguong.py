@@ -5,8 +5,10 @@ QCVN 05:2023/BTNMT (quy chuẩn kỹ thuật quốc gia về chất lượng kh�
 - PM10 24 giờ 100; NO₂ 1 giờ 200, 24 giờ 100; SO₂ 1 giờ 350, 24 giờ 125; O₃ 1 giờ 200, 8 giờ 120; CO 1 giờ 30.000, 8 giờ 10.000.
 WHO 2021 (Global Air Quality Guidelines, khuyến nghị sức khỏe, không phải quy chuẩn): PM2.5 24 giờ 15; PM10 24 giờ 45; NO₂ 24 giờ 25.
 
-Lưu ý đơn vị: QCVN dùng µg/Nm³ (điều kiện chuẩn), số liệu mô hình CAMS dùng µg/m³ ở điều kiện thực. Ở TP.HCM (≈ 1 atm, 27–33 °C)
-hai đơn vị chênh khoảng 8–10%; hệ thống so sánh trực tiếp và ghi rõ giới hạn này. "PM2.5 vượt ngưỡng QCVN" KHÁC "AQI vượt ngưỡng":
+Lưu ý đơn vị: QCVN dùng µg/Nm³ (điều kiện tiêu chuẩn), số liệu mô hình CAMS dùng µg/m³ ở điều kiện thực. Mức chênh phụ thuộc
+nhiệt độ tham chiếu của "điều kiện tiêu chuẩn" (≈ 1–2% nếu 25 °C, ≈ 10% nếu 0 °C, ở TP.HCM 27–33 °C, ≈ 1 atm) — CHƯA đối chiếu được
+văn bản gốc nên hệ thống KHÔNG quy đổi, so sánh trực tiếp; mức chênh này nhỏ hơn sai số của số liệu mô hình (MAE ≈ 10 µg/m³ so với trạm thật).
+Mốc 45 µg/Nm³ từ 01/01/2026 lấy theo đề cương "Hệ thống dự báo, phân tích xác suất và truy tìm nguồn thải"; cần đối chiếu QCVN 05:2023 gốc. "PM2.5 vượt ngưỡng QCVN" KHÁC "AQI vượt ngưỡng":
 AQI tính theo QĐ 1459/QĐ-TCMT (services/aqi.py).
 """
 
@@ -41,4 +43,4 @@ def bang_nguong(ngay=None) -> dict:
             "qcvn_05_2023": {"pm25_24h": qcvn_pm25_24h(ngay), **QCVN_05_2023, "don_vi": "µg/Nm³"},
             "who_2021": {**WHO_2021, "don_vi": "µg/m³"},
             "ghi_chu": "PM2.5 24 giờ theo QCVN 05:2023: 50 µg/Nm³ đến 31/12/2025, 45 µg/Nm³ từ 01/01/2026. "
-                       "Số liệu CAMS ở điều kiện thực (µg/m³), chênh khoảng 8–10% so với điều kiện chuẩn."}
+                       "Số liệu CAMS ở điều kiện thực (µg/m³), so sánh trực tiếp không quy đổi (chênh lệch nhỏ hơn sai số mô hình)."}

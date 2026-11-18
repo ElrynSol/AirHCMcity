@@ -18,7 +18,7 @@
       ['phan-anh.html', '📣 Phản ánh ô nhiễm'],
       ['luong-canh-bao.html', '🔔 Luồng cảnh báo']] },
     { ten: '⚙️ Hệ thống', muc: [
-      ['tram.html', '📋 Danh sách trạm'],
+      ['tram.html', '📋 Danh sách điểm ước tính'],
       ['phuong-phap.html', '🔬 Phương pháp & kiểm chứng'],
       ['trang-thai-du-lieu.html', '🛰️ Trạng thái dữ liệu'],
       ['nhat-ky.html', '🧾 Nhật ký', true],

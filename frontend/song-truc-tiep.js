@@ -107,7 +107,7 @@
       el.innerHTML = bat ? '🔔 Đang bật thông báo' : chan ? '🔕 Trình duyệt đang chặn thông báo' : '🔔 Báo cho tôi khi vượt ngưỡng';
       el.setAttribute('aria-pressed', String(bat));
       el.disabled = chan;
-      el.title = chan ? 'Mở cài đặt trang web của trình duyệt để cho phép thông báo' : bat ? 'Bấm để tắt' : 'Hiện thông báo của hệ điều hành khi trạm vượt ngưỡng cảnh báo';
+      el.title = chan ? 'Mở cài đặt trang web của trình duyệt để cho phép thông báo' : bat ? 'Bấm để tắt' : 'Hiện thông báo của hệ điều hành khi điểm vượt ngưỡng cảnh báo';
     };
     el.onclick = function () { if (thongBaoDangBat()) { tatThongBao(); ve(); } else batThongBao().then(ve); };
     ve();

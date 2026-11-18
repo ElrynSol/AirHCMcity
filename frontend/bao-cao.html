@@ -62,7 +62,7 @@
 <div id="header">
   <div>
     <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách trạm</a>
+    <a href="tram.html">📋 Danh sách điểm ước tính</a>
     <a href="so-sanh.html">📊 So sánh</a>
     <a href="canh-bao.html">⚠️ Cảnh báo</a>
     <a href="du-bao.html">🔮 Dự báo</a>
@@ -130,7 +130,7 @@
       </dl>
     </div>
 
-    <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo trạm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng trạm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng trạm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
+    <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
 
     <div class="no-print" style="margin-top:6px;">
       <button class="btn" onclick="xuatPDF()">📄 Xuất PDF</button>
@@ -143,7 +143,7 @@
   <div class="panel" id="panelExcel">
     <div class="card">
       <div class="form-row">
-        <label>Chọn trạm (giữ Ctrl để chọn nhiều) <span class="chon-tat-ca" onclick="chonTatCa()">Chọn tất cả</span></label>
+        <label>Chọn điểm (giữ Ctrl để chọn nhiều) <span class="chon-tat-ca" onclick="chonTatCa()">Chọn tất cả</span></label>
         <select id="chonTram" multiple size="8" style="height:auto;"></select>
       </div>
       <div class="form-row">
@@ -152,7 +152,7 @@
       </div>
       <button class="btn" onclick="xuatBaoCao()">⬇️ Xuất Excel</button>
       <button class="btn" onclick="xuatPdfServer()" style="margin-left:8px;">⬇️ Xuất PDF (chi tiết)</button>
-      <div class="luu-y">Mỗi trạm tải về một file. Nếu trình duyệt hỏi cho phép tải nhiều file, hãy chọn "Cho phép". Bản PDF (chi tiết) do máy chủ tạo trực tiếp, không cần hộp thoại in.</div>
+      <div class="luu-y">Mỗi điểm tải về một file. Nếu trình duyệt hỏi cho phép tải nhiều file, hãy chọn "Cho phép". Bản PDF (chi tiết) do máy chủ tạo trực tiếp, không cần hộp thoại in.</div>
     </div>
   </div>
 </div>
@@ -226,14 +226,14 @@ async function taoTomTat() {
     aqi = Math.round(co.reduce((s, d) => s + d.aqi, 0) / co.length);
     muc = mucTheoAQI(aqi);
     const cao = co.reduce((a, b) => b.aqi > a.aqi ? b : a);
-    ten = 'Toàn thành phố (trung bình các trạm)';
+    ten = 'Toàn thành phố (trung bình các điểm)';
     chat = cao.chat_gay_o_nhiem; ngay = cao.ngay_do;
     document.getElementById('tieuDe7Ngay').textContent = '📅 AQI trung bình 7 ngày gần đây';
     taiXuHuongTP();
   } else {
     const d = dsAQI.find(x => String(x.tram_id) === String(v));
     const t = dsTram.find(x => String(x.id) === String(v));
-    if (!d) { box.innerHTML = 'Trạm này chưa có dữ liệu AQI.'; loiKhuyen.textContent = ''; return; }
+    if (!d) { box.innerHTML = 'Điểm này chưa có dữ liệu AQI.'; loiKhuyen.textContent = ''; return; }
     ten = `${t.ma_tram} - ${t.ten_tram}`; aqi = d.aqi; muc = d.muc_do; chat = d.chat_gay_o_nhiem; ngay = d.ngay_do;
     document.getElementById('tieuDe7Ngay').textContent = '📅 PM2.5 7 ngày gần đây (µg/m³)';
     taiXuHuongTram(v);
@@ -304,7 +304,7 @@ function xuatBaoCao() {
   const select = document.getElementById('chonTram');
   const ids = Array.from(select.selectedOptions).map(o => o.value);
   const soNgay = parseInt(document.getElementById('soNgay').value, 10);
-  if (!ids.length) { alert('Vui lòng chọn ít nhất 1 trạm!'); return; }
+  if (!ids.length) { alert('Vui lòng chọn ít nhất 1 điểm!'); return; }
   if (!soNgay || soNgay < 1 || soNgay > 365) { alert('Số ngày phải từ 1 đến 365.'); return; }
   ids.forEach((id, i) => setTimeout(() => {
     const a = document.createElement('a');
@@ -317,7 +317,7 @@ function xuatPdfServer() {
   const select = document.getElementById('chonTram');
   const ids = Array.from(select.selectedOptions).map(o => o.value);
   const soNgay = parseInt(document.getElementById('soNgay').value, 10);
-  if (!ids.length) { alert('Vui lòng chọn ít nhất 1 trạm!'); return; }
+  if (!ids.length) { alert('Vui lòng chọn ít nhất 1 điểm!'); return; }
   if (!soNgay || soNgay < 1 || soNgay > 365) { alert('Số ngày phải từ 1 đến 365.'); return; }
   ids.forEach((id, i) => setTimeout(() => {
     const a = document.createElement('a');

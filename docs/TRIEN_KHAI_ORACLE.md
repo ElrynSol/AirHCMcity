@@ -53,10 +53,10 @@ Trên **máy Windows**, trong thư mục dự án:
 
 ```powershell
 venv\Scripts\python.exe dong_goi\tao_ban_nop.py --khong-apk      # tạo ..\AirHCM_1250080037_<ngày>.zip (đã loại mọi khóa bí mật)
-pg_dump -U postgres -d air_quality_db --no-owner -f backup.sql   # bản sao dữ liệu hiện tại (nếu muốn mang lên)
+pg_dump -U postgres -d air_quality_db --no-owner -f $env:USERPROFILE\.airhcmackup.sql   # bản sao dữ liệu, lưu NGOÀI thư mục đồng bộ OneDrive
 
 # chép lên máy chủ (đổi đường dẫn khóa SSH và IP)
-scp -i C:\duong\dan\ssh-key.key ..\AirHCM_1250080037_*.zip backup.sql gee-key.json ubuntu@<PUBLIC_IP>:~
+scp -i C:\duong\dan\ssh-key.key ..\AirHCM_1250080037_*.zip $env:USERPROFILE\.airhcmackup.sql $env:USERPROFILE\.airhcm\gee-key.json ubuntu@<PUBLIC_IP>:~
 ```
 
 `backup.sql` chứa tài khoản người dùng và `gee-key.json` là khóa Google, nên chỉ chép thẳng lên máy chủ của bạn, không gửi qua kênh khác.
