@@ -1,6 +1,7 @@
 """Thống kê AQI và trạng thái nguồn dữ liệu."""
 
 from core import config  # noqa: F401  (nạp .env và đường dẫn dự án trước)
+from core.nguong import qcvn_pm25_24h
 from database import get_db
 from fastapi import Depends
 from sqlalchemy import text
@@ -66,7 +67,7 @@ def thong_ke(so_ngay: int = 90, tram_id: int = None, db: Session = Depends(get_d
         xep = db.execute(text("""
             SELECT t.id, t.ma_tram, t.ten_tram,
                    AVG(COALESCE(m.pm25_smoothed, m.pm25_mean)) AS pm25_tb,
-                   SUM(CASE WHEN COALESCE(m.pm25_smoothed, m.pm25_mean) > 50 THEN 1 ELSE 0 END) AS ngay_vuot,
+                   SUM(CASE WHEN COALESCE(m.pm25_smoothed, m.pm25_mean) > (CASE WHEN m.ngay_do >= DATE '2026-01-01' THEN 45 ELSE 50 END) THEN 1 ELSE 0 END) AS ngay_vuot,
                    COUNT(*) AS so_ngay
             FROM (SELECT * FROM du_lieu_tram_mat_dat WHERE ngay_do >= (SELECT MAX(ngay_do) FROM du_lieu_tram_mat_dat) - (:n || ' days')::interval) m
             JOIN tram_quan_trac t ON t.id = m.tram_id
@@ -81,8 +82,9 @@ def thong_ke(so_ngay: int = 90, tram_id: int = None, db: Session = Depends(get_d
         "pm25_tb": round(sum(pm25_vals) / len(pm25_vals), 1) if pm25_vals else None,
         "pm25_max": max(pm25_vals) if pm25_vals else None,
         "pm25_min": min(pm25_vals) if pm25_vals else None,
-        # Ngưỡng PM2.5 trung bình 24 giờ theo QCVN 05:2023/BTNMT = 50 µg/m³
-        "ngay_vuot_pm25_qcvn": sum(1 for v in pm25_vals if v > 50),
+        # Ngưỡng PM2.5 TB 24 giờ QCVN 05:2023/BTNMT theo từng ngày: 50 µg/Nm³ đến hết 2025, 45 từ 01/01/2026
+        "ngay_vuot_pm25_qcvn": sum(1 for d in ngay if d["pm25"] is not None and d["pm25"] > qcvn_pm25_24h(d["ngay"])),
+        "nguong_qcvn_hien_hanh": qcvn_pm25_24h(),
         "ngay_xau_nhat": xau_nhat,
         "phan_bo_muc_do": phan_bo, "theo_ngay": ngay, "theo_thang": theo_thang, "theo_tram": theo_tram,
         "luu_y": "Giá trị PM2.5/PM10/O3 là số liệu mô hình (Open-Meteo), đã hiệu chỉnh không gian, chưa kiểm chứng đo đạc mặt đất."

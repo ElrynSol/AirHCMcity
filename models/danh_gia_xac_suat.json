@@ -1,0 +1,51 @@
+{
+ "so_ngay": 32,
+ "tu": "2026-10-17",
+ "den": "2026-11-17",
+ "MAE": 4.35,
+ "RMSE": 5.26,
+ "bias": 1.85,
+ "ky_nang_so_voi_hom_qua": 0.113,
+ "PICP_80": 0.812,
+ "xac_suat": {
+  "who_15": {
+   "nguong": 15.0,
+   "ti_le_vuot_thuc_te": 0.938,
+   "Brier": 0.0619,
+   "Brier_khi_hau": 0.0586,
+   "BSS": -0.057,
+   "do_tin_cay": [
+    {
+     "khoang": "(0.6, 0.8]",
+     "so_ngay": 4,
+     "p_tb": 0.745,
+     "tan_suat_thuc": 1.0
+    },
+    {
+     "khoang": "(0.8, 1.0]",
+     "so_ngay": 28,
+     "p_tb": 0.933,
+     "tan_suat_thuc": 0.929
+    }
+   ]
+  },
+  "qcvn_45": {
+   "nguong": 45.0,
+   "ti_le_vuot_thuc_te": 0.0,
+   "Brier": 0.0,
+   "Brier_khi_hau": 0.0,
+   "BSS": null,
+   "do_tin_cay": [
+    {
+     "khoang": "(-0.001, 0.2]",
+     "so_ngay": 32,
+     "p_tb": 0.0,
+     "tan_suat_thuc": 0.0
+    }
+   ]
+  }
+ },
+ "luu_y": "Kiểm chứng trên 32 ngày sau mốc huấn luyện — mẫu nhỏ, chỉ số dao động lớn; cần cập nhật khi có thêm dữ liệu. BSS > 0: xác suất dự báo tốt hơn dùng tần suất vượt thực tế cố định. Khi tỉ lệ vượt thực tế bằng 0 hoặc 1, Brier khí hậu = 0 nên BSS không xác định. Xác suất tính từ giả định sai số phân phối chuẩn (predict.xac_suat_vuot).",
+ "cap_nhat": "2026-11-18T09:17:37",
+ "mo_hinh_huan_luyen_den": "2026-10-16"
+}

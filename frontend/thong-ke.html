@@ -111,7 +111,7 @@
 
   <div class="card">
     <h3>📉 Bụi mịn PM2.5 mỗi ngày</h3>
-    <p class="goi-y">Đường <b style="color:#16a34a">xanh nét đứt</b> là mức WHO khuyến nghị (15 µg/m³), đường <b style="color:#dc2626">đỏ nét đứt</b> là giới hạn chuẩn Việt Nam (50 µg/m³). Càng thấp càng tốt.</p>
+    <p class="goi-y">Đường <b style="color:#16a34a">xanh nét đứt</b> là mức WHO khuyến nghị (15 µg/m³), đường <b style="color:#dc2626">đỏ nét đứt</b> là giới hạn chuẩn Việt Nam QCVN 05:2023 (45 µg/m³). Càng thấp càng tốt.</p>
     <canvas id="cNgay" height="110" aria-label="Biểu đồ bụi mịn PM2.5 theo ngày"></canvas>
   </div>
 
@@ -136,7 +136,7 @@
   <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
     <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ là cột khí đo từ
       vệ tinh Sentinel-5P (trễ 2–3 tuần). Giá trị theo từng điểm đo là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất.
-      Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT), tính từ PM2.5, PM10, O₃. Chuẩn Việt Nam: PM2.5 trung bình 24 giờ ≤ 50 µg/m³ (QCVN 05:2023/BTNMT);
+      Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT), tính từ PM2.5, PM10, O₃. Chuẩn Việt Nam: PM2.5 trung bình 24 giờ ≤ 45 µg/Nm³ từ 01/01/2026 (QCVN 05:2023/BTNMT; trước đó 50); ngày năm 2025 được so với ngưỡng 50;
       khuyến nghị WHO 2021: ≤ 15 µg/m³. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
   </details>
 </div>
@@ -166,7 +166,7 @@ async function goiApi(path) {
   } finally { clearTimeout(to); }
 }
 
-const WHO = 15, QCVN = 50, charts = {};
+const WHO = AQI_VN.WHO_PM25, QCVN = AQI_VN.qcvnPM25(), charts = {};   // QCVN 05:2023: 45 từ 01/01/2026
 let ky = 90;
 function ve(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
 const TEN_KY = { 30: '30 ngày qua', 90: '3 tháng qua', 180: '6 tháng qua', 365: '1 năm qua' };
@@ -201,7 +201,7 @@ function veTomTat(d, tr) {
   const xn = d.ngay_xau_nhat, mXn = xn ? AQI_VN.muc(xn.aqi) : null;
   document.getElementById('oSo').innerHTML = `
     <div><div class="l">Bụi mịn trung bình</div><div class="v">${so(d.pm25_tb)} <small style="font-size:13px">µg/m³</small></div><div class="s">${ngayDu(d.tu_ngay)} → ${ngayDu(d.den_ngay)}</div></div>
-    <div><div class="l">Ngày vượt chuẩn Việt Nam</div><div class="v" style="color:${d.ngay_vuot_pm25_qcvn ? '#b42318' : '#137333'}">${d.ngay_vuot_pm25_qcvn}</div><div class="s">bụi mịn trên 50 µg/m³</div></div>
+    <div><div class="l">Ngày vượt chuẩn Việt Nam</div><div class="v" style="color:${d.ngay_vuot_pm25_qcvn ? '#b42318' : '#137333'}">${d.ngay_vuot_pm25_qcvn}</div><div class="s">bụi mịn vượt ngưỡng QCVN (${QCVN} µg/m³)</div></div>
     <div><div class="l">Ngày trong lành nhất</div><div class="v">${so(d.pm25_min)} <small style="font-size:13px">µg/m³</small></div><div class="s">bụi mịn thấp nhất trong kỳ</div></div>
     <div><div class="l">Ngày ô nhiễm nhất</div><div class="v">${xn ? ngay(xn.ngay) : '--'}</div><div class="s">${xn ? `${mXn.bieuTuong || ''} ${esc(xn.muc_do)} · bụi mịn ${so(d.pm25_max)} µg/m³` : ''}</div></div>`;
 }
@@ -220,7 +220,7 @@ function veDuong(d) {
   ve('cNgay', { type: 'line', data: { labels: nhan, datasets: [
       { label: 'Bụi mịn PM2.5 (µg/m³)', data: d.theo_ngay.map(x => x.pm25), borderColor: '#1b63d6', backgroundColor: 'rgba(27,99,214,.10)', fill: true, borderWidth: 2, tension: .3, pointRadius: 0, pointHoverRadius: 5 },
       { label: 'WHO khuyến nghị (15)', data: nhan.map(() => WHO), borderColor: '#16a34a', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false },
-      { label: 'Chuẩn Việt Nam (50)', data: nhan.map(() => QCVN), borderColor: '#dc2626', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false }] },
+      { label: `Chuẩn Việt Nam (${QCVN})`, data: nhan.map(() => QCVN), borderColor: '#dc2626', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false }] },
     options: { responsive: true, interaction: { mode: 'index', intersect: false },
       plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.datasetIndex ? c.dataset.label : `Bụi mịn ${so(c.parsed.y)} µg/m³ · ${AQI_VN.ten(AQI_VN.aqiTuPM25(c.parsed.y))}` } } },
       scales: { y: { beginAtZero: true, title: { display: true, text: 'µg/m³' } }, x: { ticks: { maxTicksLimit: 8, maxRotation: 0 } } } } });

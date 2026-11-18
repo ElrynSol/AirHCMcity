@@ -118,9 +118,18 @@
   </div>
 
   <div class="card">
-    <h3>📅 7 ngày tới</h3>
-    <p class="goi-y">Ngày đầu có độ chính xác đã được kiểm chứng; các ngày sau (viền nét đứt) chỉ để tham khảo, càng xa càng kém chắc chắn.</p>
+    <h3>📅 7 ngày tới <span id="ngayHeThong" style="font-weight:500;color:var(--text-muted);font-size:13px"></span></h3>
+    <p class="goi-y">Tính từ ngày mai theo ngày hệ thống. Càng xa càng kém chắc chắn (viền nét đứt: chỉ để tham khảo).
+      “Khả năng vượt WHO” là xác suất bụi mịn trung bình ngày cao hơn mức WHO khuyên (15 µg/m³).</p>
     <div class="bay-ngay" id="bayNgay">Đang tải…</div>
+  </div>
+
+  <div class="card">
+    <h3>🗓️ Xu hướng các tháng tới</h3>
+    <p class="goi-y">Dựa vào cùng tháng của các năm trước (mùa khô tháng 12–4 thường nhiều bụi hơn mùa mưa) và tình hình 30 ngày gần đây.
+      Đây là <b>xu hướng theo mùa</b>, không phải dự báo từng ngày.</p>
+    <div class="bay-ngay" id="baThang" style="grid-template-columns:repeat(3,1fr)">Đang tải…</div>
+    <p class="goi-y" id="thangDanhGia" style="margin:10px 0 0"></p>
   </div>
 
   <a class="card lien-ket" href="ban-do-nhiet.html">
@@ -187,8 +196,8 @@ function capNhatLoiKhuyen() {
 ['chonNhom', 'chonHoatDong'].forEach(id => document.getElementById(id).addEventListener('change', capNhatLoiKhuyen));
 
 // ---------- 24 giờ tới (mô hình học máy theo giờ — sản phẩm dự báo chính) ----------
-const kt = { gio: '', ngay: '', yeuTo: '' };
-function veKyThuat() { document.getElementById('kt').innerHTML = kt.gio + kt.ngay + kt.yeuTo || 'Đang tải…'; }
+const kt = { gio: '', ngay: '', xacSuat: '', thang: '', yeuTo: '' };
+function veKyThuat() { document.getElementById('kt').innerHTML = kt.gio + kt.ngay + kt.xacSuat + kt.thang + kt.yeuTo || 'Đang tải…'; }
 goiApi('/du-bao-gio').then(d => {
   const ds = d.du_bao, ng = d.nguong, mTb = mucPM(d.tb_24h_toi);
   const xauNhat = ds.reduce((a, b) => (b.pm25 > a.pm25 ? b : a), ds[0]);
@@ -196,7 +205,7 @@ goiApi('/du-bao-gio').then(d => {
   document.getElementById('ttIcon').textContent = mTb.bieuTuong || '🔮';
   document.getElementById('ttCau').innerHTML = `24 giờ tới, không khí TP.HCM ở mức ${theMuc(mTb)}`;
   document.getElementById('ttPhu').innerHTML = `Bụi mịn trung bình khoảng <b>${so(d.tb_24h_toi)} µg/m³</b> — ` +
-    (d.tb_24h_toi > ng.qcvn_24h ? '<b>vượt chuẩn Việt Nam</b> (50).' : d.tb_24h_toi > ng.who_24h ? `đạt chuẩn Việt Nam nhưng cao hơn mức WHO khuyến nghị (15) trong <b>${d.so_gio_tren_who}/24 giờ</b>.` : 'đạt cả chuẩn Việt Nam và khuyến nghị WHO.') +
+    (d.tb_24h_toi > ng.qcvn_24h ? `<b>vượt chuẩn Việt Nam</b> (${ng.qcvn_24h}).` : d.tb_24h_toi > ng.who_24h ? `đạt chuẩn Việt Nam nhưng cao hơn mức WHO khuyến nghị (15) trong <b>${d.so_gio_tren_who}/24 giờ</b>.` : 'đạt cả chuẩn Việt Nam và khuyến nghị WHO.') +
     ` Hiện tại: ${so(d.pm25_hien_tai)} µg/m³.`;
   const k = (o, lop, tieuDe) => o ? `<div class="${lop}">${tieuDe}<b class="lon">${gio(o.tu)} – ${gio(o.den)}</b>${tenNgay(o.tu).k === 0 ? 'hôm nay' : tenNgay(o.tu).k === 1 ? 'ngày mai' : tenNgay(o.tu).dm} · bụi mịn khoảng ${so(o.pm25_tb)} µg/m³</div>` : '';
   document.getElementById('khung').innerHTML = k(d.khung_tot, 'tot', '✅ Giờ đẹp nhất để ra ngoài') + k(d.khung_xau, 'xau', '⚠️ Nên tránh ra ngoài lâu');
@@ -232,8 +241,38 @@ goiApi('/du-bao-nhieu-ngay?so_ngay=7').then(ds => {
     return `<div class="ngay${x.da_kiem_chung === false ? ' tk' : ''}" style="background:color-mix(in srgb, ${m.mau} 16%, #fff)">
       <div class="d">${n.ten}</div><div class="d2">${n.dm}</div><div class="bt">${m.bieuTuong || ''}</div>
       <div class="v">${so(x.pm25)} <small>µg/m³</small></div><div class="m">${esc(m.ten)}</div>
+      ${x.xac_suat_vuot ? `<div class="c">Khả năng vượt WHO: <b>${Math.round(x.xac_suat_vuot.who_15 * 100)}%</b>${x.xac_suat_vuot.qcvn_45 >= 0.05 ? `<br>vượt chuẩn VN: <b>${Math.round(x.xac_suat_vuot.qcvn_45 * 100)}%</b>` : ''}</div>` : ''}
       <div class="c">${x.da_kiem_chung === false ? 'tham khảo' : 'đáng tin hơn'}</div></div>`; }).join('');
+  const h = new Date();
+  document.getElementById('ngayHeThong').textContent = `· hôm nay ${String(h.getDate()).padStart(2, '0')}/${String(h.getMonth() + 1).padStart(2, '0')}/${h.getFullYear()}`;
 }).catch(e => { document.getElementById('bayNgay').innerHTML = `<span class="loi">${esc(e.message)}</span>`; });
+
+// ---------- Xu hướng các tháng tới ----------
+goiApi('/du-bao-thang?so_thang=3').then(d => {
+  document.getElementById('baThang').innerHTML = d.thang.map(x => { const m = mucPM(x.pm25), [y, t] = x.thang.split('-');
+    return `<div class="ngay" style="background:color-mix(in srgb, ${m.mau} 16%, #fff)"><div class="d">Tháng ${+t}/${y}</div><div class="d2">mùa ${x.mua}</div>
+      <div class="bt">${m.bieuTuong || ''}</div><div class="v">${so(x.pm25)} <small>µg/m³</small></div><div class="m">${esc(m.ten)}</div>
+      <div class="c">thường trong khoảng ${so(x.thap)}–${so(x.cao)}<br>(${x.so_nam_lich_su} năm số liệu)</div></div>`; }).join('');
+  const g = d.danh_gia;
+  document.getElementById('thangDanhGia').innerHTML = g ? `Kiểm chứng trên ${g.so_thang_thu} tháng trong quá khứ: sai trung bình <b>${so(g.MAE_khi_hau_hoc)} µg/m³</b>,
+    ${g.ky_nang > 0 ? `tốt hơn <b>${Math.round(g.ky_nang * 100)}%</b>` : 'không tốt hơn'} so với cách đoán “tháng sau giống tháng trước” (sai ${so(g.MAE_thang_sau_bang_thang_truoc)} µg/m³).` : '';
+  kt.thang = `<h4>Xu hướng theo tháng</h4>${esc(d.phuong_phap)} Dị thường 30 ngày gần nhất: ${so(d.di_thuong_30_ngay)} µg/m³.`;
+  veKyThuat();
+}).catch(e => { document.getElementById('baThang').innerHTML = `<span class="loi">${esc(e.message)}</span>`; });
+
+// ---------- Kiểm chứng dự báo xác suất ----------
+goiApi('/danh-gia-xac-suat').then(d => {
+  const w = d.xac_suat.who_15, q = d.xac_suat.qcvn_45;
+  kt.xacSuat = `<h4>Kiểm chứng xác suất trên ${d.so_ngay} ngày mô hình chưa học (${esc(d.tu)} → ${esc(d.den)})</h4>
+    Sai số tuyệt đối trung bình (MAE) ${so(d.MAE, 2)}, RMSE ${so(d.RMSE, 2)}, độ lệch (bias = dự báo − thật) ${so(d.bias, 2)} µg/m³;
+    kỹ năng so với “mai = hôm nay”: ${so(d.ky_nang_so_voi_hom_qua * 100)}%.<br>
+    Độ phủ khoảng 80% (PICP): <b>${so(d.PICP_80 * 100)}%</b> (mục tiêu ≈ 80%).<br>
+    Xác suất vượt WHO 15: Brier ${so(w.Brier, 3)} so với ${so(w.Brier_khi_hau, 3)} của tần suất cố định ${so(w.ti_le_vuot_thuc_te * 100, 0)}%
+    (BSS ${w.BSS == null ? 'không xác định' : so(w.BSS, 3)}${w.BSS != null && w.BSS < 0 ? ' — chưa tốt hơn dùng tần suất cố định' : ''}).
+    Vượt QCVN 45: tỉ lệ vượt thực tế ${so(q.ti_le_vuot_thuc_te * 100, 0)}%${q.BSS == null ? ', chưa đủ sự kiện để đánh giá' : ''}.<br>
+    <span style="color:var(--text-muted)">${esc(d.luu_y)}</span>`;
+  veKyThuat();
+}).catch(() => {});
 
 // ---------- Mô hình theo ngày + yếu tố (chi tiết kỹ thuật) ----------
 goiApi('/du-bao-aqi').then(d => {

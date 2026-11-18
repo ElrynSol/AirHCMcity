@@ -1,8 +1,8 @@
 /* Service worker: chạy offline phần giao diện, API ưu tiên mạng (có bản lưu gần nhất khi mất mạng),
    nhận thông báo đẩy (Web Push) khi AQI vượt ngưỡng — kể cả lúc đã đóng trang. */
-const PHIEN_BAN = 'aqi-v6-8';  // v6.1: đăng nhập Google / Facebook / Zalo
+const PHIEN_BAN = 'aqi-v6-9';  // v6.1: đăng nhập Google / Facebook / Zalo
 const LOI = ['./', 'tong-quan.html', 'chart-theme.js', 'index.html', 'du-bao.html', 'kich-ban.html', 'ban-do-nhiet.html', 'tram.html', 'so-sanh.html', 'canh-bao.html',
-  'thong-ke.html', 'bao-cao.html', 'gioi-thieu.html', 'phuong-phap.html', 'iot.html', 'iot-layer.js', 'phan-anh.html', 'phan-anh-layer.js', 'tai-app.html', 'tra-cuu-khong-gian.html', 'trang-thai-du-lieu.html', 'login.html', 'tai-khoan.html', 'chinh-sach-rieng-tu.html',
+  'thong-ke.html', 'bao-cao.html', 'gioi-thieu.html', 'phuong-phap.html', 'iot.html', 'iot-layer.js', 'phan-anh.html', 'phan-anh-layer.js', 'tai-app.html', 'tra-cuu-khong-gian.html', 'hoa-gio.html', 'trang-thai-du-lieu.html', 'login.html', 'tai-khoan.html', 'chinh-sach-rieng-tu.html',
   'style.css', 'app-config.js', 'aqi-vn.js', 'song-truc-tiep.js', 'tro-ly.js', 'pwa.js', 'nav.js', 'thong-bao-day.js',
   'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];

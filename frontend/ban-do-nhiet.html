@@ -242,7 +242,7 @@ function veTomTat(a) {
   document.getElementById('ttPhu').innerHTML = `${soNhieu} trong ${tong} phường/xã có số liệu đáng tin ở mức “${esc(tenNhieu)}”.` +
     (xau && mXau.ten !== tenNhieu ? ` Nơi bụi mịn nhiều nhất: <b>${esc((TT_PHUONG[xau.ma] || {}).ten_day_du)}</b> ${theMuc(xau.aqi)}.` : '') +
     ` Bụi mịn PM2.5 trung bình khoảng <b>${f1(pmTb)} µg/m³</b>` +
-    (pmTb > 50 ? ' — <b>vượt chuẩn Việt Nam</b> (50 µg/m³).' : pmTb > 15 ? ' — đạt chuẩn Việt Nam (dưới 50) nhưng <b>cao hơn mức khuyến nghị của WHO</b> (15).' : ' — đạt cả chuẩn Việt Nam và khuyến nghị WHO.');
+    (pmTb > AQI_VN.qcvnPM25() ? ` — <b>vượt chuẩn Việt Nam</b> (${AQI_VN.qcvnPM25()} µg/m³).` : pmTb > 15 ? ` — đạt chuẩn Việt Nam (dưới ${AQI_VN.qcvnPM25()}) nhưng <b>cao hơn mức khuyến nghị của WHO</b> (15).` : ' — đạt cả chuẩn Việt Nam và khuyến nghị WHO.');
   const mKhuyen = mXau && mXau.den > mNhieu.den ? mXau : mNhieu;
   document.getElementById('ttKhuyen').innerHTML = `<b>Lời khuyên${mKhuyen !== mNhieu ? ' (theo nơi ô nhiễm nhất)' : ''}:</b><br>
     👤 <b>Người khỏe mạnh:</b> ${esc(mKhuyen.binhThuong || '--')}<br>👶👴 <b>Trẻ em, người già, người bệnh hô hấp/tim mạch:</b> ${esc(mKhuyen.nhayCam || '--')}`;

@@ -2,7 +2,7 @@
 
 Đây là bằng chứng mà báo cáo còn thiếu: nhãn PM2.5 của đồ án là đầu ra mô hình CAMS, không phải đo đạc.
 Script tính sai lệch trung bình (bias), MAE, RMSE, hệ số tương quan Pearson theo NGÀY, và mức khớp khi so với ngưỡng
-QCVN 50 / WHO 15 µg/m³ (TB 24 giờ). Kết quả cho biết CAMS "gần không khí thật" tới đâu — đây là giới hạn trần
+QCVN 45 (từ 2026) / WHO 15 µg/m³ (TB 24 giờ). Kết quả cho biết CAMS "gần không khí thật" tới đâu — đây là giới hạn trần
 của mọi mô hình học CAMS.
 
 Chạy từ THƯ MỤC GỐC dự án. Hai cách cấp số liệu đo:
@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-NGUONG = {"QCVN_05_2023": 50.0, "WHO_2021": 15.0}
+NGUONG = {"QCVN_05_2023": 45.0, "WHO_2021": 15.0}   # QCVN 05:2023 PM2.5 TB 24h: 45 µg/Nm³ từ 01/01/2026
 
 
 def trung_binh_ngay(df, cot_gio="thoi_gian", cot_gt="pm25", toi_thieu_gio=18):

@@ -9,7 +9,8 @@
       ['ban-do-nhiet.html', '🌡️ Bản đồ nhiệt dự báo']] },
     { ten: '📊 Phân tích', muc: [
       ['tra-cuu-khong-gian.html', '🧭 Tra cứu không gian'],
-      ['so-sanh.html', '📊 So sánh trạm'],
+      ['so-sanh.html', '📊 So sánh các nơi'],
+      ['hoa-gio.html', '🧭 Hoa gió ô nhiễm'],
       ['thong-ke.html', '📈 Thống kê'],
       ['bao-cao.html', '📄 Báo cáo']] },
     { ten: '⚠️ Cảnh báo', muc: [

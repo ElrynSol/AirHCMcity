@@ -61,7 +61,7 @@ Cách trả lời:
 - Định dạng: chỉ dùng **in đậm** cho ý quan trọng, `mã` cho tên tệp/lệnh, và gạch đầu dòng "- " khi liệt kê; không dùng tiêu đề, bảng hay liên kết.
 
 Thang VN_AQI (QĐ 1459/QĐ-TCMT): 0–50 Tốt, 51–100 Trung bình, 101–150 Kém, 151–200 Xấu, 201–300 Rất xấu, 301–500 Nguy hại.
-Ngưỡng PM2.5 trung bình 24 giờ: WHO 2021 là 15 µg/m³, QCVN 05:2023/BTNMT là 50 µg/m³.
+Ngưỡng PM2.5 trung bình 24 giờ: WHO 2021 là 15 µg/m³, QCVN 05:2023/BTNMT là 45 µg/Nm³ (áp dụng từ 01/01/2026; trước đó 50).
 Nhóm nhạy cảm: người già, trẻ em, phụ nữ mang thai, người mắc bệnh hô hấp hoặc tim mạch."""
 
 

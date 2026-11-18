@@ -13,7 +13,7 @@ from services.aqi import _aqi_helpers
 router = APIRouter()
 
 LAT, LON = 10.7769, 106.7009          # điểm đại diện trung tâm TP.HCM (cùng điểm với các trang khác)
-NGUONG_QCVN_PM25_24H = 50.0           # QCVN 05:2023/BTNMT, trung bình 24 giờ
+from core.nguong import qcvn_pm25_24h   # QCVN 05:2023: 45 µg/Nm³ từ 01/01/2026 (trước đó 50)
 NGUONG_WHO_PM25_24H = 15.0            # Khuyến nghị WHO 2021, trung bình 24 giờ
 _cache = {"t": 0, "v": None}
 _TTL = 900
@@ -92,8 +92,8 @@ def du_bao_theo_gio():
     kq.update({
         "tb_24h_toi": round(tb, 1),
         "so_gio_tren_who": sum(1 for v in pm_24h_toi if v > NGUONG_WHO_PM25_24H),
-        "so_gio_tren_qcvn": sum(1 for v in pm_24h_toi if v > NGUONG_QCVN_PM25_24H),
-        "nguong": {"qcvn_24h": NGUONG_QCVN_PM25_24H, "who_24h": NGUONG_WHO_PM25_24H},
+        "so_gio_tren_qcvn": sum(1 for v in pm_24h_toi if v > qcvn_pm25_24h()),
+        "nguong": {"qcvn_24h": qcvn_pm25_24h(), "who_24h": NGUONG_WHO_PM25_24H},
         "khung_tot": tot, "khung_xau": xau,
         "mo_hinh": {"ten": "HistGradientBoosting (trực tiếp 1–24 giờ)",
                     "ky_nang_6h": (cs.get("theo_buoc", {}).get("6") or {}).get("ky_nang_so_voi_persistence"),

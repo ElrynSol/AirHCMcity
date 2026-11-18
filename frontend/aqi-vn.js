@@ -140,8 +140,16 @@
     return el.firstChild;
   }
 
+  /* Ngưỡng PM2.5 TB 24 giờ — phải khớp backend/core/nguong.py.
+     QCVN 05:2023/BTNMT: 50 µg/Nm³ đến 31/12/2025, 45 µg/Nm³ từ 01/01/2026. WHO 2021 (khuyến nghị): 15 µg/m³. */
+  function qcvnPM25(ngay) {
+    var d = ngay ? String(ngay).slice(0, 10) : new Date().toISOString().slice(0, 10);
+    return d >= '2026-01-01' ? 45 : 50;
+  }
+
   window.AQI_VN = {
     THANG: THANG, KHONG_RO: KHONG_RO, CAN_CU: 'QĐ 1459/QĐ-TCMT',
+    qcvnPM25: qcvnPM25, WHO_PM25: 15,
     muc: muc, theoTen: theoTen,
     mau: function (aqi) { return muc(aqi).mau; },
     mauChu: function (aqi) { return muc(aqi).chu; },

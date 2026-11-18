@@ -99,7 +99,7 @@
 
     <div class="card">
       <h3 id="tieuDeBd">📉 Bụi mịn PM2.5 mỗi ngày</h3>
-      <p class="goi-y">Mỗi màu là một nơi. Hai đường xám nét đứt: mức WHO khuyến nghị (15 µg/m³) và giới hạn chuẩn Việt Nam (50 µg/m³). Càng thấp càng tốt.</p>
+      <p class="goi-y">Mỗi màu là một nơi. Hai đường xám nét đứt: mức WHO khuyến nghị (15 µg/m³) và giới hạn chuẩn Việt Nam QCVN 05:2023 (45 µg/m³). Càng thấp càng tốt.</p>
       <canvas id="cvTram" height="110" aria-label="Biểu đồ so sánh bụi mịn theo ngày"></canvas>
       <details class="mo-rong" style="margin-top:10px"><summary>⚙️ Xem chất khác / so với cùng kỳ trước</summary>
         <div class="tuy-chon">
@@ -160,7 +160,7 @@ async function goiApi(path) {
 }
 
 const MAU = ['#2a78d6', '#eb6834', '#1baf7a'];   // 3 màu đầu bảng phân loại đã kiểm định (mù màu)
-const WHO = 15, QCVN = 50;
+const WHO = AQI_VN.WHO_PM25, QCVN = AQI_VN.qcvnPM25();   // QCVN 05:2023: 45 µg/Nm³ từ 01/01/2026
 const CHAT = {
   pm25: ['Bụi mịn PM2.5', 'µg/m³', true], pm10: ['Bụi PM10', 'µg/m³', false], o3: ['Ôzôn mặt đất (O₃)', 'µg/m³', false],
   no2: ['Khí NO₂ (vệ tinh)', 'mol/m²', false], co: ['Khí CO (vệ tinh)', 'mol/m²', false], so2: ['Khí SO₂ (vệ tinh)', 'mol/m²', false],
@@ -228,7 +228,7 @@ async function soSanh() {
   });
   if (coNguong) {
     ds.push({ label: 'WHO khuyến nghị (15)', data: nhan.map(() => WHO), borderColor: '#98a2b3', borderDash: [3, 3], borderWidth: 1.5, pointRadius: 0 });
-    ds.push({ label: 'Chuẩn Việt Nam (50)', data: nhan.map(() => QCVN), borderColor: '#475467', borderDash: [8, 4], borderWidth: 1.5, pointRadius: 0 });
+    ds.push({ label: `Chuẩn Việt Nam (${QCVN})`, data: nhan.map(() => QCVN), borderColor: '#475467', borderDash: [8, 4], borderWidth: 1.5, pointRadius: 0 });
   }
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('cvTram'), { type: 'line', data: { labels: nhan.map(ngay), datasets: ds },

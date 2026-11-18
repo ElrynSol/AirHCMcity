@@ -6,6 +6,7 @@ from fastapi import Depends
 from fastapi import HTTPException
 from predict import predict_multiple_days
 from predict import predict_next_day
+from predict import du_bao_theo_thang
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 import math
@@ -74,6 +75,23 @@ def get_forecast():
 @router.get("/api/v1/du-bao-nhieu-ngay")
 def get_forecast_multiple(so_ngay: int = 7):
     return predict_multiple_days(so_ngay)
+
+
+@router.get("/api/v1/du-bao-thang")
+def get_forecast_months(so_thang: int = 3):
+    """Xu hướng PM2.5 theo mùa cho các tháng tới (khí hậu học + dị thường gần đây), kèm kiểm chứng ngược."""
+    return du_bao_theo_thang(max(1, min(int(so_thang), 6)))
+
+
+@router.get("/api/v1/danh-gia-xac-suat")
+def get_danh_gia_xac_suat():
+    """Kiểm chứng dự báo xác suất trên các ngày sau mốc huấn luyện (PICP, Brier, bảng độ tin cậy) — ml/danh_gia_xac_suat.py."""
+    import json
+    from core.config import PROJECT_ROOT
+    f = PROJECT_ROOT / "models" / "danh_gia_xac_suat.json"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="Chưa chạy: python ml/danh_gia_xac_suat.py")
+    return json.loads(f.read_text(encoding="utf-8"))
 
 
 @router.get("/api/v1/phan-tich-yeu-to")

@@ -215,6 +215,21 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
   thẻ từng nơi; so sánh theo phường/xã dùng dữ liệu PostGIS của máy chủ thay cho tải ranh giới từ GitHub. Màu 3 nơi theo bảng màu đã kiểm định cho người mù màu.
 - **Tổng quan**: thay thuật ngữ (chất chính, % ngưỡng QCVN) bằng "Đạt / Vượt chuẩn Việt Nam", "cao gấp … lần mức WHO khuyên"; giải thích AQI; câu xu hướng 14 ngày.
 
+## v6.7 — Bổ sung theo đề cương "Dự báo, phân tích xác suất và truy tìm nguồn thải"
+
+- **Ngưỡng QCVN 05:2023/BTNMT đúng lộ trình**: PM2.5 TB 24 giờ **45 µg/Nm³ từ 01/01/2026** (trước đó 50). Gom về một chỗ
+  `backend/core/nguong.py` (+ `AQI_VN.qcvnPM25()` ở giao diện); thống kê lịch sử so mỗi ngày với ngưỡng của chính ngày đó. API `GET /api/v1/nguong`.
+- **Hoa gió và hoa gió ô nhiễm** (`hoa-gio.html`, `GET /api/v1/hoa-gio`, `services/hoa_gio.py`): gió 10 m theo giờ ERA5 (Open-Meteo Archive)
+  + PM2.5 CAMS; WS/WD theo quy ước WMO, tần suất F_k, nồng độ C̄_k, xác suất vượt ngưỡng có điều kiện P_k, lớp lặng gió riêng, CBPF hướng × tốc độ;
+  thang bằng chứng truy vết nguồn A–E (hệ thống đạt mức B).
+- **Dự báo theo ngày hệ thống**: 7 ngày luôn là ngày mai → +7 theo đồng hồ máy chủ; dữ liệu trễ ≤ 7 ngày được dự báo bù; khoảng 80% nới theo √bước.
+- **Xác suất vượt ngưỡng** WHO 15 / QCVN 45 cho từng ngày; **kiểm chứng xác suất** trên các ngày sau mốc huấn luyện (`ml/danh_gia_xac_suat.py`:
+  PICP, Brier, BSS, bảng độ tin cậy; `GET /api/v1/danh-gia-xac-suat`). Kết quả 32 ngày: PICP 81%, kỹ năng +11% so với "mai = hôm nay".
+- **Xu hướng các tháng tới** (`GET /api/v1/du-bao-thang`): khí hậu học theo tháng + dị thường 30 ngày tắt dần; kiểm chứng ngược 50 tháng:
+  MAE 3,2 so với 4,4 của "tháng sau = tháng trước" (kỹ năng +28%).
+- Kịch bản: bảng **biện pháp xử lý theo nguồn** và chỉ số theo dõi; mức AQI theo PM2.5 trong `ml/predict.py` sửa đúng mốc QĐ 1459 (25/50/80/150/250).
+- 148 kiểm thử (thêm `tests/test_pdf_bo_sung.py`).
+
 ## Mã nguồn mở và bộ dữ liệu
 
 - Mã nguồn: giấy phép **MIT** (tệp `LICENSE`). Tự do dùng, sửa, phân phối; giữ lại thông báo bản quyền.

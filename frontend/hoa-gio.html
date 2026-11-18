@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Hoa gió và hoa gió ô nhiễm TP.HCM: gió thường thổi từ đâu, gió từ hướng nào thì bụi mịn PM2.5 cao – AirHCM.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<script src="aqi-vn.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Hoa gió ô nhiễm</title>
+<style>
+  .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
+  .loi { background:#fde7e9; color:#b3261e; border-radius:10px; padding:10px 14px; font-size:14px; }
+  .thanh-cong-cu { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .nhom-nut { display:inline-flex; background:#eef2f6; border-radius:10px; padding:3px; }
+  .nhom-nut button { border:0; background:none; padding:8px 13px; border-radius:8px; font:600 13.5px var(--font); color:var(--text-muted); cursor:pointer; }
+  .nhom-nut button.on { background:#fff; color:var(--text-main); box-shadow:0 1px 3px rgba(16,24,40,.12); }
+  .thanh-cong-cu label { font-size:13.5px; color:var(--text-2); }
+  .thanh-cong-cu select { padding:8px 10px; border-radius:8px; border:1px solid #d0d5dd; font:14px var(--font); background:#fff; }
+  .tom-tat .cau { font-size:18px; font-weight:700; line-height:1.5; }
+  .tom-tat ul { margin:8px 0 0; padding-left:20px; } .tom-tat li { font-size:14.5px; line-height:1.65; color:var(--text-2); margin:4px 0; }
+  .hai-hoa { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:860px) { .hai-hoa { grid-template-columns:1fr; } }
+  .hai-hoa > .card { margin-bottom:0; }
+  .hoa { width:100%; max-width:420px; display:block; margin:0 auto; }
+  .hoa text { font-family:var(--font); }
+  .chu-giai { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; margin-top:8px; color:var(--text-2); justify-content:center; }
+  .chu-giai i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
+  table.bang { width:100%; border-collapse:collapse; font-size:13.5px; box-shadow:none; display:table; white-space:normal; }
+  table.bang th { text-align:left; font-size:12px; color:var(--text-muted); font-weight:600; padding:7px 8px; border-bottom:1px solid var(--border); background:none; }
+  table.bang td { padding:8px; border-bottom:1px solid #f0f2f5; vertical-align:middle; }
+  table.bang .r { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  table.bang tr.mo td { color:var(--text-muted); }
+  .o-cbpf { text-align:center; font-size:12.5px; font-variant-numeric:tabular-nums; border-radius:4px; }
+  details.mo-rong summary { cursor:pointer; color:var(--primary); font-weight:600; font-size:13.5px; }
+  .kt { font-size:13.5px; color:var(--text-2); line-height:1.7; }
+  .kt code { background:#f2f4f7; padding:1px 5px; border-radius:4px; font-size:12.5px; }
+  .muc-bc { display:inline-block; font-weight:700; padding:1px 8px; border-radius:6px; }
+  .muc-bc.co { background:#e6f4ea; color:#137333; } .muc-bc.mot-phan { background:#fff8e1; color:#8a6d00; } .muc-bc.chua { background:#f2f4f7; color:#667085; }
+  .canh-bao { font-size:13.5px; color:var(--text-2); background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:10px 14px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="header">
+  <div><a href="tong-quan.html">🏠 Tổng quan</a></div>
+  <div id="userBox"></div>
+</div>
+
+<div id="content">
+  <div class="hero-card">
+    <h2>🧭 Gió thổi từ đâu, bụi mịn đến từ đâu?</h2>
+    <div class="sub">Hoa gió cho biết gió ở TP.HCM thường thổi từ hướng nào. Hoa gió ô nhiễm cho biết khi gió thổi từ mỗi hướng thì
+      khả năng bụi mịn PM2.5 cao là bao nhiêu, giúp khoanh vùng hướng có nguồn ô nhiễm nghi vấn.</div>
+  </div>
+
+  <div class="thanh-cong-cu">
+    <div class="nhom-nut" id="chonKy"><button data-v="30">30 ngày</button><button data-v="90" class="on">3 tháng</button><button data-v="365">1 năm</button></div>
+    <label>Bụi mịn "cao" là trên
+      <select id="chonNguong">
+        <option value="15">15 µg/m³ (mức WHO khuyên)</option>
+        <option value="25" selected>25 µg/m³ (hết mức "Tốt")</option>
+        <option value="45">45 µg/m³ (ngưỡng QCVN 05:2023)</option>
+      </select></label>
+    <div class="nhom-nut" id="chonHuong"><button data-v="8" class="on">8 hướng</button><button data-v="16">16 hướng</button></div>
+  </div>
+  <div id="loi"></div>
+
+  <div class="card tom-tat">
+    <div class="cau" id="ttCau">Đang tải số liệu gió và bụi mịn theo giờ…</div>
+    <ul id="ttY"></ul>
+  </div>
+
+  <div class="hai-hoa">
+    <div class="card">
+      <h3>🌬️ Hoa gió: gió thổi từ đâu?</h3>
+      <p class="goi-y">Cánh càng dài là gió thổi từ hướng đó càng nhiều giờ. Màu cho biết gió mạnh hay nhẹ.</p>
+      <div id="hoaGio"></div>
+      <div class="chu-giai" id="cgGio"></div>
+    </div>
+    <div class="card">
+      <h3>😷 Hoa gió ô nhiễm: gió từ đâu thì bụi cao?</h3>
+      <p class="goi-y" id="gyONhiem">Cánh càng dài là khi gió thổi từ hướng đó, càng nhiều giờ bụi mịn vượt ngưỡng đã chọn.</p>
+      <div id="hoaONhiem"></div>
+      <div class="chu-giai" id="cgONhiem"></div>
+    </div>
+  </div>
+
+  <div class="canh-bao" style="margin:14px 0">⚠️ <b>Đọc cho đúng:</b> hoa gió ô nhiễm là <b>quan hệ thống kê</b> giữa hướng gió và bụi mịn.
+    Nó gợi ý hướng có nguồn ô nhiễm <b>nghi vấn</b> để ưu tiên kiểm tra, <b>không chứng minh</b> một nhà máy hay khu vực cụ thể gây ô nhiễm.</div>
+
+  <div class="card">
+    <h3>📋 Số liệu từng hướng</h3>
+    <div style="overflow-x:auto"><table class="bang" id="bang"></table></div>
+    <p class="goi-y" style="margin-top:8px">Dòng chữ mờ: hướng có dưới 10 giờ số liệu, chưa đủ để kết luận.</p>
+  </div>
+
+  <details class="card mo-rong"><summary>🔬 Hướng × tốc độ gió (CBPF) và công thức tính</summary>
+    <div class="kt" style="margin-top:10px">
+      <p><b>CBPF</b> (hàm xác suất có điều kiện hai biến): tỉ lệ giờ có PM2.5 vượt phân vị 75% của cả kỳ (<span id="p75"></span> µg/m³),
+        tính riêng theo hướng và lớp tốc độ gió. Ô đậm ở <b>gió mạnh</b> gợi ý nguồn ở xa (vận chuyển vùng); ô đậm ở <b>gió nhẹ</b> gợi ý nguồn gần.</p>
+      <div style="overflow-x:auto"><table class="bang" id="bangCbpf"></table></div>
+      <h4>Công thức (quy ước khí tượng WMO)</h4>
+      <p>Từ thành phần gió U (về hướng Đông) và V (về hướng Bắc): <code>WS = √(U² + V²)</code>;
+        <code>WD = (degrees(atan2(−U, −V)) + 360) mod 360</code>, là hướng gió <b>thổi từ</b>, Bắc = 0°, Đông = 90°.
+        Ví dụ U = −2, V = −1 → WS = 2,236 m/s, WD = 63,4° (gió Đông Bắc).</p>
+      <p>Với mỗi hướng k: tần suất <code>F_k = n_k / N × 100%</code>; nồng độ trung bình <code>C̄_k = ΣC_t / n_k</code>;
+        xác suất vượt ngưỡng có điều kiện <code>P_k = #{C_t &gt; T, WD_t ∈ k} / n_k</code>. F_k và P_k là hai đại lượng khác nhau:
+        một hướng có thể ít gió (F_k nhỏ) nhưng mỗi lần gió từ đó thì bụi cao (P_k lớn). Giờ lặng gió (WS &lt; 0,5 m/s) tách thành lớp riêng.</p>
+      <p id="nguonSoLieu"></p>
+      <h4>Thang bằng chứng truy vết nguồn thải</h4>
+      <table class="bang">
+        <tr><th>Mức</th><th>Phương pháp</th><th>Kết luận được</th><th>AirHCM</th></tr>
+        <tr><td>A. Dấu hiệu</td><td>Tương quan nhiều chất, chu kỳ giờ cao điểm</td><td>Nghi ngờ loại nguồn; không phải nhân quả</td><td><span class="muc-bc mot-phan">Một phần</span></td></tr>
+        <tr><td>B. Gió và không gian</td><td>Hoa gió ô nhiễm, CBPF</td><td>Hướng / vùng nguồn tiềm năng</td><td><span class="muc-bc co">Có (trang này)</span></td></tr>
+        <tr><td>C. Vận chuyển</td><td>Quỹ đạo ngược HYSPLIT</td><td>Khối khí đi qua đâu</td><td><span class="muc-bc chua">Chưa</span></td></tr>
+        <tr><td>D. Dấu vân tay hóa học</td><td>PMF/CMB với ion, kim loại, OC/EC</td><td>Nhóm nguồn và tỉ lệ đóng góp</td><td><span class="muc-bc chua">Chưa (cần mẫu phòng thí nghiệm)</span></td></tr>
+        <tr><td>E. Mô hình vật lý</td><td>WRF-Chem/CMAQ, gắn nhãn nguồn</td><td>Tác động kịch bản theo nguồn</td><td><span class="muc-bc chua">Chưa</span></td></tr>
+      </table>
+    </div>
+  </details>
+</div>
+
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const so = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
+const pt = x => x == null ? '--' : Math.round(x * 100) + '%';
+const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
+document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
+let ky = 90, soHuong = 8, lan = 0;
+const MAU_TOC_DO = ['#9ec5f4', '#3987e5', '#184f95'];   // một sắc xanh nhạt → đậm (thứ tự tốc độ)
+const MAU_ON = '#eb6834', MAU_IT = '#d0d5dd';
+
+// Vẽ hoa gió SVG: cac[i] = mảng giá trị chồng nhau của hướng i; hướng 0 = Bắc, theo chiều kim đồng hồ
+function veHoa(el, cac, mau, opt) {
+  const W = 400, c = W / 2, R = 150, n = cac.length, rong = 360 / n, khe = n > 8 ? 1.5 : 3;
+  const max = opt.max || Math.max(...cac.map(a => a.reduce((s, x) => s + x, 0)), 1e-9);
+  const xy = (r, g) => [c + r * Math.sin(g * Math.PI / 180), c - r * Math.cos(g * Math.PI / 180)];
+  const nem = (r0, r1, g0, g1) => { const [a, b] = xy(r0, g0), [d, e] = xy(r1, g0), [f, h] = xy(r1, g1), [i, j] = xy(r0, g1), l = g1 - g0 > 180 ? 1 : 0;
+    return `M${a},${b}L${d},${e}A${r1},${r1} 0 ${l} 1 ${f},${h}L${i},${j}A${r0},${r0} 0 ${l} 0 ${a},${b}Z`; };
+  let s = `<svg class="hoa" viewBox="0 0 ${W} ${W}" role="img" aria-label="${esc(opt.aria)}">`;
+  const vach = opt.vach || [max / 4, max / 2, max * 3 / 4, max];
+  vach.forEach(v => { s += `<circle cx="${c}" cy="${c}" r="${v / max * R}" fill="none" stroke="#e4e8ef"/><text x="${c + 3}" y="${c - v / max * R - 3}" font-size="11" fill="#667085">${opt.nhanVach(v)}</text>`; });
+  ['B', 'Đ', 'N', 'T'].forEach((t, i) => { const [x, y] = xy(R + 22, i * 90); s += `<text x="${x}" y="${y + 5}" text-anchor="middle" font-size="15" font-weight="700" fill="#344054">${t}</text>`; });
+  cac.forEach((a, i) => { const g0 = i * rong - rong / 2 + khe / 2, g1 = i * rong + rong / 2 - khe / 2; let r = 0;
+    a.forEach((v, j) => { if (!v) return; const r1 = r + v / max * R;
+      s += `<path d="${nem(Math.max(r, 2), r1, g0, g1)}" fill="${typeof mau === 'function' ? mau(i, j) : mau[j]}" stroke="#fff" stroke-width="1"><title>${esc(opt.goiY(i, j, v))}</title></path>`; r = r1; }); });
+  el.innerHTML = s + '</svg>';
+}
+
+async function tai() {
+  const id = ++lan, nguong = +document.getElementById('chonNguong').value;
+  document.getElementById('loi').innerHTML = '';
+  let d;
+  try {
+    const r = await fetch(`${API}/hoa-gio?so_ngay=${ky}&nguong=${nguong}&so_huong=${soHuong}`);
+    d = await r.json(); if (!r.ok) throw new Error(d.detail || 'Lỗi máy chủ');
+  } catch (e) { document.getElementById('loi').innerHTML = `<div class="loi">${esc(e.message)}</div>`; return; }
+  if (id !== lan) return;
+  const hs = d.huong, du = hs.filter(h => !h.it_so_lieu && h.xac_suat_vuot != null);
+  const nhieu = [...hs].sort((a, b) => b.tan_suat - a.tan_suat)[0];
+  const xau = [...du].sort((a, b) => b.xac_suat_vuot - a.xac_suat_vuot)[0], sach = [...du].sort((a, b) => a.xac_suat_vuot - b.xac_suat_vuot)[0];
+  document.getElementById('ttCau').innerHTML = `Trong ${ky === 365 ? '1 năm' : ky === 90 ? '3 tháng' : '30 ngày'} qua, gió thổi nhiều nhất từ hướng <b>${esc(nhieu.ten)}</b>
+    (${so(nhieu.tan_suat, 0)}% số giờ). Khi gió thổi từ hướng <b style="color:#b42318">${esc(xau.ten)}</b>, khả năng bụi mịn cao nhất: <b>${pt(xau.xac_suat_vuot)}</b> số giờ vượt ${nguong} µg/m³.`;
+  const y = [];
+  y.push(`Gió từ hướng <b>${esc(sach.ten)}</b> mang không khí sạch nhất: chỉ ${pt(sach.xac_suat_vuot)} số giờ vượt ngưỡng (trung bình cả kỳ: ${pt(d.tong_the.xac_suat_vuot)}).`);
+  if (d.lang_gio.so_gio) y.push(`<b>Lặng gió</b> (dưới 0,5 m/s) chiếm ${so(d.lang_gio.tan_suat)}% số giờ; lúc đó ${pt(d.lang_gio.xac_suat_vuot)} số giờ bụi vượt ngưỡng, vì không có gió để làm loãng bụi.`);
+  y.push(`Gợi ý: nguồn ô nhiễm nghi vấn nằm về phía <b>${esc(xau.ten)}</b> so với trung tâm TP.HCM. Đây là gợi ý để ưu tiên kiểm tra, chưa phải kết luận.`);
+  document.getElementById('ttY').innerHTML = y.map(x => `<li>${x}</li>`).join('');
+
+  // Hoa gió: chồng theo lớp tốc độ
+  veHoa(document.getElementById('hoaGio'), hs.map(h => h.theo_toc_do.map(l => l.tan_suat)), MAU_TOC_DO, {
+    aria: 'Hoa gió: tần suất gió theo hướng và tốc độ', nhanVach: v => so(v, 0) + '%',
+    goiY: (i, j, v) => `Gió từ ${hs[i].ten}, ${hs[i].theo_toc_do[j].lop}: ${so(v)}% số giờ` });
+  document.getElementById('cgGio').innerHTML = hs[0].theo_toc_do.map((l, j) => `<span><i style="background:${MAU_TOC_DO[j]}"></i>${esc(l.lop)}</span>`).join('') +
+    `<span>· lặng gió ${so(d.lang_gio.tan_suat)}%</span>`;
+  // Hoa gió ô nhiễm: P_k theo hướng, thang cố định 0–100%
+  veHoa(document.getElementById('hoaONhiem'), hs.map(h => [(h.xac_suat_vuot || 0) * 100]), i => hs[i].it_so_lieu ? MAU_IT : MAU_ON, {
+    aria: 'Hoa gió ô nhiễm: xác suất bụi mịn vượt ngưỡng theo hướng gió', max: 100, vach: [25, 50, 75, 100], nhanVach: v => v + '%',
+    goiY: i => `Gió từ ${hs[i].ten}: ${pt(hs[i].xac_suat_vuot)} số giờ bụi mịn > ${nguong} µg/m³ (${hs[i].so_gio} giờ, PM2.5 TB ${so(hs[i].pm25_tb)})` });
+  document.getElementById('gyONhiem').textContent = `Cánh càng dài là khi gió thổi từ hướng đó, càng nhiều giờ bụi mịn vượt ${nguong} µg/m³ (thang 0–100%).`;
+  document.getElementById('cgONhiem').innerHTML = `<span><i style="background:${MAU_ON}"></i>% số giờ vượt ${nguong} µg/m³</span><span><i style="background:${MAU_IT}"></i>ít số liệu (&lt; 10 giờ)</span>`;
+
+  document.getElementById('bang').innerHTML = `<tr><th>Gió thổi từ</th><th class="r">Số giờ</th><th class="r">Tần suất F<sub>k</sub></th><th class="r">Tốc độ TB</th>
+    <th class="r">Bụi mịn TB C̄<sub>k</sub></th><th class="r">Xác suất vượt P<sub>k</sub></th></tr>` +
+    hs.map(h => `<tr class="${h.it_so_lieu ? 'mo' : ''}"><td><b>${esc(h.ten)}</b> <small style="color:var(--text-muted)">${so(h.goc, 1)}°</small></td><td class="r">${h.so_gio}</td>
+      <td class="r">${so(h.tan_suat)}%</td><td class="r">${so(h.toc_do_tb)} m/s</td><td class="r">${so(h.pm25_tb)} µg/m³</td><td class="r"><b>${pt(h.xac_suat_vuot)}</b></td></tr>`).join('') +
+    `<tr><td><b>Lặng gió</b> <small style="color:var(--text-muted)">&lt; 0,5 m/s</small></td><td class="r">${d.lang_gio.so_gio}</td><td class="r">${so(d.lang_gio.tan_suat)}%</td><td class="r">—</td>
+      <td class="r">${so(d.lang_gio.pm25_tb)} µg/m³</td><td class="r"><b>${pt(d.lang_gio.xac_suat_vuot)}</b></td></tr>`;
+
+  document.getElementById('p75').textContent = so(d.p75_pm25);
+  const lop = hs[0].theo_toc_do.map(l => l.lop);
+  document.getElementById('bangCbpf').innerHTML = `<tr><th>Gió từ</th>${lop.map(l => `<th class="r">${esc(l)}</th>`).join('')}</tr>` +
+    hs.map(h => `<tr><td>${esc(h.ten)}</td>${h.theo_toc_do.map(l => l.cbpf == null ? '<td class="r" style="color:#98a2b3">—</td>'
+      : `<td><div class="o-cbpf" style="background:rgba(235,104,52,${(0.08 + l.cbpf * 0.85).toFixed(2)});color:${l.cbpf > .55 ? '#fff' : '#101828'}" title="${l.so_gio} giờ">${pt(l.cbpf)}</div></td>`).join('')}</tr>`).join('');
+  document.getElementById('nguonSoLieu').innerHTML = `<b>Số liệu:</b> gió 10 m theo giờ — ${esc(d.nguon_gio)}; PM2.5 theo giờ — ${esc(d.nguon_pm25)};
+    ${d.so_gio} giờ từ ${esc(d.tu)} đến ${esc(d.den)} tại trung tâm TP.HCM. Mức bằng chứng: ${esc(d.muc_bang_chung)}.<br>${d.gioi_han.map(esc).join('<br>')}`;
+}
+
+function nhom(id, cb) { document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll(`#${id} button`).forEach(x => x.classList.toggle('on', x === b)); cb(+b.dataset.v); tai(); }); }
+nhom('chonKy', v => ky = v); nhom('chonHuong', v => soHuong = v);
+document.getElementById('chonNguong').addEventListener('change', tai);
+tai();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

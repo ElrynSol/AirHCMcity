@@ -4,7 +4,7 @@
   → AQI từng trạm theo QĐ 1459 → AQI TP tính từ nồng độ trung bình các trạm (cùng cách với /aqi-theo-ngay).
   Không gọi được Open-Meteo thì dùng trung bình ngày mới nhất trong CSDL (ghi rõ nguồn trong kết quả).
 - So với hôm qua: AQI ngày gần nhất trong CSDL.
-- So với ngưỡng: PM2.5 TB 24 giờ so với WHO 2021 (15 µg/m³) và QCVN 05:2023 (50 µg/m³).
+- So với ngưỡng: PM2.5 TB 24 giờ so với WHO 2021 (15 µg/m³) và QCVN 05:2023 (45 µg/Nm³ từ 01/01/2026, core/nguong.py).
 - Thời tiết hiện tại: Open-Meteo forecast (current), đệm 15 phút.
 - Dự báo 24 giờ: lấy từ /du-bao-gio (đã có đệm riêng); lỗi thì bỏ qua phần này.
 """
@@ -23,7 +23,7 @@ from services.openmeteo import lay_gio_hien_tai
 from tinh_aqi import tinh_aqi_tong_hop, muc_aqi, THANG_AQI
 
 NGUONG_WHO_PM25 = 15.0
-NGUONG_QCVN_PM25 = 50.0
+from core.nguong import qcvn_pm25_24h
 TAM_TP = (10.7769, 106.7009)
 _dem = {"t": 0.0, "v": None}
 _dem_tt = {"t": 0.0, "v": None}
@@ -151,9 +151,9 @@ def tong_quan():
                      "so_tram": len(xep_hang), "theo_gio": theo_gio, "gio_so_lieu": gio_sl,
                      "y_nghia": m["y_nghia"] if m else None, "nguoi_binh_thuong": m["nguoi_binh_thuong"] if m else None,
                      "nhom_nhay_cam": m["nhom_nhay_cam"] if m else None},
-        "nguong": {"who": NGUONG_WHO_PM25, "qcvn": NGUONG_QCVN_PM25,
+        "nguong": {"who": NGUONG_WHO_PM25, "qcvn": qcvn_pm25_24h(),
                    "lan_who": _r(pm25 / NGUONG_WHO_PM25, 1) if pm25 else None,
-                   "phan_tram_qcvn": round(pm25 / NGUONG_QCVN_PM25 * 100) if pm25 else None},
+                   "phan_tram_qcvn": round(pm25 / qcvn_pm25_24h() * 100) if pm25 else None},
         "so_voi_hom_qua": ({"ngay": hom_qua["ngay"], "aqi": hom_qua["aqi"], "chenh": (aqi_tp - hom_qua["aqi"]) if aqi_tp is not None and hom_qua["aqi"] is not None else None}
                            if hom_qua else None),
         "phan_bo": phan_bo,

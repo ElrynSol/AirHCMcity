@@ -88,7 +88,7 @@ KICH_BAN_MAU = {
     "khong_khi_sach": {"ten": "Không khí sạch", "mo_ta": "NO₂, CO, SO₂, O₃ ở mức thấp nhất",
                        "vi_tri": {"no2_mean": 0, "co_gee": 0, "so2_gee": 0, "o3_mean": 0}},
 }
-NGUONG_QCVN_PM25 = 50.0   # QCVN 05:2023/BTNMT, trung bình 24 giờ
+from core.nguong import qcvn_pm25_24h   # QCVN 05:2023/BTNMT, TB 24 giờ: 45 µg/Nm³ từ 01/01/2026
 NGUONG_WHO_PM25 = 15.0    # Khuyến nghị WHO 2021, trung bình 24 giờ
 
 
@@ -120,6 +120,7 @@ def danh_gia(kq, chi_so_mo_hinh, muc_aqi, tinh_aqi):
         nx.append(f"Mức chất lượng không khí chuyển từ “{m_nen.get('muc')}” (AQI {aqi_nen}) sang “{m_moi.get('muc')}” (AQI {aqi_moi}).")
     else:
         nx.append(f"Mức chất lượng không khí giữ nguyên “{m_moi.get('muc')}” (AQI {aqi_nen} → {aqi_moi}).")
+    NGUONG_QCVN_PM25 = qcvn_pm25_24h()
     if moi > NGUONG_QCVN_PM25:
         nx.append(f"Vượt ngưỡng QCVN 05:2023 ({NGUONG_QCVN_PM25:.0f} µg/m³ trung bình 24 giờ) — cần hạn chế hoạt động ngoài trời.")
     elif moi > NGUONG_WHO_PM25:
