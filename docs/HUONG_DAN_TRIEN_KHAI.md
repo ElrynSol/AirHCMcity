@@ -31,8 +31,7 @@ Người dùng (trình duyệt / app Android) ──HTTPS──► Cloudflare (D
 | Bật web công khai | Bấm đúp `chay_cong_khai.bat` (tự bật máy chủ nếu chưa chạy, rồi mở đường hầm) |
 | Chỉ chạy trên máy | Bấm đúp `chay_server.bat`, mở http://localhost:8000 |
 | Tắt web công khai | Đóng cửa sổ `chay_cong_khai.bat` |
-| Kiểm tra trước khi trình diễn | `venv\Scripts\python.exe tools\kiem_thu_luong_du_lieu.py` (6/6 luồng phải đạt) |
-| Trạm IoT mô phỏng | `venv\Scripts\python.exe iot\gia_lap\tram_ao.py --dot-bien 60` |
+| Kiểm tra trước khi trình diễn | `venv\Scripts\python.exe tools\kiem_thu_luong_du_lieu.py` (5/5 luồng phải đạt) |
 | Tải app Android | https://airhcmcity.asia/tai-app.html |
 | Theo dõi truy cập | Cloudflare → Web Analytics; Google Search Console → Hiệu suất, Trang |
 

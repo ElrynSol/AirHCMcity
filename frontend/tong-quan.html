@@ -92,8 +92,6 @@
   .loi-tat a:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: #c6dafc; }
   .loi-tat .bt { font-size: 24px; } .loi-tat b { font-size: 14px; } .loi-tat small { font-size: 12px; color: var(--text-muted); }
 
-  .the-iot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .the-iot .so-iot { font-size: 26px; font-weight: 800; border-radius: 14px; padding: 8px 14px; min-width: 70px; text-align: center; }
   .song { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: nhip 1.6s infinite; margin-right: 6px; }
   @keyframes nhip { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.5); } 70% { box-shadow: 0 0 0 9px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
 
@@ -150,7 +148,6 @@
       <div class="tieu-de-the"><h3>📍 Các điểm đo lúc này</h3><a class="lk" href="ban-do-nhiet.html">Phường của bạn →</a></div>
       <div id="phanBo"><span class="khung-cho" style="height:18px"></span></div>
       <div class="cuc" id="cucTri"></div>
-      <div id="theIot" style="margin-top:14px"></div>
     </div>
   </div>
 
@@ -166,7 +163,6 @@
     <a href="ban-do-nhiet.html"><span class="bt">🏘️</span><b>Phường của bạn</b><small>Bản đồ màu 168 phường/xã</small></a>
     <a href="kich-ban.html"><span class="bt">🎛️</span><b>Nếu… thì sao?</b><small>Mưa, gió, khí thải thay đổi</small></a>
     <a href="canh-bao.html"><span class="bt">🔔</span><b>Cảnh báo</b><small>Đăng ký nhận email</small></a>
-    <a href="iot.html"><span class="bt">📡</span><b>Trạm IoT</b><small>Thời gian thực (mô phỏng)</small></a>
     <a href="phuong-phap.html"><span class="bt">🔬</span><b>Phương pháp</b><small>Cách tính & kiểm chứng</small></a>
   </div>
 
@@ -277,10 +273,6 @@ function vePhanBo(d) {
     `<div class="pb-chu">${AQI_VN.THANG.filter(m => pb[m.ten]).map(m => `<span><i style="background:${m.mau}"></i>${m.ten}: <b>${pb[m.ten]}</b></span>`).join('')}</div>`;
   const s = d.xep_hang[0], o = d.xep_hang[d.xep_hang.length - 1];
   document.getElementById('cucTri').innerHTML = s ? `<div>🌿 Trong lành nhất<b>${e(s.ten)}</b>${AQI_VN.huyHieu(s.aqi)}</div><div>🏭 Nhiều bụi nhất<b>${e(o.ten)}</b>${AQI_VN.huyHieu(o.aqi)}</div>` : '';
-  const iot = (d.iot || [])[0];
-  document.getElementById('theIot').innerHTML = iot ? `<a href="iot.html" style="text-decoration:none;color:inherit"><div class="the-iot">
-      <span class="so-iot" style="background:${AQI_VN.mau(iot.aqi)};color:${AQI_VN.mauChu(iot.aqi)}">${iot.aqi ?? '--'}</span>
-      <div><div style="font-size:12px;color:var(--text-muted)"><span class="song"></span>Trạm IoT · đang gửi dữ liệu</div><b>${e(iot.ma)} · ${e(iot.ten)}</b></div></div></a>` : '';
 }
 
 function veXepHang() {
@@ -312,13 +304,7 @@ document.querySelector('.xh-dk').addEventListener('click', ev => {
   const b = ev.target.closest('button'); if (!b) return;
   xep = b.dataset.xep; document.querySelectorAll('.xh-dk button').forEach(x => x.classList.toggle('chon', x === b)); veXepHang();
 });
-// Thời gian thực (SSE): ô trạm IoT cập nhật theo từng gói tin; có dữ liệu mới / đồng bộ xong thì tải lại cả trang tổng quan
-AirLive.nghe('iot.da_nhan', d => {
-  if (!D) return;
-  const cu = (D.iot || []).find(x => x.ma === d.ma);
-  D.iot = [{ ma: d.ma, ten: cu ? cu.ten : 'Trạm ' + d.ma, pm25: d.pm25, ...AQI_VN.muc(d.aqi), aqi: d.aqi }];
-  vePhanBo(D);
-});
+// Thời gian thực (SSE): có dữ liệu mới / đồng bộ xong thì tải lại trang tổng quan
 let henTai = null;
 ['du_lieu.da_nap', 'dong_bo.xong'].forEach(cd => AirLive.nghe(cd, () => { clearTimeout(henTai); henTai = setTimeout(tai, 20000); }));
 AirLive.chiBao('chiBaoSong');

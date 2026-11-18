@@ -1,4 +1,4 @@
-"""Quét không gian bằng PostGIS: tìm trạm, thiết bị IoT, phản ánh, phường/xã trong vùng tròn / khung chữ nhật / đa giác.
+"""Quét không gian bằng PostGIS: tìm điểm ước tính, phản ánh, phường/xã trong vùng tròn / khung chữ nhật / đa giác.
 
 Mọi phép đo làm trong CSDL trên kiểu geography (mặt cầu WGS84, đơn vị mét):
 - Vùng tròn: ST_DWithin(điểm::geography, tâm::geography, bán kính) — dùng chỉ mục, chính xác theo mét.
@@ -135,10 +135,6 @@ def quet(yc: dict) -> dict:
             FROM tram_quan_trac t LEFT JOIN moi m2 ON m2.tram_id = t.id
             WHERE t.toado IS NOT NULL AND """ + dk.format(col="t.toado") + " ORDER BY m"), ts).fetchall()
 
-        iot = c.execute(text(vung_cte + """
-            SELECT t.ma, t.ten, ST_Y(t.toado) lat, ST_X(t.toado) lon,
-                   ST_Distance(t.toado::geography, (SELECT p FROM moc)::geography) AS m
-            FROM thiet_bi_iot t WHERE t.toado IS NOT NULL AND """ + dk.format(col="t.toado") + " ORDER BY m"), ts).fetchall()
 
         pa = c.execute(text(vung_cte + """
             SELECT p.id, p.loai, p.trang_thai, p.tao_luc, p.vi_do lat, p.kinh_do lon,
@@ -170,13 +166,12 @@ def quet(yc: dict) -> dict:
         "vung": {**tt, "dien_tich_km2": round(thong_tin.km2, 3), "geojson": json.loads(thong_tin.vung_gj), "trong_tp": thong_tin.trong_tp},
         "cot_moc": {"lat": thong_tin.mlat, "lon": thong_tin.mlon, "la_vi_tri_nguoi_dung": mlat is not None},
         "tram": ds_tram,
-        "iot": [{"ma": r.ma, "ten": r.ten, "lat": r.lat, "lon": r.lon, "km": round(r.m / 1000, 2)} for r in iot],
         "phan_anh": [{"id": r.id, "loai": r.loai, "ten_loai": pa_sv.LOAI.get(r.loai, pa_sv.LOAI["khac"])["ten"],
                       "bieu_tuong": pa_sv.LOAI.get(r.loai, pa_sv.LOAI["khac"])["bt"], "trang_thai": r.trang_thai,
                       "tao_luc": r.tao_luc.isoformat(), "lat": r.lat, "lon": r.lon, "km": round(r.m / 1000, 2)} for r in pa],
         "phuong": [{"ma": r.ma, "ten": r.ten_day_du, "khu_vuc": r.khu_vuc, "ti_le_trong_vung": round(float(r.ti_le or 0), 3),
                     "km": round(r.m / 1000, 2)} for r in phuong],
-        "tom_tat": {"so_tram": len(ds_tram), "so_iot": len(iot), "so_phan_anh": len(pa), "so_phuong": len(phuong),
+        "tom_tat": {"so_tram": len(ds_tram), "so_phan_anh": len(pa), "so_phuong": len(phuong),
                     "aqi_tb": round(sum(aqi_ds) / len(aqi_ds)) if aqi_ds else None, "aqi_cao_nhat": max(aqi_ds) if aqi_ds else None},
     }
 

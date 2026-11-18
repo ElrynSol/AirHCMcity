@@ -61,7 +61,7 @@
 <div id="content">
   <div class="hero">
     <h2>🧭 Tra cứu không gian</h2>
-    <div class="sub">Định vị, quét vùng tròn / khung / đa giác để tìm trạm quan trắc, thiết bị IoT, phản ánh và phường/xã trong vùng; đo khoảng cách và chỉ đường. Mọi phép tính không gian chạy trên PostGIS.</div>
+    <div class="sub">Định vị, quét vùng tròn / khung / đa giác để tìm điểm ước tính, phản ánh và phường/xã trong vùng; đo khoảng cách và chỉ đường. Mọi phép tính không gian chạy trên PostGIS.</div>
   </div>
 
   <div class="luoi-kg">
@@ -93,7 +93,6 @@
         <div class="tom" id="tom"></div>
         <div class="duong" id="duong" style="display:none"></div>
         <h4>Trạm quan trắc (gần cột mốc nhất trước)</h4><ul class="ds" id="dsTram"></ul>
-        <h4>Thiết bị IoT</h4><ul class="ds" id="dsIot"></ul>
         <h4>Phản ánh của người dân (7 ngày)</h4><ul class="ds" id="dsPa"></ul>
         <h4>Phường/xã bị vùng quét cắt qua</h4><ul class="ds" id="dsPhuong"></ul>
       </div>
@@ -211,7 +210,7 @@ function veKq(d) {
   $('trong').style.display = 'none'; $('noiDung').style.display = '';
   const t = d.tom_tat, m = t.aqi_tb != null ? AQI_VN.muc(t.aqi_tb) : null;
   $('tom').innerHTML = `<div>Diện tích<b>${String(d.vung.dien_tich_km2.toFixed(1)).replace('.', ',')} km²</b></div>
-    <div>Trạm · IoT<b>${t.so_tram} · ${t.so_iot}</b></div>
+    <div>Điểm ước tính<b>${t.so_tram}</b></div>
     <div>AQI trung bình<b style="color:${m ? m.dam : 'inherit'}">${t.aqi_tb ?? '--'}</b>${m ? m.ten : 'không có trạm'}</div>
     <div>Phường/xã<b>${t.so_phuong}</b></div><div>Phản ánh<b>${t.so_phan_anh}</b></div>
     <div>Đo từ<b style="font-size:13px">${d.cot_moc.la_vi_tri_nguoi_dung ? '📌 cột mốc' : 'tâm vùng'}</b>${esc(d.cot_moc.la_vi_tri_nguoi_dung ? nguonMoc : '')}</div>`;
@@ -227,10 +226,6 @@ function veKq(d) {
     L.circleMarker([x.lat, x.lon], { radius: 9, color: '#222', weight: 1.5, fillColor: mm ? mm.mau : '#ccc', fillOpacity: 1 })
       .bindPopup(`<b>${esc(x.ma)}</b> ${esc(x.ten)}<br>AQI <b>${x.aqi ?? '--'}</b> · cách ${km(x.km)}`).addTo(lopKq);
   });
-  const dsI = $('dsIot'); dsI.textContent = '';
-  if (!d.iot.length) dsI.append(li('<div class="tt"><small>Không có thiết bị IoT trong vùng.</small></div>'));
-  d.iot.forEach(x => { dsI.append(li(`<span aria-hidden="true">📡</span><div class="tt"><b>${esc(x.ma)}</b><small>${esc(x.ten)} · ${km(x.km)}</small></div>`, nutDuong(x.lat, x.lon, x.ma)));
-    L.marker([x.lat, x.lon], { icon: L.divIcon({ className: '', html: '<div style="background:#0b2545;color:#fff;border-radius:7px;padding:3px 5px;font:700 10px sans-serif">IoT</div>', iconSize: [26, 18] }) }).addTo(lopKq); });
   const dsP = $('dsPa'); dsP.textContent = '';
   if (!d.phan_anh.length) dsP.append(li('<div class="tt"><small>Không có phản ánh trong 7 ngày qua. <a href="phan-anh.html">Gửi phản ánh</a></small></div>'));
   d.phan_anh.forEach(x => { dsP.append(li(`<span aria-hidden="true">${esc(x.bieu_tuong)}</span><div class="tt"><b>${esc(x.ten_loai)}</b><small>${km(x.km)} · ${new Date(x.tao_luc).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</small></div>`));

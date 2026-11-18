@@ -1,6 +1,6 @@
 """Luồng sự kiện thời gian thực cho trình duyệt (Server-Sent Events).
 
-GET /api/v1/su-kien?chu_de=iot.da_nhan,iot.vuot_nguong   (bỏ chu_de: nhận mọi chủ đề công khai)
+GET /api/v1/su-kien?chu_de=du_lieu.da_nap,dong_bo.xong   (bỏ chu_de: nhận mọi chủ đề công khai)
 Trình duyệt dùng EventSource; mỗi sự kiện có tên = chủ đề, data = JSON. Gửi ': ping' mỗi 15 giây để giữ kết nối
 (qua proxy) và phát hiện trình duyệt đã đóng.
 Mỗi luồng tự đóng sau TUOI_LUONG giây, EventSource tự nối lại sau 1 giây: máy chủ tắt/nạp lại (uvicorn --reload)

@@ -18,7 +18,7 @@ Tệp `.sh` là bản tương ứng cho Linux / macOS (chạy bằng `bash tên_
 
 Các tệp khác **không cần bấm**: `requirements.txt` (danh sách thư viện Python), `.env.example` (mẫu tệp cấu hình), `LICENSE` (giấy phép MIT).
 Giải thích các thư mục con: `models/README.md` (mô hình, kết quả `.json`), `dong_goi/README.md` (Docker, triển khai máy chủ),
-`mobile/README_MOBILE.md` (app Android), `iot/README.md` (trạm IoT), `du_lieu/README.md` (bộ dữ liệu mở), `docs/CAU_TRUC_DU_AN.md` (từng tệp).
+`mobile/README_MOBILE.md` (app Android), `du_lieu/README.md` (bộ dữ liệu mở), `docs/CAU_TRUC_DU_AN.md` (từng tệp).
 
 ## Dữ liệu (trung thực về bản chất)
 | Chỉ số | Nguồn | Bản chất |
@@ -41,7 +41,6 @@ frontend/       23 trang web + nav.js, style.css, tro-ly.js, sw.js (PWA)
 ml/             tinh_aqi, predict, train_model, train_du_bao_gio, train_diem, train_downscale_model, phan_cum_tram
 models/         mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
 data_pipeline/  download_*, gee_extract, run_pipeline, load_to_db, dong_bo_hang_ngay, kiem_tra_du_lieu, doi_chieu_tram_that
-iot/            ESP32 Wokwi (trạm cảm biến, bảng điện tử) + giả lập Python
 mobile/         app Android (Capacitor) + AirHCM.apk
 tests/          148 kiểm thử pytest
 dong_goi/       Dockerfile, docker-compose.yml, tao_ban_nop.py (tạo bản nộp .zip sạch)
@@ -132,7 +131,7 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 - Ghi chú nguồn dữ liệu ở các trang: chuyển từ khung cảnh báo vàng sang dòng thông tin trung tính, có liên kết tới trang phương pháp; nội dung giới hạn giữ nguyên, diễn đạt lại theo văn phong khoa học.
 - Trang Dự báo: dự báo theo giờ (đã có kỹ năng) đứng đầu; dự báo ngày mai đổi thành "xu hướng" kèm đánh giá thống kê.
 
-## v4.5 — IoT mô phỏng (Wokwi ESP32 + MQTT)
+## v4.5 — IoT mô phỏng (Wokwi ESP32 + MQTT) — *đã gỡ ở v6.8*
 - `iot/wokwi_tram/`: ESP32 + DHT22 + 2 biến trở (vai cảm biến bụi) + OLED + LED màu AQI, gửi JSON qua MQTT mỗi 5 giây. AQI tính ngay trên thiết bị bằng cùng bảng ngưỡng QĐ 1459 (có test so khớp với `ml/tinh_aqi.py`).
 - `iot/wokwi_bang_dien_tu/`: ESP32 + LCD 20x4 + 6 LED màu mức AQI + còi, nhận bản tin AQI do hệ thống phát.
 - `backend/services/iot.py`: nhận MQTT, lọc dữ liệu, lưu `du_lieu_iot` (cờ mô phỏng, bảng riêng), AQI trung bình 1 phút, sự kiện `iot.vuot_nguong` → thư cảnh báo (có trễ chống báo dồn dập), phát AQI cho bảng điện tử. API `/api/v1/iot/...`.
@@ -148,15 +147,15 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 ## v5.0 — Trang Tổng quan và công nghệ mới
 - **Trang Tổng quan** (`tong-quan.html`, trang chủ `/`): đồng hồ AQI, so với ngưỡng WHO/QCVN và hôm qua, thời tiết hiện tại, PM2.5 dự báo 24 giờ có vạch ngưỡng, xu hướng 14 ngày, phân bố và xếp hạng trạm, trạm IoT trực tiếp. API gom một lần gọi: `GET /api/v1/tong-quan` (đệm 60 giây).
 - **Thành phần dùng chung:** `AQI_VN.dongHo()` (đồng hồ AQI SVG, dùng ở Tổng quan, Cảnh báo, Bản đồ), `chart-theme.js` (giao diện chung cho mọi biểu đồ Chart.js + plugin nền dải màu AQI), khung chờ khi tải, thẻ hiện dần.
-- **Server-Sent Events:** `GET /api/v1/su-kien` đẩy sự kiện công khai từ bus nội bộ tới trình duyệt (`iot.da_nhan`, `iot.vuot_nguong`, `du_lieu.da_nap`, `dong_bo.xong`); trang Trạm IoT, Tổng quan, Trạng thái dữ liệu cập nhật ngay, không hỏi lại định kỳ. `frontend/song-truc-tiep.js`.
-- **Thông báo trình duyệt (Notification API):** nút "Báo cho tôi khi vượt ngưỡng" (Tổng quan, Trạm IoT); đã bật thì mọi trang đều nhận.
+- **Server-Sent Events:** `GET /api/v1/su-kien` đẩy sự kiện công khai từ bus nội bộ tới trình duyệt (`du_lieu.da_nap`, `dong_bo.xong`); trang Trạm IoT, Tổng quan, Trạng thái dữ liệu cập nhật ngay, không hỏi lại định kỳ. `frontend/song-truc-tiep.js`.
+- **Thông báo trình duyệt (Notification API):** nút "Báo cho tôi khi vượt ngưỡng" (Tổng quan); đã bật thì mọi trang đều nhận.
 - **View Transitions API:** chuyển trang mượt, header và thanh tab đứng yên (Chromium; trình duyệt khác bỏ qua).
 - **Trợ lý AirHCM** (nút "✨ Hỏi AI" trên header): trả lời câu hỏi dựa trên dữ liệu hiện tại; có `ANTHROPIC_API_KEY` thì dùng Claude (`claude-opus-5-5`, effort `low`, dự phòng khi bị từ chối `fallbacks: "default"`), không có thì trả lời tự động theo ý định câu hỏi. Giới hạn tần suất chống tốn phí. `POST /api/v1/tro-ly` (text/event-stream).
 - Trang So sánh tự hiện sẵn so sánh trạm ô nhiễm nhất – trung tâm – sạch nhất; tiêu đề bảng không viết HOA nữa (tránh "µg/m³" thành "MG/M³").
 
 ## v5.1 — Chatbot Gemini trả lời về đồ án
 - Trợ lý (nút "✨ Hỏi AI") hỗ trợ **Gemini** (`google-genai`): đặt `GEMINI_API_KEY` trong `.env` (lấy tại https://aistudio.google.com/apikey), model `GEMINI_MODEL` (mặc định `gemini-3.8-flash`). Chọn nhà cung cấp bằng `TRO_LY_NHA_CUNG_CAP` = `auto` (Gemini → Claude → tự động) | `gemini` | `claude`.
-- Ngoài số liệu hiện tại, trợ lý được nạp **tài liệu dự án** (`README.md`, `iot/README.md`, `mobile/README_MOBILE.md`, tự đọc lại khi tệp đổi) nên trả lời được câu hỏi về kiến trúc, cách tính AQI, mô hình, IoT, cách chạy… Chỉ dùng thông tin có trong tài liệu, không bịa.
+- Ngoài số liệu hiện tại, trợ lý được nạp **tài liệu dự án** (`README.md`, `mobile/README_MOBILE.md`, tự đọc lại khi tệp đổi) nên trả lời được câu hỏi về kiến trúc, cách tính AQI, mô hình, IoT, cách chạy… Chỉ dùng thông tin có trong tài liệu, không bịa.
 - Không có khóa: chế độ tự động có thêm ý định "đồ án" (tóm tắt kiến trúc, công nghệ, cách chạy).
 
 ## v6.0 — Bảo mật doanh nghiệp, chạy nền, triển khai 24/7, phân tích theo bài Lab
@@ -172,7 +171,7 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 - **Đóng gói đa nền tảng**: `cai_dat.ps1`/`cai_dat.sh`, `kiem_tra_moi_truong.py`; `requirements.txt` UTF-8 ghim đúng phiên bản khớp mô hình;
   `DATABASE_URL` dùng thống nhất; sửa build APK khi đường dẫn có dấu tiếng Việt.
 - **Kiểm thử**: 136 ca tự động; `tools/kiem_thu_luong_du_lieu.py` kiểm 6 luồng dữ liệu đầu-cuối
-  (nguồn ngoài → CSDL → đồng bộ → API → MQTT/SSE thời gian thực → CDC).
+  (nguồn ngoài → CSDL → đồng bộ → API → CDC).
 
 ## v6.1 — Đăng nhập bằng Google, Facebook, Zalo
 - Nút "Đăng nhập/Đăng ký bằng Google · Facebook · Zalo" ở `login.html` (chỉ hiện nhà cung cấp đã có khóa); liên kết/gỡ liên kết ở trang Tài khoản;

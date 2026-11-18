@@ -35,7 +35,7 @@ GIOI_HAN_GIO = int(os.getenv("TRO_LY_GIOI_HAN_GIO", "200"))  # câu hỏi AI / g
 DO_DAI_CAU_HOI = 500
 SO_LUOT_LICH_SU = 6
 GOC_DU_AN = Path(__file__).resolve().parents[2]
-TAI_LIEU = ("README.md", "docs/CAU_TRUC_DU_AN.md", "iot/README.md", "mobile/README_MOBILE.md")   # kiến thức nền về đồ án (không chứa bí mật)
+TAI_LIEU = ("README.md", "docs/CAU_TRUC_DU_AN.md", "mobile/README_MOBILE.md")   # kiến thức nền về đồ án (không chứa bí mật)
 
 _khoa = threading.Lock()
 _theo_ip = {}
@@ -49,7 +49,7 @@ HUONG_DAN = """Bạn là "Trợ lý AirHCM" của hệ thống giám sát và d�
 
 Nhiệm vụ:
 1. Trả lời câu hỏi về chất lượng không khí hiện tại, chỉ số AQI, khuyến nghị sức khỏe, dự báo, các trạm quan trắc – dựa trên khối <du_lieu>.
-2. Trả lời câu hỏi về chính đồ án AirHCM: kiến trúc, nguồn dữ liệu, cách tính AQI, mô hình dự báo và kết quả kiểm chứng, IoT/Wokwi, app Android, đồng bộ tự động, cách cài đặt và chạy, các trang web – dựa trên khối <tai_lieu_du_an>. Được nêu tên tệp, thư mục, lệnh, biến .env đúng như tài liệu ghi.
+2. Trả lời câu hỏi về chính đồ án AirHCM: kiến trúc, nguồn dữ liệu, cách tính AQI, mô hình dự báo và kết quả kiểm chứng, app Android, đồng bộ tự động, cách cài đặt và chạy, các trang web – dựa trên khối <tai_lieu_du_an>. Được nêu tên tệp, thư mục, lệnh, biến .env đúng như tài liệu ghi.
 
 Cách trả lời:
 - Tiếng Việt, thân thiện, đi thẳng vào câu trả lời. Câu hỏi về không khí: khoảng 150 chữ trở xuống. Câu hỏi kỹ thuật về đồ án: tối đa khoảng 250 chữ.
@@ -172,7 +172,6 @@ def khoi_du_lieu(d: dict) -> str:
         "aqi_14_ngay_qua": [{"ngay": x["ngay"], "aqi": x["aqi"]} for x in d.get("xu_huong", [])],
         "xep_hang_tram_sach_den_o_nhiem": [{"ma": x["ma"], "ten": x["ten"], "aqi": x["aqi"], "muc": x["muc"], "pm25": x["pm25"]}
                                           for x in d.get("xep_hang", [])],
-        "tram_iot_mo_phong": d.get("iot"),
     }
     return "<du_lieu>\n" + json.dumps(rut, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n</du_lieu>"
 
@@ -353,7 +352,6 @@ Y_DINH = [
     ("aqi", r"aqi la gi|chi so|cach tinh|1459|thang do|y nghia|muc do"),
     ("nhay_cam", r"tre em|tre nho|em be|nguoi gia|nguoi lon tuoi|nhay cam|hen|ho hap|tim mach|mang thai|bau"),
     ("thoi_tiet", r"thoi tiet|nhiet do|nong|mua|do am|gio "),
-    ("iot", r"iot|cam bien|wokwi|esp32"),
     ("chinh_xac", r"chinh xac|tin cay|do tin|sai so|that khong|nguon du lieu|lay du lieu"),
 ]
 
@@ -369,7 +367,7 @@ def tra_loi_tu_dong(cau_hoi: str, d: dict) -> str:
                 "- Dữ liệu: Open-Meteo (CAMS) cho PM2.5/PM10/O₃ và thời tiết; Sentinel-5P qua Google Earth Engine cho NO₂/CO/SO₂; đồng bộ tự động hằng ngày\n"
                 "- Backend FastAPI + PostgreSQL/PostGIS, bus sự kiện (CDC LISTEN/NOTIFY), luồng thời gian thực SSE\n"
                 "- AQI theo QĐ 1459/QĐ-TCMT; dự báo theo giờ (HistGradientBoosting) và theo ngày (Random Forest)\n"
-                "- IoT mô phỏng ESP32/Wokwi qua MQTT; web Leaflet + Chart.js; app Android (Capacitor)\n"
+                "- Web Leaflet + Chart.js; app Android (Capacitor)\n"
                 "Chạy: từ thư mục `backend`, `uvicorn main:app --reload`, mở http://localhost:8000. "
                 "Bật Gemini (`GEMINI_API_KEY` trong `.env`) để hỏi chi tiết hơn về đồ án.")
     if y == "ra_ngoai":
@@ -408,11 +406,6 @@ def tra_loi_tu_dong(cau_hoi: str, d: dict) -> str:
             return "Chưa lấy được số liệu thời tiết."
         return (f"Thời tiết TP.HCM lúc {tt.get('luc', '--')[11:16]}: {tt.get('bieu_tuong', '')} {tt.get('mo_ta', '--')}, **{_so(tt.get('nhiet_do'), 0)}°C** "
                 f"(cảm giác {_so(tt.get('cam_giac'), 0)}°C), độ ẩm {_so(tt.get('do_am'), 0)}%, gió {_so(tt.get('gio_kmh'))} km/h, mưa {_so(tt.get('mua_mm'))} mm.")
-    if y == "iot":
-        iot = d.get("iot")
-        if not iot:
-            return "Hiện chưa có trạm IoT nào đang gửi dữ liệu. Trạm IoT là ESP32 mô phỏng trên Wokwi, xem trang Trạm IoT."
-        return "\n".join(f"- Trạm IoT {x['ma']} ({x['ten']}): AQI **{x['aqi']}** ({x['muc']}), PM2.5 {_so(x.get('pm25'))} µg/m³" for x in iot) + "\n(Dữ liệu mô phỏng.)"
     if y == "chinh_xac":
         return ("Số liệu PM2.5, PM10, O₃ là **tái phân tích CAMS** (Open-Meteo, lưới khoảng 45 km), không phải trạm đo mặt đất; giá trị theo phường được nội suy. "
                 "Dự báo theo giờ tốt hơn mô hình nền khoảng 24% (đã kiểm chứng); dự báo ngày mai tương đương mô hình nền. Chi tiết ở trang Phương pháp & kiểm chứng.")

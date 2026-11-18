@@ -5,7 +5,7 @@ Thành phần phát (producer) chỉ gọi publish(chu_de, du_lieu); các thành
 được ghi nhật ký và không ảnh hưởng producer.
 
 Đây là bản gọn của mô hình Kafka (topic - producer - consumer). Giao diện publish/subscribe được
-giữ nguyên nên khi mở rộng sang cảm biến IoT có thể thay phần bên trong bằng Kafka mà không đổi
+giữ nguyên nên khi mở rộng sang cảm biến thật có thể thay phần bên trong bằng Kafka mà không đổi
 các consumer (xem sơ đồ kiến trúc mở rộng).
 """
 

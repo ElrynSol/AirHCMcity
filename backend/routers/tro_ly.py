@@ -27,7 +27,7 @@ def trang_thai():
     return {"che_do": "ai" if ncc else "tu_dong", "nha_cung_cap": ncc, "model": tro_ly.ten_model(ncc),
             "goi_y": ["Hôm nay có nên chạy bộ buổi sáng không?", "Khu vực nào đang sạch nhất?",
                       "Tối nay không khí thế nào?", "Kiến trúc hệ thống gồm những gì?",
-                      "AQI được tính theo cách nào?", "Làm sao chạy mô phỏng IoT trên Wokwi?"]}
+                      "AQI được tính theo cách nào?", "Số liệu có chính xác không?"]}
 
 
 @router.post("/api/v1/tro-ly")

@@ -14,8 +14,7 @@ Nhờ vậy, mỗi phần có thể sửa, kiểm thử và triển khai riêng 
  ──────────────                    ────────            ────────              ────────               ──────────
  Open-Meteo (CAMS)  ┐                                  ml/  ──huấn luyện──►  models/
  Sentinel-5P (GEE)  ├─► data_pipeline/ ─► PostgreSQL ──────────────────────► backend/ (FastAPI) ─┬─► frontend/ (web, PWA)
- Trạm IoT (Wokwi)   ┘   (tải, làm sạch,    + PostGIS        đọc mô hình ───►   API REST + SSE     ├─► mobile/   (app Android)
-     iot/  ──MQTT──────────────────────────────────────────────────────────►                      └─► Email cảnh báo
+                    ┘   (tải, làm sạch,    + PostGIS        đọc mô hình ───►   API REST + SSE     ├─► mobile/   (app Android)
                                                        tests/ kiểm thử tự động các lớp trên
 ```
 
@@ -27,7 +26,6 @@ Nhờ vậy, mỗi phần có thể sửa, kiểm thử và triển khai riêng 
 | Máy chủ | `backend/` | API FastAPI: xác thực, dữ liệu, AQI, dự báo, cảnh báo, sự kiện thời gian thực, trợ lý AI |
 | Giao diện web | `frontend/` | 22 trang web (bản đồ, dự báo, thống kê, báo cáo...), cài đặt được như ứng dụng (PWA) |
 | Ứng dụng di động | `mobile/` | Đóng gói web thành ứng dụng Android (Capacitor) |
-| IoT mô phỏng | `iot/` | Firmware ESP32 trên Wokwi: trạm cảm biến và bảng điện tử công bố AQI, giao tiếp qua MQTT |
 | Kiểm thử | `tests/`, `tools/` | 138 ca kiểm thử tự động (pytest) + kiểm thử đầu-cuối 6 luồng dữ liệu |
 | Triển khai | `dong_goi/` | Docker đa kiến trúc, bản chạy 24/7 (Caddy HTTPS, sao lưu), kiểm tra môi trường, tạo bản nộp |
 | Tài liệu | `docs/` | Tài liệu cấu trúc này, lịch sử phiên bản, hình minh họa |
@@ -46,7 +44,6 @@ air_quality_project/
 ├── models/             Mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
 ├── data_pipeline/      Tải, làm sạch, nạp, đồng bộ dữ liệu; nạp ranh giới phường vào PostGIS
 ├── du_lieu/            gio_cache.csv (số liệu theo giờ đã tải) · ranh_gioi/ (168 phường/xã, bản gọn)
-├── iot/                Trạm cảm biến + bảng điện tử ESP32 (Wokwi), giả lập bằng Python
 ├── mobile/             Ứng dụng Android (Capacitor) + tệp cài đặt AirHCM.apk
 ├── tests/              142 kiểm thử tự động (pytest)
 ├── tools/              kiem_thu_luong_du_lieu.py: kiểm thử đầu-cuối 6 luồng dữ liệu trên máy chủ đang chạy
@@ -68,7 +65,7 @@ air_quality_project/
 
 | Tệp | Chức năng |
 |---|---|
-| `main.py` | Tạo ứng dụng FastAPI, gắn các router, phục vụ giao diện web; khi khởi động thì bật các dịch vụ nền (bus sự kiện, SSE, CDC, MQTT, lịch đồng bộ, cảnh báo) |
+| `main.py` | Tạo ứng dụng FastAPI, gắn các router, phục vụ giao diện web; khi khởi động thì bật các dịch vụ nền (bus sự kiện, SSE, CDC, lịch đồng bộ, cảnh báo) |
 | `database.py` | Kết nối PostgreSQL/PostGIS (SQLAlchemy) |
 | `models.py` | Ánh xạ các bảng CSDL (ORM, có kiểu hình học PostGIS) |
 | `schemas.py` | Định dạng dữ liệu vào/ra API (Pydantic), tự kiểm tra dữ liệu hợp lệ |
@@ -107,14 +104,13 @@ air_quality_project/
 | `tram.py` | Quản lý trạm quan trắc (thêm/sửa/xóa) |
 | `du_lieu.py` | Dữ liệu quan trắc: heatmap, theo giờ, theo trạm |
 | `aqi.py` | AQI theo trạm, toàn bộ trạm, theo ngày |
-| `tong_quan.py` | Trang Tổng quan (gom AQI, thời tiết, dự báo 24 giờ, xếp hạng trạm, IoT) |
+| `tong_quan.py` | Trang Tổng quan (gom AQI, thời tiết, dự báo 24 giờ, xếp hạng điểm ước tính) |
 | `du_bao.py`, `du_bao_gio.py` | Dự báo PM2.5 theo ngày và theo giờ (24 giờ tới) |
 | `ban_do_nhiet.py` | Bản đồ nhiệt dự báo (dự báo theo trạm rồi nội suy không gian) |
 | `kich_ban.py` | Kịch bản "nếu đầu vào thay đổi thì PM2.5 thay đổi thế nào" |
 | `dong_thoi_gian.py` | Thanh thời gian trên bản đồ |
 | `thong_ke.py`, `bao_cao.py` | Thống kê; xuất báo cáo Excel/PDF |
 | `canh_bao.py`, `luong_canh_bao.py` | Đăng ký cảnh báo email; trình diễn luồng cảnh báo từng bước (admin) |
-| `iot.py` | Thiết bị IoT, lịch sử đo, trạng thái MQTT |
 | `su_kien.py` | Luồng sự kiện thời gian thực (SSE) |
 | `tro_ly.py` | Trợ lý AI (Gemini), trả lời theo luồng |
 | `dong_bo.py`, `admin_gee.py` | Trạng thái và chạy đồng bộ dữ liệu; chạy xử lý GEE (admin) |
@@ -133,7 +129,6 @@ air_quality_project/
 | `dong_thoi_gian.py` | Dữ liệu cho thanh thời gian (theo ngày từ CSDL, theo giờ từ Open-Meteo) |
 | `canh_bao_service.py` | Quét ngưỡng AQI và gửi email (tối đa 1 thư/ngày/đăng ký) |
 | `cdc.py` | Bắt thay đổi dữ liệu bằng PostgreSQL LISTEN/NOTIFY (CDC) rồi phát lên bus sự kiện |
-| `iot.py` | Nhận dữ liệu cảm biến qua MQTT, lưu CSDL, cảnh báo khi vượt ngưỡng, phát bản tin cho bảng điện tử |
 | `dong_bo.py` | Lịch đồng bộ chạy trong máy chủ (bổ sung cho lịch Windows) |
 | `tro_ly.py` | Trợ lý AI: ghép dữ liệu thật + tài liệu dự án, gọi Gemini (tự chuyển sang mô hình dự phòng khi lỗi) |
 | `day_thong_bao.py` | Web Push: khóa VAPID, quét AQI mỗi 30 phút, gửi thông báo nền khi vượt ngưỡng |
@@ -143,13 +138,12 @@ air_quality_project/
 | Trang | Chức năng |
 |---|---|
 | `tong-quan.html` | Tổng quan: AQI hiện tại, thời tiết, dự báo 24 giờ, xếp hạng trạm |
-| `index.html` | Bản đồ AQI (Leaflet), lớp IoT, thanh thời gian |
+| `index.html` | Bản đồ AQI (Leaflet), thanh thời gian |
 | `ban-do-nhiet.html` | Bản đồ nhiệt dự báo PM2.5 |
 | `du-bao.html`, `kich-ban.html` | Dự báo theo ngày/giờ; thử kịch bản thay đổi đầu vào |
 | `tram.html`, `so-sanh.html` | Quản lý trạm; so sánh các trạm |
 | `thong-ke.html`, `bao-cao.html` | Thống kê; xuất báo cáo |
 | `canh-bao.html` | Đăng ký nhận cảnh báo email |
-| `iot.html` | Trạm IoT theo thời gian thực |
 | `tra-cuu-khong-gian.html` | Định vị GPS, quét vùng tròn/khung/đa giác kéo thả được, khoảng cách, chỉ đường |
 | `tai-app.html` | Tải ứng dụng: APK cho Android, hướng dẫn cài lên iPhone (PWA), mã QR |
 | `phan-anh.html` | Người dân gửi phản ánh ô nhiễm (khói, đốt rác, bụi công trình...) lên bản đồ; admin duyệt |
@@ -169,7 +163,7 @@ air_quality_project/
 | `tro-ly.js` | Khung chat trợ lý AI dạng bong bóng nổi |
 | `thong-bao-day.js` | Bật/tắt thông báo cảnh báo chạy nền (Web Push) |
 | `hinh/ml/` | 12 biểu đồ + chỉ số xuất từ notebook phân tích (trang Phương pháp) |
-| `iot-layer.js`, `phan-anh-layer.js` | Lớp trạm IoT và lớp phản ánh của người dân trên bản đồ |
+| `phan-anh-layer.js` | Lớp phản ánh của người dân trên bản đồ |
 | `sw.js`, `pwa.js`, `manifest.webmanifest`, `icons/` | Progressive Web App: cài lên máy, dùng khi mất mạng |
 | `kien_truc_hien_tai.svg`, `kien_truc_mo_rong.svg` | Sơ đồ kiến trúc hiện tại và hướng mở rộng |
 
@@ -208,16 +202,11 @@ air_quality_project/
 | `doi_chieu_tram_that.py` | Đối chiếu số liệu mô hình CAMS với số đo thực tế tại trạm (bias, MAE, RMSE, Pearson) |
 | `them_khoa_ngoai.py` | Thêm khóa ngoại để sơ đồ ERD hiển thị quan hệ giữa các bảng |
 
-### 3.5. `iot/` — Thiết bị IoT mô phỏng
 
 | Tệp | Chức năng |
 |---|---|
-| `wokwi_tram/` | Trạm cảm biến ESP32: DHT22 đo nhiệt độ/độ ẩm, 2 biến trở đóng vai cảm biến bụi PM2.5/PM10, màn hình OLED, đèn màu theo mức AQI; gửi số đo qua MQTT mỗi 5 giây |
-| `wokwi_bang_dien_tu/` | Bảng điện tử ESP32 nhận bản tin AQI từ máy chủ và hiển thị |
 | `gia_lap/tram_ao.py`, `gia_lap/bang_ao.py` | Trạm và bảng ảo bằng Python (dự phòng khi trình diễn) |
-| `build_firmware.bat` | Biên dịch firmware để chạy Wokwi trong VS Code |
 
-Mỗi thư mục Wokwi gồm `*.ino` (mã firmware), `diagram.json` (sơ đồ mạch), `wokwi.toml`, `libraries.txt`.
 
 ### 3.6. `mobile/` — Ứng dụng Android
 
@@ -232,9 +221,9 @@ Mỗi thư mục Wokwi gồm `*.ino` (mã firmware), `diagram.json` (sơ đồ m
 
 ### 3.7. `tests/` — Kiểm thử tự động
 
-138 ca kiểm thử chạy **không cần CSDL và không gọi API thật**: tính AQI (`test_aqi.py`), xác thực (`test_auth.py`), dự báo theo ngày/giờ (`test_train_model.py`, `test_predict.py`, `test_du_bao_gio.py`), bản đồ nhiệt (`test_ban_do_nhiet.py`), kịch bản (`test_kich_ban.py`), đồng bộ (`test_dong_bo.py`), IoT (`test_iot.py`), trợ lý AI (`test_tro_ly.py`), đối chiếu trạm thật (`test_doi_chieu.py`), bảo mật đăng nhập + SEO (`test_bao_mat.py`).
+148 ca kiểm thử chạy **không cần CSDL và không gọi API thật**: tính AQI (`test_aqi.py`), xác thực (`test_auth.py`), dự báo theo ngày/giờ (`test_train_model.py`, `test_predict.py`, `test_du_bao_gio.py`), bản đồ nhiệt (`test_ban_do_nhiet.py`), kịch bản (`test_kich_ban.py`), đồng bộ (`test_dong_bo.py`), IoT (`test_iot.py`), trợ lý AI (`test_tro_ly.py`), đối chiếu trạm thật (`test_doi_chieu.py`), bảo mật đăng nhập + SEO (`test_bao_mat.py`).
 
-Kiểm thử đầu-cuối trên máy chủ đang chạy (dùng CSDL, mạng, MQTT thật): `python tools/kiem_thu_luong_du_lieu.py`.
+Kiểm thử đầu-cuối trên máy chủ đang chạy (dùng CSDL và mạng thật): `python tools/kiem_thu_luong_du_lieu.py`.
 
 ```
 cd backend
@@ -247,7 +236,7 @@ python -m pytest ../tests -q
 |---|---|---|
 | `venv/` | Thư viện Python tải về (~35.000 tệp) | `python -m venv venv` rồi `pip install -r requirements.txt` |
 | `mobile/node_modules/` | Thư viện Node.js tải về (83 gói) | `cd mobile` rồi `npm install` |
-| `build/`, `.gradle/` | Tệp biên dịch Android/ESP32 | `npm run apk`, `iot/build_firmware.bat` |
+| `build/`, `.gradle/` | Tệp biên dịch Android | `npm run apk` |
 | `.env`, `gee-key.json`, `bi_mat/` | **Khóa bí mật** (CSDL, JWT, email, Gemini, Google, VAPID) | Chạy `cai_dat.ps1`/`cai_dat.sh` hoặc sao chép `.env.example` thành `.env`; khóa VAPID tự sinh |
 | `backup.sql` | Bản sao CSDL, có dữ liệu tài khoản người dùng | Cung cấp riêng khi cần |
 | `mlruns/`, `mlflow.db` | Lịch sử các lần huấn luyện (MLflow) | Tự sinh khi chạy `ml/train_model.py` (nếu cài mlflow) |

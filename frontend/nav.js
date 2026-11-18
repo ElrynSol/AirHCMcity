@@ -16,7 +16,6 @@
     { ten: '⚠️ Cảnh báo', muc: [
       ['canh-bao.html', '⚠️ Cảnh báo hiện tại'],
       ['phan-anh.html', '📣 Phản ánh ô nhiễm'],
-      ['iot.html', '📡 Trạm IoT thời gian thực'],
       ['luong-canh-bao.html', '🔔 Luồng cảnh báo']] },
     { ten: '⚙️ Hệ thống', muc: [
       ['tram.html', '📋 Danh sách trạm'],

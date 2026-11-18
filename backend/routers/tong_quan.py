@@ -1,4 +1,4 @@
-"""API trang Tổng quan: gom AQI hiện tại, so sánh ngưỡng, thời tiết, dự báo 24 giờ, xu hướng, xếp hạng trạm, IoT."""
+"""API trang Tổng quan: gom AQI hiện tại, so sánh ngưỡng, thời tiết, dự báo 24 giờ, xu hướng, xếp hạng điểm ước tính."""
 
 from core import config  # noqa: F401
 from fastapi import APIRouter

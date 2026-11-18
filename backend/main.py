@@ -7,10 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
 
-from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, iot, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio
+from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio
 from services.canh_bao_service import _tao_bang_canh_bao, _tao_bang_thu_da_gui, _vong_lap_canh_bao, dang_ky_consumer
 from services import cdc
-from services import iot as iot_service
 from services import dong_bo as dong_bo_service
 from services import day_thong_bao
 from services import phan_anh as phan_anh_service
@@ -59,7 +58,7 @@ async def ghi_loi_may_chu(request: Request, call_next):
     return response
 
 
-for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, iot, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio):
+for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio):
     app.include_router(_router.router)
 
 
@@ -71,7 +70,6 @@ def khoi_dong_canh_bao():
     day_su_kien.khoi_dong()  # chuyển tiếp sự kiện công khai tới trình duyệt (SSE)
     cdc.tao_trigger()    # trigger NOTIFY trên tram_quan_trac / du_lieu_tram_mat_dat
     cdc.khoi_dong()      # luồng LISTEN
-    iot_service.khoi_dong()  # MQTT: trạm IoT mô phỏng (Wokwi) + phát AQI cho bảng điện tử
     dong_bo_service.khoi_dong()  # lịch tự đồng bộ dữ liệu + tự lấy bù ngày thiếu
     day_thong_bao.khoi_dong()    # thông báo đẩy (Web Push) khi AQI vượt ngưỡng, chạy nền mỗi 30 phút
     logbus.ghi("INFO", "he_thong", "khoi_dong", "Máy chủ đã khởi động")

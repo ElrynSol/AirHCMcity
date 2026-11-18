@@ -76,12 +76,11 @@
       <li><a href="thong-ke.html">Thống kê</a>: xu hướng, phân bố mức AQI, số ngày vượt ngưỡng QCVN.</li>
       <li><a href="bao-cao.html">Báo cáo</a>: tóm tắt dễ hiểu và xuất Excel/PDF.</li>
       <li><a href="trang-thai-du-lieu.html">Dữ liệu</a>: tình trạng cập nhật và phân loại nguồn dữ liệu.</li>
-      <li><a href="iot.html">Trạm IoT</a>: ESP32 mô phỏng trên Wokwi gửi số đo qua MQTT, cảnh báo tức thời khi vượt ngưỡng, bảng điện tử nhận AQI từ hệ thống.</li>
       <li><a href="phuong-phap.html">Phương pháp &amp; kiểm chứng</a>: cách tính AQI, đánh giá mô hình so với mô hình nền.</li>
     </ul></div>
 
   <div class="card"><h3>🏗️ Kiến trúc hệ thống</h3>
-    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm trạm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung. Thiết bị IoT (mô phỏng Wokwi) đi vào cùng bus sự kiện qua MQTT: trạm gửi số đo, hệ thống tính AQI, phát sự kiện <code>iot.vuot_nguong</code> và gửi AQI cho bảng điện tử.</p>
+    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm trạm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung.</p>
     <img src="kien_truc_hien_tai.svg" alt="Sơ đồ kiến trúc hiện tại" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff">
     <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">Hướng mở rộng quy mô lớn: nhiều cảm biến thật + Apache Kafka (chưa triển khai; hiện đã có module MQTT với trạm mô phỏng)</summary>
       <p style="font-size:12.5px;color:#666;margin:8px 0">Với 13 trạm và dữ liệu theo ngày, Kafka là không cần thiết nên đồ án dùng bản gọn tương đương. Giao diện publish/subscribe được giữ nguyên để có thể thay bằng Kafka khi dữ liệu lên đến mức giây/phút.</p>
@@ -90,9 +89,9 @@
 
   <div class="grid2">
     <div class="card"><h3>🛠️ Công nghệ</h3>
-      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest (theo ngày) – scikit-learn</li><li>IoT: ESP32 trên Wokwi, MQTT (paho-mqtt, broker HiveMQ)</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
+      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest (theo ngày) – scikit-learn</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
     <div class="card"><h3>⚖️ Cam kết &amp; giới hạn dữ liệu</h3>
-      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo trạm/phường/xã là <b>ước tính</b>, chưa kiểm chứng bằng đo đạc mặt đất.</li><li>Trạm IoT hiện là <b>mô phỏng</b> (Wokwi), dữ liệu lưu riêng, không dùng huấn luyện mô hình.</li><li>Hướng phát triển: lắp cảm biến bụi thật (ví dụ PMS5003) vào đúng firmware hiện có, đối chiếu với trạm quan trắc chính thức.</li></ul></div>
+      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo trạm/phường/xã là <b>ước tính</b>, chưa kiểm chứng bằng đo đạc mặt đất.</li><li>Hướng phát triển: lắp cảm biến bụi thật (ví dụ PMS5003) vào đúng firmware hiện có, đối chiếu với trạm quan trắc chính thức.</li></ul></div>
   </div>
   <p class="luu-y">* Hệ thống phục vụ mục đích học thuật, không thay thế số liệu công bố chính thức của cơ quan quản lý.</p>
 </div>

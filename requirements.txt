@@ -38,13 +38,12 @@ pandas==3.0.6
 scikit-learn==1.9.1
 joblib==1.6.0
 
-# --- Dữ liệu ngoài, báo cáo, IoT, trợ lý AI ---
+# --- Dữ liệu ngoài, báo cáo, trợ lý AI ---
 requests==2.34.2
 earthengine-api==1.7.45
 python-dateutil==2.9.0.post0
 pytz==2026.4
 openpyxl==3.1.5
 reportlab==5.1.0
-paho-mqtt==2.2.0
 google-genai==3.0.0
 anthropic==2.6.0

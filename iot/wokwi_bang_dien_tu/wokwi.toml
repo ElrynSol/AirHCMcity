@@ -1,6 +1,0 @@
-# Cấu hình Wokwi cho VS Code: chạy firmware đã biên dịch bằng iot/build_firmware.bat (arduino-cli).
-# Đường dẫn tính từ thư mục chứa file này; diagram.json nằm cùng thư mục.
-[wokwi]
-version = 1
-firmware = 'build/wokwi_bang_dien_tu.ino.merged.bin'
-elf = 'build/wokwi_bang_dien_tu.ino.elf'

@@ -3,7 +3,7 @@
 ## Kết luận
 
 AirHCM dùng **PostgreSQL 17 + PostGIS 3**. Đề tài là hệ thống thông tin môi trường gắn với **vị trí**: trạm quan trắc,
-168 phường/xã, thiết bị IoT, phản ánh của người dân. Các câu hỏi chính đều là câu hỏi không gian: điểm này thuộc phường nào,
+168 phường/xã, phản ánh của người dân. Các câu hỏi chính đều là câu hỏi không gian: điểm này thuộc phường nào,
 trạm nào gần nhất, cách bao xa, vùng nào ô nhiễm. PostGIS trả lời các câu hỏi này **ngay trong CSDL, có chỉ mục không gian**.
 SQL thường (PostgreSQL không PostGIS, MySQL, SQL Server…) chỉ lưu được vĩ độ/kinh độ dạng số và phải tự viết lại các phép toán hình học.
 
@@ -33,10 +33,9 @@ Dự án đã xử lý bằng `dong_goi/Dockerfile.db` (dựng từ `postgres:17
 | Bản đồ nhiệt: giá trị từng phường | `phuong_xa` | `ST_PointOnSurface` (điểm luôn nằm trong phường) | `services/ranh_gioi.py` |
 | Độ tin cậy theo khoảng cách tới trạm | `phuong_xa` × `tram_quan_trac` | KNN `<->` + `ST_Distance(geography)` | `services/ranh_gioi.py` |
 | Cắt bản đồ nhiệt theo thành phố | `phuong_xa` | `ST_Union`, `ST_SimplifyPreserveTopology`, `ST_Extent`, `ST_AsGeoJSON` | `services/ranh_gioi.py` |
-| Thiết bị IoT thuộc phường nào, trạm gần nhất | `thiet_bi_iot.toado` (Point, GiST) | `ST_Contains`, KNN `<->`, `ST_Distance` | `services/iot.py`, `routers/iot.py` |
 | Phản ánh của người dân thuộc phường nào | `phan_anh` × `phuong_xa` | `ST_Contains(geom, ST_MakePoint(...))` | `services/phan_anh.py` |
-| Quét vùng tròn (bán kính theo mét) | trạm, IoT, phản ánh | `ST_DWithin(geography)` | `services/khong_gian.py` |
-| Quét khung / đa giác vẽ tay | trạm, IoT, phản ánh, phường | `ST_Intersects`, `ST_Area(ST_Intersection)` | `services/khong_gian.py` |
+| Quét vùng tròn (bán kính theo mét) | điểm ước tính, phản ánh | `ST_DWithin(geography)` | `services/khong_gian.py` |
+| Quét khung / đa giác vẽ tay | điểm ước tính, phản ánh, phường | `ST_Intersects`, `ST_Area(ST_Intersection)` | `services/khong_gian.py` |
 | Phát hiện xung đột hình học (đa giác tự cắt) | — | `ST_IsValid`, `ST_IsValidReason`, `ST_IsValidDetail` (vị trí điểm cắt), sửa bằng `ST_MakeValid` | `services/khong_gian.py` |
 | Khoảng cách từ cột mốc kéo được (vị trí người dùng) | mọi điểm | `ST_Distance(geography)` | `services/khong_gian.py` |
 | Tra cứu tọa độ → phường | `phuong_xa` | `ST_Contains` | `GET /api/v1/ranh-gioi/tra-cuu?lat=&lon=` |

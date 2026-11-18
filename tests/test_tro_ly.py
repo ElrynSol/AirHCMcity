@@ -166,7 +166,7 @@ def test_chon_nha_cung_cap(monkeypatch):
 
 def test_kien_thuc_du_an_doc_readme():
     k = tro_ly.kien_thuc_du_an()
-    assert k.startswith("<tai_lieu_du_an>") and 'ten="README.md"' in k and 'ten="iot/README.md"' in k
+    assert k.startswith("<tai_lieu_du_an>") and 'ten="README.md"' in k and 'ten="mobile/README_MOBILE.md"' in k
     assert "AIza" not in k and "sk-ant" not in k     # chỉ tài liệu, không lẫn khóa API
 
 

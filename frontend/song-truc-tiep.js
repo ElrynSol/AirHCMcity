@@ -1,14 +1,14 @@
 /* AirLive — nhận sự kiện thời gian thực từ máy chủ bằng Server-Sent Events (EventSource) + thông báo trình duyệt.
    Dùng:
-     AirLive.nghe('iot.da_nhan', d => ...)      // tự mở kết nối; trình duyệt tự nối lại khi rớt mạng
+     AirLive.nghe('du_lieu.da_nap', d => ...)      // tự mở kết nối; trình duyệt tự nối lại khi rớt mạng
      AirLive.chiBao(el)                         // chấm "● Trực tiếp" / "Đang nối lại…"
      AirLive.nutThongBao(el)                    // nút bật/tắt thông báo hệ điều hành khi vượt ngưỡng
-   Chủ đề công khai: iot.da_nhan, iot.vuot_nguong, du_lieu.da_nap, dong_bo.xong (xem backend/core/day_su_kien.py).
+   Chủ đề công khai: du_lieu.da_nap, dong_bo.xong (xem backend/core/day_su_kien.py).
    Đã bật thông báo thì trang nào có nav.js cũng tự kết nối để báo (kể cả khi tab đang ẩn). */
 (function () {
   if (window.AirLive) return;
   var API = (window.API_ORIGIN || '') + '/api/v1';
-  var CHU_DE = ['iot.da_nhan', 'iot.vuot_nguong', 'du_lieu.da_nap', 'dong_bo.xong'];
+  var CHU_DE = ['du_lieu.da_nap', 'dong_bo.xong'];
   var KHOA_TB = 'airhcm_thong_bao';
   var es = null, nguoiNghe = {}, ttNghe = [], tt = 'chua';
   var coThongBao = 'Notification' in window && !/AirHCM-App/.test(navigator.userAgent);   // WebView Android không hỗ trợ
@@ -86,14 +86,6 @@
   /* ---------- Xử lý chung cho mọi trang ---------- */
   function xuLyChung(cd, d) {
     var m = window.AQI_VN ? AQI_VN.muc(d.aqi) : { mau: '#dc2626', ten: '' };
-    if (cd === 'iot.vuot_nguong') {
-      toast('⚠️ <b>Trạm IoT ' + String(d.ma || '').replace(/[<>&"]/g, '') + '</b>: AQI <b>' + d.aqi + '</b> (' + m.ten + ') vượt ngưỡng ' + d.nguong +
-            '. <a href="iot.html">Xem</a>', m.mau, 10000);
-      hienThongBao('⚠️ AQI ' + d.aqi + ' – ' + m.ten, 'Trạm IoT ' + d.ma + ' vượt ngưỡng cảnh báo ' + d.nguong + '. Hạn chế hoạt động ngoài trời.', 'iot-' + d.ma);
-    } else if (cd === 'dong_bo.xong' && d.trang_thai) {
-      toast((d.trang_thai === 'thanh_cong' ? '✅' : '⚠️') + ' Đồng bộ dữ liệu xong: ' + (d.so_dong_openmeteo || 0) + ' dòng PM/thời tiết, ' +
-            (d.so_dong_gee || 0) + ' dòng vệ tinh.', d.trang_thai === 'thanh_cong' ? '#16a34a' : '#f59e0b');
-    }
   }
 
   /* ---------- Thành phần giao diện ---------- */

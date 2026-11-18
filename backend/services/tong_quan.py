@@ -135,14 +135,6 @@ def tong_quan():
     except Exception:
         pass
 
-    iot = None
-    try:
-        from routers.iot import ds_thiet_bi
-        song = [t for t in ds_thiet_bi() if t.get("truc_tuyen")]
-        if song:
-            iot = [{"ma": t["ma"], "ten": t["ten"], "pm25": t["pm25"], **_muc(t["aqi"])} for t in song]
-    except Exception:
-        pass
 
     m = muc_aqi(aqi_tp)
     v = {
@@ -161,7 +153,6 @@ def tong_quan():
         "xu_huong": xu_huong,
         "du_bao": du_bao,
         "thoi_tiet": thoi_tiet_hien_tai(),
-        "iot": iot,
     }
     _dem.update(t=time.time(), v=v)
     return v

@@ -57,8 +57,8 @@ def _trang_tiep(t: str | None) -> str:
 def _chuyen(url: str) -> HTMLResponse:
     """Chuyển trang bằng JavaScript thay vì HTTP 302: lượt điều hướng xuất phát từ chính trang của mình
     nên cookie phiên SameSite=Strict vừa đặt được gửi kèm ngay (302 nối tiếp từ trang nhà cung cấp thì không)."""
-    # Trang này nằm ở /api/v1/auth/oauth/<ncc>/callback → phải chuyển về đường dẫn tính từ GỐC web ("/iot.html"),
-    # nếu không trình duyệt hiểu "iot.html" thành /api/v1/auth/oauth/<ncc>/iot.html (404)
+    # Trang này nằm ở /api/v1/auth/oauth/<ncc>/callback → phải chuyển về đường dẫn tính từ GỐC web ("/tong-quan.html"),
+    # nếu không trình duyệt hiểu "tong-quan.html" thành /api/v1/auth/oauth/<ncc>/tong-quan.html (404)
     if not url.startswith("/"):
         url = "/" + url
     u = json.dumps(url)

@@ -99,7 +99,7 @@ Sau đó chạy kiểm thử đầu-cuối từ máy Windows:
 venv\Scripts\python.exe tools\kiem_thu_luong_du_lieu.py --may-chu https://<tên-miền>
 ```
 
-Với `--may-chu https://...`, luồng 1 (nguồn ngoài), 4 (API) và 5 (MQTT → SSE) kiểm chính máy chủ Internet.
+Với `--may-chu https://...`, luồng 1 (nguồn ngoài) và 4 (API) kiểm chính máy chủ Internet.
 Luồng 2, 3, 6 đọc CSDL theo `.env` của máy đang chạy lệnh, tức là kiểm CSDL trên máy Windows của bạn.
 Tình trạng đồng bộ của máy chủ xem ở trang **Trạng thái dữ liệu** trên web.
 

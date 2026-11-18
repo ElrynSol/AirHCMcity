@@ -15,7 +15,7 @@ import time
 from core import events
 
 # Không đẩy aqi.vuot_nguong: sự kiện đó phát theo TỪNG người đăng ký (email, ngưỡng riêng) – không công khai được.
-CHU_DE_DAY = ("iot.da_nhan", "iot.vuot_nguong", "du_lieu.da_nap", "dong_bo.xong")
+CHU_DE_DAY = ("du_lieu.da_nap", "dong_bo.xong")
 _nguoi_nghe = {}          # queue -> (loop, tập chủ đề muốn nhận | None = tất cả)
 _khoa = threading.Lock()
 _da_dang_ky = False

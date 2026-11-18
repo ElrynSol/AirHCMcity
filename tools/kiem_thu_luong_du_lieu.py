@@ -1,4 +1,4 @@
-"""Kiểm thử ĐẦU-CUỐI các luồng dữ liệu của AirHCM trên máy chủ đang chạy (khác tests/: dùng CSDL, mạng, MQTT thật).
+"""Kiểm thử ĐẦU-CUỐI các luồng dữ liệu của AirHCM trên máy chủ đang chạy (khác tests/: dùng CSDL và mạng thật).
 
     python tools/kiem_thu_luong_du_lieu.py                          # máy chủ http://127.0.0.1:8000
     python tools/kiem_thu_luong_du_lieu.py --may-chu https://ten-mien # máy chủ đã triển khai
@@ -9,8 +9,7 @@ Luồng được kiểm (không gửi email, không ghi đè số liệu thật)
   2. Lưu trữ        : CSDL có số liệu mới (độ trễ theo ngày), không có giá trị âm/trùng, lịch sử đồng bộ gần nhất
   3. Đồng bộ        : data_pipeline/dong_bo_hang_ngay.py tính đúng khoảng ngày cần tải bù (--kiem-tra)
   4. API → giao diện : các API chính trả dữ liệu; AQI trên trang Tổng quan khớp công thức VN_AQI tính lại độc lập
-  5. Thời gian thực : gói tin MQTT của trạm IoT → máy chủ lưu CSDL → sự kiện SSE tới trình duyệt (đo độ trễ)
-  6. CDC            : thay đổi trong CSDL → PostgreSQL NOTIFY → bus sự kiện → nhật ký hệ thống
+  5. CDC            : thay đổi trong CSDL → PostgreSQL NOTIFY → bus sự kiện → nhật ký hệ thống
 Mã thoát 0 = mọi luồng đạt.
 """
 
@@ -124,7 +123,7 @@ def luong_api(B: str):
     r = s.get(B + "/api/v1/health", timeout=10)
     ghi("ĐẠT" if r.status_code == 200 and r.json().get("csdl") else "LỖI", "api", f"Health: {r.status_code} {r.text[:120]}")
     for duong, mo_ta in [("/api/v1/du-bao-gio", "Dự báo 24 giờ"), ("/api/v1/aqi-tat-ca-tram", "AQI các trạm"),
-                         ("/api/v1/dong-bo/trang-thai", "Trạng thái đồng bộ"), ("/api/v1/iot/thiet-bi", "Thiết bị IoT"),
+                         ("/api/v1/dong-bo/trang-thai", "Trạng thái đồng bộ"),
                          ("/api/v1/day/aqi-hien-tai", "AQI gọn cho app chạy nền"), ("/sitemap.xml", "Sitemap SEO")]:
         try:
             t0 = time.time(); r = s.get(B + duong, timeout=60)
@@ -142,55 +141,9 @@ def luong_api(B: str):
     ghi("ĐẠT" if gon.get("aqi") == tq.get("aqi") else "LỖI", "api", f"API gọn của app khớp trang Tổng quan: {gon.get('aqi')} = {tq.get('aqi')}")
 
 
-# ---------------------------------------------------------------- 5. Thời gian thực: MQTT → máy chủ → SSE
-def luong_thoi_gian_thuc(B: str):
-    tieu_de("5. Thời gian thực: trạm IoT → MQTT → máy chủ → CSDL → SSE → trình duyệt")
-    tt = requests.get(B + "/api/v1/iot/trang-thai", timeout=10).json()
-    if not tt.get("ket_noi"):
-        ghi("LỖI", "realtime", f"Máy chủ chưa kết nối MQTT broker ({tt.get('loi')})"); return
-    nhan, san_sang = [], threading.Event()
-
-    def nghe():
-        try:
-            with requests.get(B + "/api/v1/su-kien", stream=True, timeout=(10, 60)) as r:
-                chu_de = None
-                for dong in r.iter_lines(decode_unicode=True):
-                    if dong.startswith("event:"):
-                        chu_de = dong[6:].strip()
-                        if chu_de == "ket_noi":
-                            san_sang.set()
-                    elif dong.startswith("data:") and chu_de == "iot.da_nhan":
-                        nhan.append((time.time(), json.loads(dong[5:])))
-                        return
-        except Exception:
-            pass
-
-    th = threading.Thread(target=nghe, daemon=True); th.start()
-    san_sang.wait(10)
-    import paho.mqtt.client as mqtt
-    from dotenv import dotenv_values
-    env = {**dotenv_values(GOC / ".env"), **os.environ}
-    du_an, khoa = env.get("MQTT_DU_AN", "dhtnmt-1250080037"), env.get("IOT_KHOA_THIET_BI", "airhcm-demo-2026")
-    c = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"airhcm-kiemthu-{os.getpid()}")
-    c.connect(tt["broker"].split(":")[0], int(tt["broker"].split(":")[1]), 30); c.loop_start()
-    gui_luc = time.time()
-    c.publish(f"airhcm/{du_an}/tram/IOT01/do", json.dumps({
-        "khoa": khoa, "ten": "Trạm IoT Quận 3 (mô phỏng)", "vi_do": 10.7840, "kinh_do": 106.6880, "che_do": "kiem_thu",
-        "pm25": 21.5, "pm10": 33.0, "nhiet_do": 30.1, "do_am": 70.0}), qos=1).wait_for_publish(10)
-    th.join(25); c.loop_stop(); c.disconnect()
-    if nhan:
-        t, d = nhan[0]
-        ghi("ĐẠT", "realtime", f"Gói tin MQTT → sự kiện SSE 'iot.da_nhan' ({d.get('ma')}, PM2.5 {d.get('pm25')}, AQI {d.get('aqi')}) "
-            f"sau {1000 * (t - gui_luc):.0f} ms (qua broker công cộng {tt['broker']})")
-        ls = requests.get(B + "/api/v1/iot/IOT01/lich-su", timeout=10)
-        ghi("ĐẠT" if ls.status_code == 200 else "LỖI", "realtime", f"Số đo đã lưu CSDL, đọc lại qua API lịch sử: {ls.status_code}")
-    else:
-        ghi("LỖI", "realtime", "Không nhận được sự kiện SSE trong 25 giây (kiểm tra mạng tới broker MQTT, IOT_KHOA_THIET_BI)")
-
-
-# ---------------------------------------------------------------- 6. CDC: CSDL → NOTIFY → bus sự kiện
+# ---------------------------------------------------------------- 5. CDC: CSDL → NOTIFY → bus sự kiện
 def luong_cdc():
-    tieu_de("6. CDC: thay đổi CSDL → PostgreSQL NOTIFY → bus sự kiện → nhật ký")
+    tieu_de("5. CDC: thay đổi CSDL → PostgreSQL NOTIFY → bus sự kiện → nhật ký")
     from database import engine
     from sqlalchemy import text
     with engine.begin() as c:
@@ -220,7 +173,7 @@ def main():
     B = a.may_chu.rstrip("/")
     print(f"Kiểm thử luồng dữ liệu AirHCM · {datetime.now():%d/%m/%Y %H:%M} · máy chủ {B}")
     for ham in (lambda: luong_nguon_ngoai(a.gee), luong_luu_tru, lambda: luong_dong_bo(a.dong_bo_that),
-                lambda: luong_api(B), lambda: luong_thoi_gian_thuc(B), luong_cdc):
+                lambda: luong_api(B), luong_cdc):
         try:
             ham()
         except Exception as e:
