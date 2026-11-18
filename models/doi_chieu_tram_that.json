@@ -1,0 +1,141 @@
+{
+ "cap_nhat": "2026-11-18T02:51:40+00:00",
+ "nguon": "OpenAQ v3",
+ "qa_qc": "Loại giá trị âm và mã lỗi thiết bị ≥ 900 µg/m³ (985 của AirNow); giữ giá trị cao hợp lý.",
+ "tram": [
+  {
+   "tram": {
+    "ma": 3276359,
+    "ten": "CMT8",
+    "nha_cung_cap": "AirGradient",
+    "la_cam_bien_re": true,
+    "lat": 10.78533,
+    "lon": 106.67029
+   },
+   "theo_gio": {
+    "so_gio": 16138,
+    "tu": "2024-11-19 17:00:00",
+    "den": "2026-11-18 07:00:00",
+    "tb_do_that": 32.15,
+    "tb_cams": 29.34,
+    "bias_cams_tru_that": -2.81,
+    "MAE": 14.55,
+    "RMSE": 19.95,
+    "pearson_r": 0.233,
+    "hieu_chinh": {
+     "he_so": 0.2392,
+     "chan": 25.133
+    }
+   },
+   "theo_ngay": {
+    "so_ngay": 672,
+    "tu": "2024-11-20",
+    "den": "2026-11-17",
+    "tb_do_that": 32.104500456157616,
+    "tb_cams": 29.22194320436508,
+    "bias_cams_tru_that": -2.8825572517925386,
+    "MAE": 10.637119097664709,
+    "RMSE": 13.224690456386464,
+    "pearson_r": 0.29425648894673945,
+    "ti_le_bias_so_voi_tb_that": -0.08978670313618496,
+    "ngưỡng": {
+     "QCVN_05_2023": {
+      "so_ngay_that_vuot": 77,
+      "so_ngay_cams_vuot": 61,
+      "ti_le_phan_loai_dung": 0.8482142857142857,
+      "bo_sot": 59,
+      "bao_nham": 43
+     },
+     "WHO_2021": {
+      "so_ngay_that_vuot": 659,
+      "so_ngay_cams_vuot": 648,
+      "ti_le_phan_loai_dung": 0.9568452380952381,
+      "bo_sot": 20,
+      "bao_nham": 9
+     }
+    },
+    "dien_giai": "CAMS THẤP hơn số đo thật trung bình 2.9 µg/m³; sai số tuyệt đối trung bình 10.6; tương quan r = 0.29. Mô hình học máy huấn luyện trên CAMS thừa hưởng sai lệch này."
+   }
+  },
+  {
+   "tram": {
+    "ma": 6552005,
+    "ten": "Linh Trung (Vietnam)",
+    "nha_cung_cap": "AirGradient",
+    "la_cam_bien_re": true,
+    "lat": 10.87691,
+    "lon": 106.79757
+   },
+   "theo_gio": {
+    "so_gio": 190,
+    "tu": "2026-11-10 10:00:00",
+    "den": "2026-11-18 07:00:00",
+    "tb_do_that": 26.43,
+    "tb_cams": 20.27,
+    "bias_cams_tru_that": -6.17,
+    "MAE": 13.23,
+    "RMSE": 16.94,
+    "pearson_r": 0.436,
+    "hieu_chinh": {
+     "he_so": 0.7858,
+     "chan": 10.508
+    }
+   },
+   "theo_ngay": null
+  },
+  {
+   "tram": {
+    "ma": 7440,
+    "ten": "US Diplomatic Post: Ho Chi Minh City",
+    "nha_cung_cap": "Ho Chi Minh City",
+    "la_cam_bien_re": false,
+    "lat": 10.782773,
+    "lon": 106.700035
+   },
+   "theo_gio": {
+    "so_gio": 4278,
+    "tu": "2022-08-04 07:00:00",
+    "den": "2023-07-16 16:00:00",
+    "tb_do_that": 30.73,
+    "tb_cams": 26.32,
+    "bias_cams_tru_that": -4.42,
+    "MAE": 20.92,
+    "RMSE": 59.43,
+    "pearson_r": 0.114,
+    "hieu_chinh": {
+     "he_so": 0.5402,
+     "chan": 16.516
+    }
+   },
+   "theo_ngay": {
+    "so_ngay": 167,
+    "tu": "2022-08-05",
+    "den": "2023-07-15",
+    "tb_do_that": 30.649894736367553,
+    "tb_cams": 26.3315119760479,
+    "bias_cams_tru_that": -4.318382760319654,
+    "MAE": 18.8040985082348,
+    "RMSE": 57.89597516987107,
+    "pearson_r": 0.15839568393694672,
+    "ti_le_bias_so_voi_tb_that": -0.14089388552436652,
+    "ngưỡng": {
+     "QCVN_05_2023": {
+      "so_ngay_that_vuot": 9,
+      "so_ngay_cams_vuot": 6,
+      "ti_le_phan_loai_dung": 0.9221556886227545,
+      "bo_sot": 8,
+      "bao_nham": 5
+     },
+     "WHO_2021": {
+      "so_ngay_that_vuot": 122,
+      "so_ngay_cams_vuot": 150,
+      "ti_le_phan_loai_dung": 0.7604790419161677,
+      "bo_sot": 6,
+      "bao_nham": 34
+     }
+    },
+    "dien_giai": "CAMS THẤP hơn số đo thật trung bình 4.3 µg/m³; sai số tuyệt đối trung bình 18.8; tương quan r = 0.16. Mô hình học máy huấn luyện trên CAMS thừa hưởng sai lệch này."
+   }
+  }
+ ]
+}

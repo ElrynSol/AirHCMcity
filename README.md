@@ -1,6 +1,24 @@
 # Hệ thống Giám sát, Quản lý & Dự báo Chất lượng Không khí TP.HCM
 
-Đồ án chuyên ngành · Lê Ngọc Ánh Dương (MSSV 1250080037) · GVHD: TS. Dương Thị Thúy Nga
+Đồ án chuyên ngành · Lê Ngọc Ánh Dương (MSSV 1250080037) · GVHD: TS. Dương Thị Thúy Nga · Web: https://airhcmcity.asia
+
+## Bắt đầu nhanh: muốn làm gì thì bấm tệp nào?
+
+Các tệp ở thư mục gốc. Trên Windows: **bấm đúp** tệp `.bat`; tệp `.ps1` thì **chuột phải → Run with PowerShell**.
+Tệp `.sh` là bản tương ứng cho Linux / macOS (chạy bằng `bash tên_tệp.sh`).
+
+| Muốn | Windows | Linux / macOS | Ghi chú |
+|---|---|---|---|
+| **1. Cài đặt lần đầu** (thư viện, CSDL, khóa bí mật) | `cai_dat.ps1` | `cai_dat.sh` | Chạy 1 lần; chạy lại không sao |
+| **2. Mở web trên máy này** | `chay_server.bat` | `chay_server.sh` | Rồi mở http://localhost:8000 |
+| 3. Mở web cho **điện thoại cùng Wi-Fi** | `chay_server_dien_thoai.bat` | `chay_server.sh --lan` | Cửa sổ hiện địa chỉ để gõ trên điện thoại |
+| 4. **Đưa web lên Internet** (https://airhcmcity.asia) | `chay_cong_khai.bat` | — | Cần cài trước Cloudflare Tunnel; đóng cửa sổ là tắt |
+| 5. Lấy **dữ liệu mới nhất** ngay | `chay_dong_bo.bat` | `python data_pipeline/dong_bo_hang_ngay.py` | Máy chủ cũng tự đồng bộ mỗi ngày |
+| 6. **Tự lấy dữ liệu mỗi ngày** kể cả khi không mở web | `cai_dat_dong_bo_tu_dong.ps1` | (dùng cron) | Tạo lịch trong Windows Task Scheduler |
+
+Các tệp khác **không cần bấm**: `requirements.txt` (danh sách thư viện Python), `.env.example` (mẫu tệp cấu hình), `LICENSE` (giấy phép MIT).
+Giải thích các thư mục con: `models/README.md` (mô hình, kết quả `.json`), `dong_goi/README.md` (Docker, triển khai máy chủ),
+`mobile/README_MOBILE.md` (app Android), `iot/README.md` (trạm IoT), `du_lieu/README.md` (bộ dữ liệu mở), `docs/CAU_TRUC_DU_AN.md` (từng tệp).
 
 ## Dữ liệu (trung thực về bản chất)
 | Chỉ số | Nguồn | Bản chất |
@@ -19,13 +37,13 @@ Nguồn dữ liệu (Open-Meteo, GEE) → script nạp (download_*, load_to_db, 
 ```
 ```
 backend/        API FastAPI: main.py · core/ (cấu hình, bảo mật, mail, nhật ký, bus sự kiện) · routers/ · services/
-frontend/       17 trang web + nav.js, style.css, tro-ly.js, sw.js (PWA)
+frontend/       23 trang web + nav.js, style.css, tro-ly.js, sw.js (PWA)
 ml/             tinh_aqi, predict, train_model, train_du_bao_gio, train_diem, train_downscale_model, phan_cum_tram
 models/         mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
 data_pipeline/  download_*, gee_extract, run_pipeline, load_to_db, dong_bo_hang_ngay, kiem_tra_du_lieu, doi_chieu_tram_that
 iot/            ESP32 Wokwi (trạm cảm biến, bảng điện tử) + giả lập Python
 mobile/         app Android (Capacitor) + AirHCM.apk
-tests/          127 kiểm thử pytest
+tests/          148 kiểm thử pytest
 dong_goi/       Dockerfile, docker-compose.yml, tao_ban_nop.py (tạo bản nộp .zip sạch)
 docs/           CAU_TRUC_DU_AN.md (giải thích từng thư mục, từng tệp)
 ```

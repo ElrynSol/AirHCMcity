@@ -138,6 +138,15 @@
     </div>
   </section>
 
+  <section id="tram-that" class="card">
+    <h3>Đối chiếu với số đo thật tại trạm mặt đất</h3>
+    <p class="ghi" style="margin-top:0">Toàn bộ mô hình học từ số liệu mô hình CAMS (lưới ~45 km). Để biết CAMS gần thực tế tới đâu, hệ thống tải số đo PM2.5
+      theo giờ của các trạm thật quanh TP.HCM qua <b>OpenAQ</b> (trạm chuẩn của Tổng Lãnh sự quán Hoa Kỳ và cảm biến AirGradient), kiểm soát chất lượng
+      (loại mã lỗi thiết bị), rồi so với CAMS tại đúng vị trí trạm.</p>
+    <div id="bangTramThat" style="overflow-x:auto">Đang tải…</div>
+    <p class="ghi" id="ghiTramThat"></p>
+  </section>
+
   <section id="quy-trinh" class="card">
     <h3>Quy trình xử lý và đánh giá</h3>
     <ol class="duong">
@@ -159,7 +168,7 @@
       <tbody>
         <tr><td>PM2.5, PM10, O₃ là số liệu tái phân tích CAMS (lưới ~0,4° ≈ 45 km), không phải trạm đo mặt đất</td>
             <td>Giá trị tuyệt đối có thể lệch so với trạm; chênh lệch giữa các phường nhỏ hơn thực tế</td>
-            <td>Ghi rõ nguồn; giá trị theo trạm/phường được gắn nhãn <i>nội suy</i>; công cụ đối chiếu <code>doi_chieu_tram_that.py</code> sẵn sàng nhận số đo thật</td>
+            <td>Ghi rõ nguồn; giá trị theo trạm/phường được gắn nhãn <i>nội suy</i>; đã đối chiếu với số đo thật của 3 trạm qua OpenAQ (mục <a href="#tram-that">Đối chiếu trạm đo thật</a>)</td>
             <td>Hiệu chỉnh bằng số liệu trạm quan trắc tự động hoặc cảm biến IoT — đường thu nhận MQTT đã sẵn sàng và đang chạy với <a href="iot.html">trạm mô phỏng</a></td></tr>
         <tr><td>NO₂, CO, SO₂ vệ tinh là cột khí (mol/m²), trễ 2–3 tuần</td>
             <td>Không cùng đơn vị với ngưỡng AQI mặt đất</td>
@@ -283,6 +292,26 @@ Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => nul
 })();
 
 // 6. Đối chiếu với bài báo (số liệu do ml/doi_chieu_bai_bao.py xuất ra)
+lay('/doi-chieu-tram-that').then(d => {
+  const f = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+  const ds = d.tram.filter(t => t.theo_ngay || t.theo_gio.so_gio >= 48);
+  document.getElementById('bangTramThat').innerHTML = `<table class="bang"><tr><th>Trạm</th><th>Loại</th><th>Khoảng thời gian</th><th class="so">Số ngày</th>
+    <th class="so">TB đo thật</th><th class="so">TB CAMS</th><th class="so">Sai lệch (CAMS − thật)</th><th class="so">MAE ngày</th><th class="so">Tương quan r (ngày)</th></tr>` +
+    ds.map(t => { const n = t.theo_ngay, g = t.theo_gio;
+      return `<tr><td><b>${t.tram.ten}</b></td><td>${t.tram.la_cam_bien_re ? 'cảm biến giá rẻ' : 'trạm chuẩn'}</td>
+        <td>${(n || g).tu.slice(0, 10)} → ${(n || g).den.slice(0, 10)}</td><td class="so">${n ? n.so_ngay : '<i>' + g.so_gio + ' giờ</i>'}</td>
+        <td class="so">${f(n ? n.tb_do_that : g.tb_do_that)}</td><td class="so">${f(n ? n.tb_cams : g.tb_cams)}</td>
+        <td class="so"><b>${f(n ? n.bias_cams_tru_that : g.bias_cams_tru_that)}</b></td><td class="so">${n ? f(n.MAE) : '—'}</td><td class="so">${f(n ? n.pearson_r : g.pearson_r, 2)}</td></tr>`; }).join('') + '</table>';
+  const c = d.tram.find(t => /CMT8/.test(t.tram.ten)), u = d.tram.find(t => /Diplomatic/.test(t.tram.ten));
+  const y = [];
+  if (c && c.theo_ngay) y.push(`CAMS <b>thấp hơn</b> số đo thật trung bình ${f(-c.theo_ngay.bias_cams_tru_that)} µg/m³ (khoảng ${f(-c.theo_ngay.ti_le_bias_so_voi_tb_that * 100, 0)}%) tại CMT8 trong ${c.theo_ngay.so_ngay} ngày, `
+    + `và ${f(-(u && u.theo_ngay ? u.theo_ngay.bias_cams_tru_that : NaN))} µg/m³ tại trạm Lãnh sự quán: <b>mức trung bình khá sát</b>.`);
+  if (c && c.theo_ngay) y.push(`Nhưng tương quan theo ngày thấp (r = ${f(c.theo_ngay.pearson_r, 2)}): CAMS <b>bắt được mức nền nhưng chưa bắt được dao động từng ngày</b> tại một điểm, `
+    + `vì một ô lưới 45 km gộp cả đô thị lẫn ngoại thành. Ngày vượt QCVN: thực tế ${c.theo_ngay['ngưỡng'].QCVN_05_2023.so_ngay_that_vuot}, CAMS bỏ sót ${c.theo_ngay['ngưỡng'].QCVN_05_2023.bo_sot}.`);
+  y.push('Hệ quả: dự báo của hệ thống phản ánh <b>xu hướng chung của vùng</b>, có xu hướng <b>đánh giá thấp</b> các đợt ô nhiễm cục bộ. Hướng phát triển: '
+    + 'hiệu chỉnh độ lệch theo trạm thật và huấn luyện lại mô hình trên số đo trạm khi có chuỗi đủ dài.');
+  document.getElementById('ghiTramThat').innerHTML = y.join(' ') + ` <br>QA/QC: ${d.qa_qc || ''} Cảm biến giá rẻ (AirGradient) có sai số riêng, độ ẩm cao thường làm số đo cao lên.`;
+}).catch(() => { document.getElementById('bangTramThat').textContent = 'Chưa có số liệu đối chiếu (chạy data_pipeline/tai_tram_that.py).'; });
 fetch('hinh/ml/doi_chieu_bai_bao.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
   const b = d.bai_bao, dd = d.dac_diem, $ = id => document.getElementById(id);
   const trich = $('bbTrich');

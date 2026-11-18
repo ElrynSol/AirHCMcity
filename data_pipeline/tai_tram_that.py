@@ -68,17 +68,22 @@ def _goi(duong, **ts):
     khoa = os.getenv("OPENAQ_API_KEY", "").strip()
     if not khoa:
         sys.exit("Thiếu OPENAQ_API_KEY trong .env — đăng ký miễn phí tại https://explore.openaq.org (Account → API Key).")
-    for lan in range(5):
-        r = requests.get(API + duong, params=ts, headers={"X-API-Key": khoa, "User-Agent": "AirHCM-do-an"}, timeout=60)
+    for lan in range(6):
+        try:
+            r = requests.get(API + duong, params=ts, headers={"X-API-Key": khoa, "User-Agent": "AirHCM-do-an"}, timeout=90)
+        except requests.RequestException:
+            time.sleep(5 * (lan + 1)); continue
         if r.status_code == 429:                       # giới hạn tốc độ: chờ rồi thử lại
             time.sleep(int(r.headers.get("x-ratelimit-reset", 10)) + 1)
             continue
+        if r.status_code in (408, 500, 502, 503, 504):  # máy chủ OpenAQ quá tải / quá thời gian: chờ tăng dần rồi thử lại
+            time.sleep(5 * (lan + 1)); continue
         if r.status_code in (401, 403):
             sys.exit("OpenAQ từ chối khóa API (sai khóa hoặc chưa kích hoạt).")
         r.raise_for_status()
         time.sleep(1.1)                                # ~60 lời gọi/phút theo giới hạn gói miễn phí
         return r.json()
-    raise RuntimeError("OpenAQ từ chối do vượt giới hạn tốc độ nhiều lần")
+    raise RuntimeError(f"OpenAQ không phản hồi sau nhiều lần thử ({duong})")
 
 
 def tim_tram() -> list[dict]:
@@ -98,25 +103,47 @@ def tim_tram() -> list[dict]:
 
 
 def tai_gio(ma_cam_bien: int, tu: date, den: date) -> pd.DataFrame:
-    """Số liệu PM2.5 trung bình theo giờ của một cảm biến (đã gộp sẵn bởi OpenAQ), giờ Việt Nam."""
-    hang, trang = [], 1
-    while True:
-        d = _goi(f"/sensors/{ma_cam_bien}/hours", datetime_from=f"{tu}T00:00:00Z", datetime_to=f"{den}T23:59:59Z",
-                 limit=1000, page=trang)
-        kq = d.get("results", [])
-        for x in kq:
-            v = x.get("value")
-            t = ((x.get("period") or {}).get("datetimeFrom") or {}).get("utc")
-            if v is not None and t and 0 <= v < 1000:          # loại giá trị âm / lỗi cảm biến
-                hang.append((t, float(v)))
-        if len(kq) < 1000:
-            break
-        trang += 1
+    """Số liệu PM2.5 trung bình theo giờ của một cảm biến (đã gộp sẵn bởi OpenAQ), giờ Việt Nam.
+    Tải theo từng đợt 90 ngày (lật trang sâu trên khoảng dài làm OpenAQ quá thời gian — lỗi 408)."""
+    hang = []
+    dau = tu
+    while dau <= den:
+        cuoi = min(dau + timedelta(days=89), den)
+        trang = 1
+        while True:
+            d = _goi(f"/sensors/{ma_cam_bien}/hours", datetime_from=f"{dau}T00:00:00Z", datetime_to=f"{cuoi}T23:59:59Z",
+                     limit=1000, page=trang)
+            kq = d.get("results", [])
+            for x in kq:
+                v = x.get("value")
+                t = ((x.get("period") or {}).get("datetimeFrom") or {}).get("utc")
+                if v is not None and t:
+                    hang.append((t, float(v)))
+            if len(kq) < 1000:
+                break
+            trang += 1
+        print(f"    {dau} → {cuoi}: tổng {len(hang):,} giờ", flush=True)
+        dau = cuoi + timedelta(days=1)
     df = pd.DataFrame(hang, columns=["utc", "pm25"])
+    df, qc = kiem_soat_chat_luong(df)
+    if qc["loai"]:
+        print(f"    QA/QC: loại {qc['loai']:,} giờ ({qc['ly_do']})", flush=True)
     if df.empty:
         return df.assign(thoi_gian=pd.Series(dtype="datetime64[ns]"))
     df["thoi_gian"] = pd.to_datetime(df["utc"], utc=True).dt.tz_convert("Asia/Bangkok").dt.tz_localize(None).dt.floor("h")
     return df.groupby("thoi_gian", as_index=False)["pm25"].mean()
+
+
+MA_LOI = 900   # AirNow/OpenAQ dùng 985 (và các giá trị ≥ 900) làm mã lỗi thiết bị, không phải nồng độ
+
+
+def kiem_soat_chat_luong(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """QA/QC: loại giá trị âm và mã lỗi thiết bị (≥ 900 µg/m³, vd. 985 của trạm Lãnh sự quán Mỹ).
+    KHÔNG xóa giá trị cao nhưng hợp lý (< 900) khi chưa đối chứng — có thể là đợt ô nhiễm thật."""
+    am, loi = int((df["pm25"] < 0).sum()), int((df["pm25"] >= MA_LOI).sum())
+    sach = df[(df["pm25"] >= 0) & (df["pm25"] < MA_LOI)]
+    ly_do = ", ".join(x for x in (f"{loi:,} giờ mã lỗi thiết bị ≥ {MA_LOI}" if loi else "", f"{am:,} giờ âm" if am else "") if x)
+    return sach, {"loai": am + loi, "ly_do": ly_do, "con_lai": len(sach)}
 
 
 def luu_csdl(engine, tram: dict, df: pd.DataFrame):
@@ -124,6 +151,7 @@ def luu_csdl(engine, tram: dict, df: pd.DataFrame):
     with engine.begin() as c:
         for cau in DDL:
             c.execute(text(cau))
+        c.execute(text("DELETE FROM do_that_gio WHERE pm25 >= :n OR pm25 < 0"), {"n": MA_LOI})   # dọn mã lỗi đã lỡ lưu
         c.execute(text("""
             INSERT INTO tram_do_that (ma, ten, nha_cung_cap, la_cam_bien_re, ma_cam_bien_pm25, toado)
             VALUES (:ma, :ten, :ncc, :re, :cb, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326))
@@ -219,8 +247,12 @@ def main():
             ket_qua.append(dc)
     if ket_qua:
         ra = GOC / "models" / "doi_chieu_tram_that.json"
+        cu = json.loads(ra.read_text(encoding="utf-8")).get("tram", []) if ra.exists() else []
+        moi = {x["tram"]["ma"] for x in ket_qua}
+        tat_ca = [x for x in cu if x["tram"]["ma"] not in moi] + ket_qua      # gộp: chạy lại 1 trạm không mất kết quả trạm khác
         ra.write_text(json.dumps({"cap_nhat": datetime.now(timezone.utc).isoformat(timespec="seconds"), "nguon": "OpenAQ v3",
-                                  "tram": ket_qua}, ensure_ascii=False, indent=1), encoding="utf-8")
+                                  "qa_qc": f"Loại giá trị âm và mã lỗi thiết bị ≥ {MA_LOI} µg/m³ (985 của AirNow); giữ giá trị cao hợp lý.",
+                                  "tram": tat_ca}, ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"\nĐã ghi {ra.relative_to(GOC)}")
 
 

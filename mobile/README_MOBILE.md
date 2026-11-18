@@ -1,7 +1,19 @@
 # App di động AirHCM (Android) — v2
 
+## Các tệp trong thư mục này
+| Tệp | Là gì |
+|---|---|
+| `AirHCM.apk` | **Tệp cài app Android**: chép sang điện thoại rồi mở để cài (hoặc tải ở https://airhcmcity.asia/tai-app.html) |
+| `build_apk.js` | Tạo lại APK: `npm run apk` (lấy tên miền từ `TEN_MIEN` trong `.env`) |
+| `chay_may_ao.js` | Mở máy ảo Android, cài và chạy app: `npm run may-ao` |
+| `package.json`, `package-lock.json` | Danh sách thư viện Node.js của app (Capacitor); `npm install` đọc tệp này |
+| `capacitor.config.json` | Cấu hình app: tên, mã gói `vn.edu.aqi.hcm`, tác vụ nền kiểm tra AQI mỗi 30 phút |
+| `www/` | Trang khởi động trong app (dò máy chủ) và `may_chu.js` (địa chỉ máy chủ, tự sinh khi build) |
+| `android/` | Dự án Android do Capacitor tạo — không cần sửa tay |
+
 ## Cách hoạt động
 APK chỉ chứa một **trang khởi động** nhỏ (`www/index.html`). Khi mở app, trang này tự dò máy chủ theo thứ tự:
+0. máy chủ công khai `https://airhcmcity.asia` (ghi vào `www/may_chu.js` lúc build),
 1. máy chủ đã dùng lần trước,
 2. `http://10.0.2.2:8000` — địa chỉ máy tính khi chạy trong **máy ảo Android**,
 3. `http://192.168.1.227:8000` — IP Wi-Fi của máy tính lúc build (sửa mảng `MAC_DINH` trong `www/index.html` nếu đổi).

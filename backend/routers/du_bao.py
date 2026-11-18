@@ -94,6 +94,17 @@ def get_danh_gia_xac_suat():
     return json.loads(f.read_text(encoding="utf-8"))
 
 
+@router.get("/api/v1/doi-chieu-tram-that")
+def get_doi_chieu_tram_that():
+    """CAMS so với số đo thật tại trạm mặt đất (OpenAQ: Lãnh sự quán Mỹ, AirGradient) — data_pipeline/tai_tram_that.py."""
+    import json
+    from core.config import PROJECT_ROOT
+    f = PROJECT_ROOT / "models" / "doi_chieu_tram_that.json"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="Chưa chạy: python data_pipeline/tai_tram_that.py")
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
 @router.get("/api/v1/phan-tich-yeu-to")
 def phan_tich_yeu_to():
     """Phân tích các yếu tố ảnh hưởng nhiều nhất đến dự báo PM2.5."""
