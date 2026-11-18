@@ -147,6 +147,14 @@
     <p class="ghi" id="ghiTramThat"></p>
   </section>
 
+  <section id="du-bao-that" class="card">
+    <h3>Dự báo PM2.5 THẬT ngày mai: số đo thật hay mô hình CAMS?</h3>
+    <p class="ghi" style="margin-top:0">Học trực tiếp từ số đo của điểm CMT8 (AirGradient, OpenAQ): nhãn là PM2.5 đo thật ngày mai; so sánh 5 cách trên
+      30% thời gian cuối mà mô hình chưa thấy. Kỹ năng = mức giảm RMSE so với "mai = hôm nay"; khoảng tin cậy 95% bootstrap theo khối 7 ngày.</p>
+    <div id="bangDuBaoThat" style="overflow-x:auto">Đang tải…</div>
+    <p class="ghi" id="ghiDuBaoThat"></p>
+  </section>
+
   <section id="quy-trinh" class="card">
     <h3>Quy trình xử lý và đánh giá</h3>
     <ol class="duong">
@@ -292,6 +300,22 @@ Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => nul
 })();
 
 // 6. Đối chiếu với bài báo (số liệu do ml/doi_chieu_bai_bao.py xuất ra)
+lay('/mo-hinh-tram-that').then(d => {
+  const f = (x, n = 2) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+  const pc = x => x == null ? '--' : (x > 0 ? '+' : '') + Math.round(x * 100) + '%';
+  document.getElementById('bangDuBaoThat').innerHTML = `<table class="bang"><tr><th>Cách dự báo</th><th class="so">MAE</th><th class="so">RMSE</th><th class="so">Lệch</th>
+    <th class="so">r</th><th class="so">Kỹ năng (KTC 95%)</th><th class="so">Mùa khô / mưa</th><th class="so">Bắt ngày vượt QCVN</th></tr>` +
+    Object.entries(d.mo_hinh).map(([ten, x]) => { const v = x.vuot_nguong.QCVN_45, mk = x.theo_mua['khô'], mm = x.theo_mua['mưa'];
+      return `<tr><td><b>${ten}</b></td><td class="so">${f(x.MAE)}</td><td class="so">${f(x.RMSE)}</td><td class="so">${f(x.bias)}</td><td class="so">${f(x.r)}</td>
+        <td class="so">${pc(x.ky_nang)}${x.ky_nang_ci95 ? ` (${pc(x.ky_nang_ci95.thap)} … ${pc(x.ky_nang_ci95.cao)})` : ''}</td>
+        <td class="so">${mk ? pc(mk.ky_nang) : '—'} / ${mm ? pc(mm.ky_nang) : '—'}</td><td class="so">${v.bat_dung}/${v.so_ngay_vuot_that}</td></tr>`; }).join('') + '</table>';
+  const c = d.mo_hinh['CAMS thô'], rf = d.mo_hinh['Random Forest'];
+  document.getElementById('ghiDuBaoThat').innerHTML = `Kiểm tra ${d.so_ngay_kiem_tra} ngày (${d.kiem_tra_tu} → ${d.kiem_tra_den}), huấn luyện ${d.so_ngay_huan_luyen} ngày.
+    <b>Kết luận:</b> với không khí thật tại một điểm, số đo thật gần nhất quan trọng hơn mô hình CAMS — dự báo bằng CAMS thô kém "mai = hôm nay"
+    ${pc(-c.ky_nang).replace('+', '')}; cộng bù độ lệch còn kém hơn vì độ lệch của CAMS đổi theo mùa (tập huấn luyện ${f(d.do_lech_cams_tap_huan_luyen)} µg/m³).
+    Học máy trên số đo thật chỉ hơn "mai = hôm nay" ${pc(rf.ky_nang)}, khoảng tin cậy chứa 0 — <b>chưa chứng minh được</b> là tốt hơn.
+    Số ngày vượt QCVN trong tập kiểm tra ít (mùa mưa) nên chỉ số phát hiện vượt ngưỡng chưa đủ tin cậy.<br>Giới hạn: ${d.gioi_han.join(' ')}`;
+}).catch(() => { document.getElementById('bangDuBaoThat').textContent = 'Chưa có kết quả (chạy ml/mo_hinh_tram_that.py).'; });
 lay('/doi-chieu-tram-that').then(d => {
   const f = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
   const ds = d.tram.filter(t => t.theo_ngay || t.theo_gio.so_gio >= 48);

@@ -1,0 +1,277 @@
+{
+ "so_ngay": 647,
+ "so_ngay_huan_luyen": 453,
+ "so_ngay_kiem_tra": 194,
+ "kiem_tra_tu": "2026-05-08",
+ "kiem_tra_den": "2026-11-17",
+ "do_lech_cams_tap_huan_luyen": 6.17,
+ "mo_hinh": {
+  "Mai = hôm nay (đo thật)": {
+   "MAE": 6.08,
+   "RMSE": 7.86,
+   "bias": 0.01,
+   "r": 0.654,
+   "ky_nang": 0.0,
+   "theo_mua": {
+    "mưa": {
+     "so_ngay": 194,
+     "MAE": 6.08,
+     "RMSE": 7.86,
+     "bias": 0.01,
+     "r": 0.654,
+     "ky_nang": 0.0
+    }
+   },
+   "vuot_nguong": {
+    "QCVN_45": {
+     "so_ngay_vuot_that": 6,
+     "bat_dung": 3,
+     "bo_sot": 3,
+     "bao_nham": 3,
+     "do_nhay": 0.5,
+     "do_chinh_xac": 0.5,
+     "F1": 0.5
+    },
+    "Kem_50": {
+     "so_ngay_vuot_that": 4,
+     "bat_dung": 2,
+     "bo_sot": 2,
+     "bao_nham": 2,
+     "do_nhay": 0.5,
+     "do_chinh_xac": 0.5,
+     "F1": 0.5
+    }
+   }
+  },
+  "CAMS thô": {
+   "MAE": 10.79,
+   "RMSE": 13.98,
+   "bias": 4.36,
+   "r": 0.285,
+   "ky_nang": -0.778,
+   "ky_nang_ci95": {
+    "thap": -1.332,
+    "cao": -0.296
+   },
+   "theo_mua": {
+    "mưa": {
+     "so_ngay": 194,
+     "MAE": 10.79,
+     "RMSE": 13.98,
+     "bias": 4.36,
+     "r": 0.285,
+     "ky_nang": -0.778
+    }
+   },
+   "vuot_nguong": {
+    "QCVN_45": {
+     "so_ngay_vuot_that": 6,
+     "bat_dung": 2,
+     "bo_sot": 4,
+     "bao_nham": 25,
+     "do_nhay": 0.333,
+     "do_chinh_xac": 0.074,
+     "F1": 0.121
+    },
+    "Kem_50": {
+     "so_ngay_vuot_that": 4,
+     "bat_dung": 2,
+     "bo_sot": 2,
+     "bao_nham": 16,
+     "do_nhay": 0.5,
+     "do_chinh_xac": 0.111,
+     "F1": 0.182
+    }
+   }
+  },
+  "CAMS cộng bù độ lệch": {
+   "MAE": 13.04,
+   "RMSE": 16.95,
+   "bias": 10.54,
+   "r": 0.285,
+   "ky_nang": -1.156,
+   "ky_nang_ci95": {
+    "thap": -1.901,
+    "cao": -0.524
+   },
+   "theo_mua": {
+    "mưa": {
+     "so_ngay": 194,
+     "MAE": 13.04,
+     "RMSE": 16.95,
+     "bias": 10.54,
+     "r": 0.285,
+     "ky_nang": -1.156
+    }
+   },
+   "vuot_nguong": {
+    "QCVN_45": {
+     "so_ngay_vuot_that": 6,
+     "bat_dung": 3,
+     "bo_sot": 3,
+     "bao_nham": 45,
+     "do_nhay": 0.5,
+     "do_chinh_xac": 0.062,
+     "F1": 0.111
+    },
+    "Kem_50": {
+     "so_ngay_vuot_that": 4,
+     "bat_dung": 2,
+     "bo_sot": 2,
+     "bao_nham": 30,
+     "do_nhay": 0.5,
+     "do_chinh_xac": 0.062,
+     "F1": 0.111
+    }
+   }
+  },
+  "Hồi quy tuyến tính (Ridge)": {
+   "MAE": 5.93,
+   "RMSE": 7.43,
+   "bias": 1.57,
+   "r": 0.657,
+   "ky_nang": 0.055,
+   "ky_nang_ci95": {
+    "thap": -0.116,
+    "cao": 0.199
+   },
+   "theo_mua": {
+    "mưa": {
+     "so_ngay": 194,
+     "MAE": 5.93,
+     "RMSE": 7.43,
+     "bias": 1.57,
+     "r": 0.657,
+     "ky_nang": 0.055
+    }
+   },
+   "vuot_nguong": {
+    "QCVN_45": {
+     "so_ngay_vuot_that": 6,
+     "bat_dung": 2,
+     "bo_sot": 4,
+     "bao_nham": 0,
+     "do_nhay": 0.333,
+     "do_chinh_xac": 1.0,
+     "F1": 0.5
+    },
+    "Kem_50": {
+     "so_ngay_vuot_that": 4,
+     "bat_dung": 1,
+     "bo_sot": 3,
+     "bao_nham": 0,
+     "do_nhay": 0.25,
+     "do_chinh_xac": 1.0,
+     "F1": 0.4
+    }
+   }
+  },
+  "Random Forest": {
+   "MAE": 5.92,
+   "RMSE": 7.43,
+   "bias": 2.62,
+   "r": 0.685,
+   "ky_nang": 0.055,
+   "ky_nang_ci95": {
+    "thap": -0.077,
+    "cao": 0.175
+   },
+   "theo_mua": {
+    "mưa": {
+     "so_ngay": 194,
+     "MAE": 5.92,
+     "RMSE": 7.43,
+     "bias": 2.62,
+     "r": 0.685,
+     "ky_nang": 0.055
+    }
+   },
+   "vuot_nguong": {
+    "QCVN_45": {
+     "so_ngay_vuot_that": 6,
+     "bat_dung": 0,
+     "bo_sot": 6,
+     "bao_nham": 0,
+     "do_nhay": 0.0,
+     "do_chinh_xac": null,
+     "F1": null
+    },
+    "Kem_50": {
+     "so_ngay_vuot_that": 4,
+     "bat_dung": 0,
+     "bo_sot": 4,
+     "bao_nham": 0,
+     "do_nhay": 0.0,
+     "do_chinh_xac": null,
+     "F1": null
+    }
+   }
+  }
+ },
+ "tam_quan_trong_rf": [
+  {
+   "dac_trung": "y",
+   "muc": 0.321
+  },
+  {
+   "dac_trung": "gio_mai",
+   "muc": 0.189
+  },
+  {
+   "dac_trung": "cams_mai",
+   "muc": 0.152
+  },
+  {
+   "dac_trung": "y_tb7",
+   "muc": 0.089
+  },
+  {
+   "dac_trung": "thang_cos",
+   "muc": 0.074
+  },
+  {
+   "dac_trung": "mua_mai",
+   "muc": 0.039
+  },
+  {
+   "dac_trung": "y_lag1",
+   "muc": 0.035
+  },
+  {
+   "dac_trung": "nhiet_do_mai",
+   "muc": 0.035
+  },
+  {
+   "dac_trung": "do_am_mai",
+   "muc": 0.033
+  },
+  {
+   "dac_trung": "thang_sin",
+   "muc": 0.033
+  }
+ ],
+ "tram": {
+  "ma": 3276359,
+  "ten": "CMT8 (AirGradient, OpenAQ)",
+  "lat": 10.78533,
+  "lon": 106.67029
+ },
+ "dac_trung": [
+  "y",
+  "y_lag1",
+  "y_tb7",
+  "cams_mai",
+  "nhiet_do_mai",
+  "do_am_mai",
+  "gio_mai",
+  "mua_mai",
+  "thang_sin",
+  "thang_cos"
+ ],
+ "cap_nhat": "2026-11-18T14:23:57",
+ "gioi_han": [
+  "Một điểm đo duy nhất (cảm biến giá rẻ AirGradient, không phải trạm chuẩn) — chưa đại diện cho cả thành phố.",
+  "Khi đánh giá, CAMS và thời tiết ngày mai là số liệu tái phân tích (đã biết); khi vận hành là dự báo nên sai số lớn hơn.",
+  "Cảm biến quang học giá rẻ thường đo cao khi độ ẩm cao; chưa hiệu chỉnh theo trạm chuẩn."
+ ]
+}

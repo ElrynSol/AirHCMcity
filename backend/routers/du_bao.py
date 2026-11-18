@@ -105,6 +105,55 @@ def get_doi_chieu_tram_that():
     return json.loads(f.read_text(encoding="utf-8"))
 
 
+@router.get("/api/v1/mo-hinh-tram-that")
+def get_mo_hinh_tram_that():
+    """So sánh 5 cách dự báo PM2.5 THẬT ngày mai tại điểm đo CMT8 (ml/mo_hinh_tram_that.py)."""
+    import json
+    from core.config import PROJECT_ROOT
+    f = PROJECT_ROOT / "models" / "mo_hinh_tram_that.json"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="Chưa chạy: python ml/mo_hinh_tram_that.py")
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
+@router.get("/api/v1/du-bao-tram-that")
+def get_du_bao_tram_that():
+    """Dự báo PM2.5 ngày mai từ số đo thật mới nhất (OpenAQ) tại điểm CMT8."""
+    from services import du_bao_tram_that
+    try:
+        return du_bao_tram_that.du_bao()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Chưa có mô hình: python ml/mo_hinh_tram_that.py")
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Chưa dự báo được từ số đo thật: {e}")
+
+
+@router.get("/api/v1/du-bao-da-chat")
+def get_du_bao_da_chat():
+    """Dự báo ngày mai cho PM2.5, PM10, O₃ (trung bình thành phố) bằng mô hình đã chọn theo kiểm định; kèm kỹ năng."""
+    import json
+    import joblib
+    import pandas as pd
+    from core.config import PROJECT_ROOT
+    import du_bao_da_chat as ddc
+    f, fj = PROJECT_ROOT / "models" / "du_bao_da_chat.joblib", PROJECT_ROOT / "models" / "du_bao_da_chat.json"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="Chưa chạy: python ml/du_bao_da_chat.py")
+    goi, dg = joblib.load(f), json.loads(fj.read_text(encoding="utf-8"))
+    df = ddc.doc_chuoi().set_index("ngay_do").asfreq("D")
+    kq = {}
+    for ma, (ten, cot) in goi["chat"].items():
+        b = ddc.tao_dac_trung(df[cot].interpolate(limit=2)).dropna(subset=goi["dac_trung"])
+        if b.empty:
+            continue
+        x, chon = b[goi["dac_trung"]].iloc[[-1]], goi["chon"][ma]
+        p = float(x["y"].iloc[0]) if chon == "Mai = hôm nay" else float(goi["mo_hinh"][ma]["ridge" if chon == "Hồi quy tuyến tính" else "rf"].predict(x)[0])
+        m = dg["chat"][ma]["mo_hinh"].get(chon, {})
+        kq[ma] = {"ten": ten, "ngay_du_bao": str((b.index[-1] + pd.Timedelta(days=1)).date()), "du_bao": round(p, 1),
+                  "hom_nay": round(float(x["y"].iloc[0]), 1), "mo_hinh": chon, "ky_nang": m.get("ky_nang"), "ky_nang_ci95": m.get("ky_nang_ci95")}
+    return {"chat": kq, "khong_du_bao": dg["khong_du_bao"], "luu_y": dg["luu_y"]}
+
+
 @router.get("/api/v1/phan-tich-yeu-to")
 def phan_tich_yeu_to():
     """Phân tích các yếu tố ảnh hưởng nhiều nhất đến dự báo PM2.5."""

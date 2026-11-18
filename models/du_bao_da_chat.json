@@ -1,0 +1,208 @@
+{
+ "cap_nhat": "2026-11-18T14:26:06",
+ "du_lieu": "04/08/2022 → 17/11/2026",
+ "chat": {
+  "pm25": {
+   "ten": "PM2.5",
+   "so_ngay_huan_luyen": 1092,
+   "so_ngay_kiem_tra": 468,
+   "kiem_tra_tu": "2025-08-07",
+   "mo_hinh": {
+    "Mai = hôm nay": {
+     "MAE": 5.02,
+     "RMSE": 6.74,
+     "bias": 0.02,
+     "ky_nang": 0.0,
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.0
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.0
+      }
+     }
+    },
+    "Hồi quy tuyến tính": {
+     "MAE": 4.7,
+     "RMSE": 6.25,
+     "bias": -0.37,
+     "ky_nang": 0.072,
+     "ky_nang_ci95": {
+      "thap": 0.037,
+      "cao": 0.1
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.09
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.066
+      }
+     }
+    },
+    "Random Forest": {
+     "MAE": 4.69,
+     "RMSE": 6.27,
+     "bias": -0.69,
+     "ky_nang": 0.069,
+     "ky_nang_ci95": {
+      "thap": 0.022,
+      "cao": 0.121
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.059
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.072
+      }
+     }
+    }
+   },
+   "mo_hinh_chon": "Hồi quy tuyến tính",
+   "ly_do_chon": "Hồi quy tuyến tính tốt hơn có ý nghĩa thống kê"
+  },
+  "pm10": {
+   "ten": "PM10",
+   "so_ngay_huan_luyen": 1092,
+   "so_ngay_kiem_tra": 468,
+   "kiem_tra_tu": "2025-08-07",
+   "mo_hinh": {
+    "Mai = hôm nay": {
+     "MAE": 5.26,
+     "RMSE": 7.02,
+     "bias": 0.02,
+     "ky_nang": 0.0,
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.0
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.0
+      }
+     }
+    },
+    "Hồi quy tuyến tính": {
+     "MAE": 5.15,
+     "RMSE": 6.64,
+     "bias": 1.17,
+     "ky_nang": 0.054,
+     "ky_nang_ci95": {
+      "thap": 0.018,
+      "cao": 0.081
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.072
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.049
+      }
+     }
+    },
+    "Random Forest": {
+     "MAE": 5.35,
+     "RMSE": 7.03,
+     "bias": 1.28,
+     "ky_nang": -0.002,
+     "ky_nang_ci95": {
+      "thap": -0.049,
+      "cao": 0.05
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.059
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": -0.019
+      }
+     }
+    }
+   },
+   "mo_hinh_chon": "Hồi quy tuyến tính",
+   "ly_do_chon": "Hồi quy tuyến tính tốt hơn có ý nghĩa thống kê"
+  },
+  "o3": {
+   "ten": "O₃ (TB ngày)",
+   "so_ngay_huan_luyen": 1092,
+   "so_ngay_kiem_tra": 468,
+   "kiem_tra_tu": "2025-08-07",
+   "mo_hinh": {
+    "Mai = hôm nay": {
+     "MAE": 8.22,
+     "RMSE": 10.67,
+     "bias": -0.02,
+     "ky_nang": 0.0,
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.0
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.0
+      }
+     }
+    },
+    "Hồi quy tuyến tính": {
+     "MAE": 7.86,
+     "RMSE": 10.02,
+     "bias": -1.38,
+     "ky_nang": 0.062,
+     "ky_nang_ci95": {
+      "thap": 0.024,
+      "cao": 0.098
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.082
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.052
+      }
+     }
+    },
+    "Random Forest": {
+     "MAE": 8.07,
+     "RMSE": 10.34,
+     "bias": -1.01,
+     "ky_nang": 0.031,
+     "ky_nang_ci95": {
+      "thap": -0.014,
+      "cao": 0.077
+     },
+     "theo_mua": {
+      "khô": {
+       "so_ngay": 151,
+       "ky_nang": 0.024
+      },
+      "mưa": {
+       "so_ngay": 317,
+       "ky_nang": 0.035
+      }
+     }
+    }
+   },
+   "mo_hinh_chon": "Hồi quy tuyến tính",
+   "ly_do_chon": "Hồi quy tuyến tính tốt hơn có ý nghĩa thống kê"
+  }
+ },
+ "khong_du_bao": {
+  "NO2, CO, SO2": "Chỉ có cột khí vệ tinh Sentinel-5P (mol/m², trễ 2–3 tuần), không phải nồng độ mặt đất → không dự báo, không so với QCVN."
+ },
+ "luu_y": "Số liệu là trung bình thành phố từ mô hình CAMS. O₃ là trung bình ngày; QCVN dùng trung bình 8 giờ nên không kết luận vượt chuẩn."
+}
