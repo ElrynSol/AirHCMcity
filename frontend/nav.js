@@ -24,6 +24,7 @@
       ['nhat-ky.html', '🧾 Nhật ký', true],
       ['tai-khoan.html', '🔐 Tài khoản & bảo mật'],
       ['tai-app.html', '📲 Tải ứng dụng'],
+      ['khao-sat.html', '📝 Đánh giá AirHCM (khảo sát)'],
       ['gioi-thieu.html', 'ℹ️ Giới thiệu']] }
   ];
   var hd = document.getElementById('header');

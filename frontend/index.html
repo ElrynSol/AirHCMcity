@@ -353,7 +353,7 @@
 
 <script>
 // ============ HẠ TẦNG GỌI API: xử lý lỗi HTTP thống nhất + cache ngắn hạn ============
-const API = 'http://localhost:8000/api/v1';
+const API = (window.API_ORIGIN || '') + '/api/v1';
 const _cache = new Map();
 function thongBao(msg, ms = 3500) {
   const t = document.getElementById('toast');
@@ -409,7 +409,7 @@ if (token) {
 } else {
   userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 }
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
 // ============ BẢN ĐỒ ============
 const map = L.map('map', { zoomControl: false, zoomSnap: 0.5 }).setView([10.85, 106.9], 9);

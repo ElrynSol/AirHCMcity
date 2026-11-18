@@ -158,7 +158,7 @@
 </div>
 
 <script>
-const API = 'http://localhost:8000/api/v1';
+const API = (window.API_ORIGIN || '') + '/api/v1';
 async function goiApi(path) {
   let r;
   try { r = await fetch(API + path); }
@@ -173,7 +173,7 @@ const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 if (token) userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
 else userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
 function doiTab(t) {
   ['TomTat', 'Excel'].forEach(x => {

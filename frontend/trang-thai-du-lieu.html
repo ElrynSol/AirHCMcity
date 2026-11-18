@@ -107,14 +107,14 @@
 </div>
 
 <script>
-const API = 'http://localhost:8000/api/v1';
+const API = (window.API_ORIGIN || '') + '/api/v1';
 const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 userBox.innerHTML = token
   ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 async function goiApi(path, opt = {}) {
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   try {

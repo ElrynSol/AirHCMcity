@@ -149,7 +149,7 @@
 function ngayCucBo(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-const API = 'http://localhost:8000/api/v1';
+const API = (window.API_ORIGIN || '') + '/api/v1';
 async function goiApi(path) {
   let r;
   try { r = await fetch(API + path); }
@@ -172,7 +172,7 @@ if (token) {
 } else {
   userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 }
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
 const badgeClass = { 'Tốt': 'b-tot', 'Trung bình': 'b-trung-binh', 'Kém': 'b-kem', 'Xấu': 'b-xau', 'Rất xấu': 'b-rat-xau', 'Nguy hại': 'b-nguy-hai' };
 const iconMuc = { 'Tốt': '😊', 'Trung bình': '🙂', 'Kém': '😷', 'Xấu': '😨', 'Rất xấu': '🤢', 'Nguy hại': '⚠️' };
@@ -371,7 +371,7 @@ taiDienBienHomNay();
 
 <script>
 (function () {
-  const API_EM = 'http://localhost:8000/api/v1';
+  const API_EM = (window.API_ORIGIN || '') + '/api/v1';
   const tk = localStorage.getItem('ho_ten') ? 'phien-cookie' : null;
   const hd = () => ({ 'Content-Type': 'application/json' });
   const esc2 = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

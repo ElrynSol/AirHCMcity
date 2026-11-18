@@ -15,6 +15,7 @@ Tệp `.sh` là bản tương ứng cho Linux / macOS (chạy bằng `bash tên_
 | 4. **Đưa web lên Internet** (https://airhcmcity.asia) | `chay_cong_khai.bat` | — | Cần cài trước Cloudflare Tunnel; đóng cửa sổ là tắt |
 | 5. Lấy **dữ liệu mới nhất** ngay | `chay_dong_bo.bat` | `python data_pipeline/dong_bo_hang_ngay.py` | Máy chủ cũng tự đồng bộ mỗi ngày |
 | 6. **Tự lấy dữ liệu mỗi ngày** kể cả khi không mở web | `cai_dat_dong_bo_tu_dong.ps1` | (dùng cron) | Tạo lịch trong Windows Task Scheduler |
+| 7. **Sao lưu cơ sở dữ liệu** (ra ngoài OneDrive, giữ 14 bản) | `sao_luu_csdl.ps1` (thêm `-DatLich` để chạy 02:30 mỗi ngày) | `pg_dump` | Lưu ở `%USERPROFILE%\.airhcm\sao_luu\` |
 
 Các tệp khác **không cần bấm**: `requirements.txt` (danh sách thư viện Python), `.env.example` (mẫu tệp cấu hình), `LICENSE` (giấy phép MIT).
 Giải thích các thư mục con: `models/README.md` (mô hình, kết quả `.json`), `dong_goi/README.md` (Docker, triển khai máy chủ),
@@ -42,7 +43,7 @@ ml/             tinh_aqi, predict, train_model, train_du_bao_gio, train_diem, tr
 models/         mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
 data_pipeline/  download_*, gee_extract, run_pipeline, load_to_db, dong_bo_hang_ngay, kiem_tra_du_lieu, doi_chieu_tram_that
 mobile/         app Android (Capacitor) + AirHCM.apk
-tests/          148 kiểm thử pytest
+tests/          201 kiểm thử pytest (gồm kiểm thử giao diện tĩnh)
 dong_goi/       Dockerfile, docker-compose.yml, tao_ban_nop.py (tạo bản nộp .zip sạch)
 docs/           CAU_TRUC_DU_AN.md (giải thích từng thư mục, từng tệp)
 ```
@@ -247,6 +248,19 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
   MAE 3,2 so với 4,4 của "tháng sau = tháng trước" (kỹ năng +28%).
 - Kịch bản: bảng **biện pháp xử lý theo nguồn** và chỉ số theo dõi; mức AQI theo PM2.5 trong `ml/predict.py` sửa đúng mốc QĐ 1459 (25/50/80/150/250).
 - 148 kiểm thử (thêm `tests/test_pdf_bo_sung.py`).
+
+## v6.8 — Sửa các thiếu sót theo góc nhìn hội đồng
+
+- **Gỡ IoT** (MQTT qua broker công cộng không mã hóa, khóa thiết bị công khai → ai cũng gửi được số liệu giả).
+- **Tên gọi trung thực:** 16 vị trí T01–T17 là **điểm ước tính** (điểm lấy số liệu mô hình CAMS, ô lưới ~45 km), không phải trạm quan trắc;
+  khung ghi rõ bản chất số liệu trên Bản đồ nhiệt, So sánh, Thống kê; xếp hạng phường kèm cảnh báo sai số nội suy; chatbot gọi đúng tên.
+- **Dự báo từ số đo thật** (`ml/mo_hinh_tram_that.py`, điểm CMT8 – AirGradient qua OpenAQ, 672 ngày): so 5 cách trên 194 ngày chưa thấy —
+  CAMS thô kém "mai = hôm nay" 78%; học máy trên số đo thật hơn 5% (khoảng tin cậy chứa 0). Thẻ "Dự báo từ số đo thật" trên trang Dự báo.
+- **Dự báo nhiều chất** PM2.5, PM10, O₃ (`ml/du_bao_da_chat.py`): Ridge hơn "mai = hôm nay" 5–7%, khoảng tin cậy bootstrap không chứa 0;
+  NO₂/CO/SO₂ ghi rõ không dự báo (chỉ có cột khí vệ tinh).
+- QA/QC số đo thật: loại mã lỗi 985 của AirNow. Xác suất vượt ngưỡng ghi rõ "thử nghiệm" (Brier chưa hơn khí hậu). Kịch bản ghi rõ là phân tích độ nhạy.
+- Khảo sát **SUS** (`khao-sat.html`), bảng so sánh với các hệ thống hiện có (Giới thiệu), kiểm thử giao diện tĩnh, bỏ gọi cứng `localhost:8000`.
+- Bí mật ra ngoài OneDrive (`%USERPROFILE%\.airhcm\`), script `sao_luu_csdl.ps1`. 201 kiểm thử.
 
 ## Mã nguồn mở và bộ dữ liệu
 

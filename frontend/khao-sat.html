@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Khảo sát mức độ dễ dùng của AirHCM theo thang SUS (System Usability Scale): 10 câu, 2 phút.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<script src="app-config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Khảo sát người dùng</title>
+<style>
+  .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
+  .cau { padding:12px 0; border-bottom:1px solid var(--border); }
+  .cau:last-of-type { border-bottom:none; }
+  .cau .de { font-size:15px; font-weight:600; margin-bottom:8px; }
+  .thang { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+  .thang label { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:var(--text-muted); cursor:pointer;
+    border:1px solid var(--border); border-radius:10px; padding:8px 4px; text-align:center; }
+  .thang input { width:18px; height:18px; accent-color:var(--primary); }
+  .thang label:has(input:checked) { border-color:var(--primary); background:var(--primary-soft); color:var(--text-main); font-weight:600; }
+  select, textarea { width:100%; padding:9px 10px; border-radius:8px; border:1px solid #d0d5dd; font:14px var(--font); background:#fff; }
+  .btn { padding:11px 20px; background:var(--primary); color:#fff; border:none; border-radius:10px; cursor:pointer; font:700 15px var(--font); }
+  .btn:disabled { opacity:.6; cursor:default; }
+  .kq { font-size:16px; line-height:1.6; padding:12px 14px; border-radius:12px; margin-top:12px; }
+  .kq.ok { background:#e6f4ea; border:1px solid #b7e1c1; } .kq.loi { background:#fde7e9; border:1px solid #f6c2c2; }
+  .o-so { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:10px 0 14px; }
+  .o-so > div { background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--text-muted); }
+  .o-so b { display:block; font-size:24px; color:var(--text-main); margin-top:2px; }
+  .ray { height:10px; background:#eef2f6; border-radius:5px; overflow:hidden; } .ray span { display:block; height:100%; background:#2a78d6; }
+  table.bang { width:100%; border-collapse:collapse; font-size:13.5px; box-shadow:none; display:table; white-space:normal; }
+  table.bang td { padding:7px 8px; border-bottom:1px solid #f0f2f5; vertical-align:middle; }
+  .luu-y { color:var(--text-muted); font-size:12.5px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="header"><div><a href="tong-quan.html">🏠 Tổng quan</a></div><div id="userBox"></div></div>
+<div id="content">
+  <div class="hero-card">
+    <h2>📝 Bạn thấy AirHCM dễ dùng không?</h2>
+    <div class="sub">10 câu hỏi, khoảng 2 phút, không cần đăng nhập. Kết quả dùng để đánh giá đồ án theo thang đo chuẩn quốc tế SUS.</div>
+  </div>
+
+  <form class="card" id="phieu">
+    <p class="goi-y">Hãy dùng thử vài trang (Tổng quan, Bản đồ nhiệt, Dự báo…) rồi chấm mỗi câu: 1 = rất không đồng ý, 5 = rất đồng ý.</p>
+    <label style="font-size:14px;font-weight:600">Bạn là
+      <select id="vaiTro" required style="margin-top:4px"></select></label>
+    <div id="dsCau" style="margin-top:8px"></div>
+    <label style="font-size:14px;font-weight:600;display:block;margin-top:10px">Góp ý thêm (không bắt buộc)
+      <textarea id="yKien" maxlength="500" rows="3" style="margin-top:4px" placeholder="Điều gì khó hiểu, cần thêm gì…"></textarea></label>
+    <div style="margin-top:14px"><button class="btn" id="nutGui" type="submit">Gửi đánh giá</button></div>
+    <div id="kqGui"></div>
+  </form>
+
+  <div class="card">
+    <h3>📊 Kết quả đến nay</h3>
+    <div id="tongHop">Đang tải…</div>
+    <p class="luu-y">Điểm SUS = 2,5 × [Σ(câu lẻ − 1) + Σ(5 − câu chẵn)], thang 0–100. Mốc tham chiếu: trung bình các phần mềm ≈ 68;
+      ≥ 80,3 thuộc nhóm tốt nhất (hạng A); dưới 51 là kém. Nguồn: Brooke (1996); Bangor, Kortum &amp; Miller (2009); Sauro (2011).
+      Hệ thống không lưu địa chỉ IP, chỉ lưu mã băm để chống gửi trùng.</p>
+  </div>
+</div>
+
+<script>
+const API = (window.API_ORIGIN || '') + '/api/v1';
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const so = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+const NHAN = ['Rất không đồng ý', 'Không đồng ý', 'Phân vân', 'Đồng ý', 'Rất đồng ý'];
+const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
+document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
+
+fetch(API + '/khao-sat/cau-hoi').then(r => r.json()).then(d => {
+  document.getElementById('vaiTro').innerHTML = '<option value="">— Chọn —</option>' + Object.entries(d.vai_tro).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  document.getElementById('dsCau').innerHTML = d.cau_hoi.map((c, i) => `<fieldset class="cau" style="border:0;margin:0;padding:12px 0">
+    <legend class="de">${i + 1}. ${esc(c)}</legend><div class="thang">${NHAN.map((n, j) => `<label><input type="radio" name="c${i}" value="${j + 1}" required>${j + 1}<span>${n}</span></label>`).join('')}</div></fieldset>`).join('');
+});
+
+document.getElementById('phieu').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const tl = [...Array(10).keys()].map(i => { const x = document.querySelector(`input[name=c${i}]:checked`); return x ? +x.value : null; });
+  const kq = document.getElementById('kqGui'), nut = document.getElementById('nutGui');
+  if (tl.includes(null)) { kq.innerHTML = '<div class="kq loi">Bạn còn câu chưa chấm.</div>'; return; }
+  nut.disabled = true;
+  try {
+    const r = await fetch(API + '/khao-sat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vai_tro: document.getElementById('vaiTro').value, tra_loi: tl, y_kien: document.getElementById('yKien').value || null }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Lỗi máy chủ');
+    kq.innerHTML = `<div class="kq ok">✅ Cảm ơn bạn! Điểm của bạn: <b>${so(d.diem_sus)}/100</b> — hạng ${esc(d.xep_hang)}.</div>`;
+    document.getElementById('phieu').reset(); taiTongHop();
+  } catch (e) { kq.innerHTML = `<div class="kq loi">${esc(e.message)}</div>`; }
+  nut.disabled = false;
+});
+
+function taiTongHop() {
+  fetch(API + '/khao-sat/ket-qua').then(r => r.json()).then(d => {
+    const el = document.getElementById('tongHop');
+    if (!d.so_phieu) { el.innerHTML = '<p class="goi-y">Chưa có phiếu nào. Hãy là người đầu tiên!</p>'; return; }
+    el.innerHTML = `<div class="o-so"><div>Số phiếu<b>${d.so_phieu}</b></div><div>Điểm SUS trung bình<b>${so(d.sus_tb)}</b>${d.ci95 ? `KTC 95%: ${so(d.ci95[0])}–${so(d.ci95[1])}` : ''}</div>
+      <div>Xếp hạng<b style="font-size:18px">${esc(d.xep_hang)}</b>so với mốc 68 (trung bình)</div></div>
+      <table class="bang">${d.theo_cau.map((c, i) => `<tr><td style="width:55%">${i + 1}. ${esc(c.cau)}</td><td style="width:30%"><div class="ray"><span style="width:${(c.tb - 1) / 4 * 100}%;background:${c.tich_cuc ? '#2a78d6' : '#eb6834'}"></span></div></td>
+        <td style="text-align:right;white-space:nowrap">${so(c.tb, 2)}/5 ${c.tich_cuc ? '<small>(cao = tốt)</small>' : '<small>(thấp = tốt)</small>'}</td></tr>`).join('')}</table>
+      ${Object.keys(d.theo_vai_tro).length ? `<p class="goi-y" style="margin:10px 0 0">Theo nhóm: ${Object.entries(d.theo_vai_tro).map(([k, v]) => `${esc(k)} ${so(v.sus_tb)} (${v.so_phieu} phiếu)`).join(' · ')}</p>` : ''}
+      ${d.so_phieu < 10 ? '<p class="goi-y" style="margin:6px 0 0">Dưới 10 phiếu: kết quả chưa đủ tin cậy.</p>' : ''}`;
+  }).catch(() => { document.getElementById('tongHop').textContent = 'Không tải được kết quả.'; });
+}
+taiTongHop();
+</script>
+<script src="nav.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

@@ -194,7 +194,7 @@ if (token) {
 } else {
   userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 }
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
 const badgeAQI = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));  // màu chuẩn QĐ 1459
 
@@ -246,7 +246,7 @@ function toaDoGiua(feature) {
 async function veRanhGioiCoMau(mapInstance) {
   const [geoData, readings] = await Promise.all([
     layDuLieuRanhGioi(null),
-    fetch('http://localhost:8000/api/v1/heatmap?chi_so=pm25').then(r => r.json()).catch(() => [])
+    fetch((window.API_ORIGIN || '') + '/api/v1/heatmap?chi_so=pm25').then(r => r.json()).catch(() => [])
   ]);
   const values = geoData.features.map(f => {
     const center = toaDoGiua(f);
@@ -519,8 +519,8 @@ function dongQuickView() { document.getElementById('quickViewOverlay').style.dis
 
 function taiDanhSachTram() {
   Promise.all([
-    fetch('http://localhost:8000/api/v1/tram').then(r => r.json()),
-    fetch('http://localhost:8000/api/v1/aqi-tat-ca-tram').then(r => r.json()).catch(() => [])
+    fetch((window.API_ORIGIN || '') + '/api/v1/tram').then(r => r.json()),
+    fetch((window.API_ORIGIN || '') + '/api/v1/aqi-tat-ca-tram').then(r => r.json()).catch(() => [])
   ]).then(([stations, aqiList]) => {
     danhSachTramGoc = stations;
     banDoAQI = {};
@@ -623,7 +623,7 @@ function themTram() {
     }
   }
 
-  fetch('http://localhost:8000/api/v1/tram', {
+  fetch((window.API_ORIGIN || '') + '/api/v1/tram', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -680,7 +680,7 @@ function luuSuaTram() {
     trang_thai: document.getElementById('editTrangThai').value
   };
 
-  fetch(`http://localhost:8000/api/v1/tram/${id}`, {
+  fetch(`${window.API_ORIGIN || ''}/api/v1/tram/${id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -707,7 +707,7 @@ function xoaTram(id, maTram) {
   if (!confirm(`Bạn chắc chắn muốn xóa điểm ${maTram}?`)) return;
   if (!token) { alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'); return; }
 
-  fetch(`http://localhost:8000/api/v1/tram/${id}`, {
+  fetch(`${window.API_ORIGIN || ''}/api/v1/tram/${id}`, {
     method: 'DELETE',
     credentials: 'include',
     headers: {}

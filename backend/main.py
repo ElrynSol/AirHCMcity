@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
 
-from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio
+from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio, khao_sat
 from services.canh_bao_service import _tao_bang_canh_bao, _tao_bang_thu_da_gui, _vong_lap_canh_bao, dang_ky_consumer
 from services import cdc
 from services import dong_bo as dong_bo_service
@@ -58,7 +58,7 @@ async def ghi_loi_may_chu(request: Request, call_next):
     return response
 
 
-for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio):
+for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio, khao_sat):
     app.include_router(_router.router)
 
 

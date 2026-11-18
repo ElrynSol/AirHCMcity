@@ -79,6 +79,20 @@
       <li><a href="phuong-phap.html">Phương pháp &amp; kiểm chứng</a>: cách tính AQI, đánh giá mô hình so với mô hình nền.</li>
     </ul></div>
 
+  <div class="card"><h3>🔎 So với các hệ thống hiện có</h3>
+    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px;color:var(--text-2)">Theo thông tin công khai của từng hệ thống (cần đối chiếu lại khi trích dẫn).
+      AirHCM <b>không thay thế</b> mạng trạm quan trắc chính thức; điểm khác là minh bạch phương pháp và kiểm chứng.</p>
+    <div style="overflow-x:auto"><table style="width:100%;font-size:13px">
+      <tr><th>Tiêu chí</th><th>Cổng quan trắc của cơ quan nhà nước</th><th>IQAir / AirVisual</th><th>Mạng cảm biến giá rẻ (vd. PAM Air, AirGradient)</th><th>AirHCM (đồ án)</th></tr>
+      <tr><td>Nguồn số liệu</td><td>Trạm quan trắc tự động chuẩn</td><td>Trạm chính thức + cảm biến, có mô hình</td><td>Cảm biến quang học giá rẻ</td><td>Mô hình CAMS + vệ tinh; đối chiếu trạm thật qua OpenAQ</td></tr>
+      <tr><td>Mật độ không gian</td><td>Ít trạm, chính xác</td><td>Phụ thuộc trạm/cảm biến khu vực</td><td>Dày, sai số từng cảm biến</td><td>Nội suy 168 phường từ lưới ~45 km (thô)</td></tr>
+      <tr><td>Dự báo</td><td>Thường không công bố dự báo theo giờ</td><td>Có (phương pháp không công bố)</td><td>Thường không</td><td>24 giờ, 7 ngày, xu hướng tháng; công bố sai số và kỹ năng</td></tr>
+      <tr><td>Thang AQI</td><td>VN_AQI</td><td>US AQI</td><td>Thường US AQI</td><td>VN_AQI (QĐ 1459), so QCVN 05:2023 và WHO 2021</td></tr>
+      <tr><td>Mã nguồn, dữ liệu</td><td>Đóng</td><td>Đóng, thương mại</td><td>Một phần mở</td><td>Mở (MIT) kèm bộ dữ liệu</td></tr>
+      <tr><td>Phân tích thêm</td><td>—</td><td>—</td><td>—</td><td>Hoa gió ô nhiễm, phân tích độ nhạy, tra cứu không gian PostGIS, phản ánh người dân</td></tr>
+    </table></div>
+  </div>
+
   <div class="card"><h3>🏗️ Kiến trúc hệ thống</h3>
     <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm điểm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung.</p>
     <img src="kien_truc_hien_tai.svg" alt="Sơ đồ kiến trúc hiện tại" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff">
@@ -89,22 +103,22 @@
 
   <div class="grid2">
     <div class="card"><h3>🛠️ Công nghệ</h3>
-      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest (theo ngày) – scikit-learn</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
+      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest, hồi quy Ridge (theo ngày, theo chất, từ số đo thật) – scikit-learn</li><li>Số đo thật: OpenAQ (Lãnh sự quán Hoa Kỳ, AirGradient); gió: ERA5</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
     <div class="card"><h3>⚖️ Cam kết &amp; giới hạn dữ liệu</h3>
-      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo điểm/phường/xã là <b>ước tính</b>, chưa kiểm chứng bằng đo đạc mặt đất.</li><li>Hướng phát triển: lắp cảm biến bụi thật (ví dụ PMS5003) vào đúng firmware hiện có, đối chiếu với điểm ước tính chính thức.</li></ul></div>
+      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo điểm/phường/xã là <b>ước tính nội suy</b>. Đã đối chiếu với 3 trạm đo thật (OpenAQ): CAMS thấp hơn thực tế ~3–4 µg/m³, tương quan theo ngày thấp (r ≈ 0,2–0,3) — xem <a href="phuong-phap.html#tram-that">Phương pháp</a>.</li><li>Hướng phát triển: mở rộng mô hình học từ số đo thật (hiện 1 điểm CMT8) ra nhiều trạm chuẩn khi có số liệu.</li></ul></div>
   </div>
   <p class="luu-y">* Hệ thống phục vụ mục đích học thuật, không thay thế số liệu công bố chính thức của cơ quan quản lý.</p>
 </div>
 
 <script>
-const API = 'http://localhost:8000/api/v1';
+const API = (window.API_ORIGIN || '') + '/api/v1';
 const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 userBox.innerHTML = token
   ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
-async function dangXuat() { try { await fetch('http://localhost:8000/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
+async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 async function goiApi(path, opt = {}) {
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   try {
