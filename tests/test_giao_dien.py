@@ -58,6 +58,16 @@ def test_menu_tro_toi_trang_co_that():
         assert (FE / t).exists(), f"menu trỏ tới {t} không tồn tại"
 
 
+@pytest.mark.parametrize("trang", TRANG, ids=lambda p: p.name)
+def test_id_dom_khop_voi_html(trang):
+    s = trang.read_text(encoding="utf-8")
+    ids_html = set(re.findall(r'\bid=["\']([^"\']+)["\']', s))
+    ids_js = set(re.findall(r'getElementById\(["\']([^"\']+)["\']\)', s))
+    bo_qua = {"ghiChuGio", "ma2FATat", "ma2FAXN", "mk2FA"}  # các phần tử được JS tạo động khi cần
+    thieu = (ids_js - ids_html) - bo_qua
+    assert not thieu, f"{trang.name}: gọi getElementById nhưng không có id trong HTML: {sorted(thieu)}"
+
+
 def test_diem_sus_theo_cong_thuc_brooke():
     from services.khao_sat import diem_sus, xep_hang, tong_hop_tu
     assert diem_sus([5, 1, 5, 1, 5, 1, 5, 1, 5, 1]) == 100.0

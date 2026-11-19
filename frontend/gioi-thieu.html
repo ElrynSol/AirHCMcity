@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Giới thiệu đề tài</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
   .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
@@ -35,22 +35,20 @@
   .list li { margin-bottom:6px; } ul.list { margin:0; padding-left:20px; line-height:1.7; font-size:14px; }
 </style>
 </head>
-<body>
-
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html"><b>ℹ️ Giới thiệu</b></a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html"><b>Giới thiệu</b></a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -58,16 +56,16 @@
 
 <div id="content">
 
-  <div class="hero"><h2>ℹ️ Hệ thống Giám sát, Quản lý &amp; Dự báo Chất lượng Không khí TP.HCM</h2><div class="sub">Đồ án chuyên ngành · Ngành Công nghệ thông tin môi trường (lớp 12_ĐH_THMT)</div></div>
+  <div class="hero"><h2>Hệ thống Giám sát, Quản lý &amp; Dự báo Chất lượng Không khí TP.HCM</h2><div class="sub">Đồ án chuyên ngành · Ngành Công nghệ thông tin môi trường (lớp 12_ĐH_THMT)</div></div>
 
   <div class="grid2">
-    <div class="card"><h3>👤 Thông tin</h3>
+    <div class="card"><h3>Thông tin</h3>
       <ul class="list"><li>Sinh viên: <b>Lê Ngọc Ánh Dương</b> · MSSV 1250080037</li><li>Giảng viên hướng dẫn: <b>TS. Dương Thị Thúy Nga</b></li><li>Năm thực hiện: 2026</li></ul></div>
-    <div class="card"><h3>🎯 Mục tiêu</h3>
+    <div class="card"><h3>Mục tiêu</h3>
       <ul class="list"><li>Tích hợp dữ liệu môi trường không khí từ nhiều nguồn vào một cơ sở dữ liệu không gian.</li><li>Trực quan hóa trên bản đồ, cảnh báo và dự báo AQI cho TP.HCM.</li><li>Trình bày minh bạch bản chất, độ trễ và giới hạn của từng loại dữ liệu.</li></ul></div>
   </div>
 
-  <div class="card"><h3>🧩 Chức năng chính</h3>
+  <div class="card"><h3>Chức năng chính</h3>
     <ul class="list">
       <li><a href="index.html">Bản đồ</a>: màu theo phường/xã (ước tính), bản đồ nhiệt, số liệu theo giờ, vị trí của tôi.</li>
       <li><a href="tram.html">Danh sách điểm ước tính</a> và <a href="so-sanh.html">So sánh</a>: quản lý điểm (admin), so sánh các điểm.</li>
@@ -75,37 +73,35 @@
       <li><a href="du-bao.html">Dự báo</a>: dự báo PM2.5/AQI ngày tới và nhiều ngày bằng Random Forest, lời khuyên cá nhân hóa.</li>
       <li><a href="thong-ke.html">Thống kê</a>: xu hướng, phân bố mức AQI, số ngày vượt ngưỡng QCVN.</li>
       <li><a href="bao-cao.html">Báo cáo</a>: tóm tắt dễ hiểu và xuất Excel/PDF.</li>
-      <li><a href="trang-thai-du-lieu.html">Dữ liệu</a>: tình trạng cập nhật và phân loại nguồn dữ liệu.</li>
-      <li><a href="phuong-phap.html">Phương pháp &amp; kiểm chứng</a>: cách tính AQI, đánh giá mô hình so với mô hình nền.</li>
+      <li><a href="phuong-phap.html">Phương pháp &amp; Độ chính xác</a>: cách tính VN_AQI, quy trình học máy (Hồi quy, Phân loại, Chuỗi thời gian) và kết quả kiểm chứng thực nghiệm.</li>
     </ul></div>
 
-  <div class="card"><h3>🔎 So với các hệ thống hiện có</h3>
-    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px;color:var(--text-2)">Theo thông tin công khai của từng hệ thống (cần đối chiếu lại khi trích dẫn).
-      AirHCM <b>không thay thế</b> mạng trạm quan trắc chính thức; điểm khác là minh bạch phương pháp và kiểm chứng.</p>
+  <div class="card"><h3>So với các hệ thống hiện có</h3>
+    <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px;color:var(--text-2)">Bảng đối chiếu đặc trưng kỹ thuật giữa các nhóm hệ thống giám sát chất lượng không khí hiện nay và mô hình tích hợp của đề tài AirHCM.</p>
     <div style="overflow-x:auto"><table style="width:100%;font-size:13px">
       <tr><th>Tiêu chí</th><th>Cổng quan trắc của cơ quan nhà nước</th><th>IQAir / AirVisual</th><th>Mạng cảm biến giá rẻ (vd. PAM Air, AirGradient)</th><th>AirHCM (đồ án)</th></tr>
-      <tr><td>Nguồn số liệu</td><td>Trạm quan trắc tự động chuẩn</td><td>Trạm chính thức + cảm biến, có mô hình</td><td>Cảm biến quang học giá rẻ</td><td>Mô hình CAMS + vệ tinh; đối chiếu trạm thật qua OpenAQ</td></tr>
-      <tr><td>Mật độ không gian</td><td>Ít trạm, chính xác</td><td>Phụ thuộc trạm/cảm biến khu vực</td><td>Dày, sai số từng cảm biến</td><td>Nội suy 168 phường từ lưới ~45 km (thô)</td></tr>
-      <tr><td>Dự báo</td><td>Thường không công bố dự báo theo giờ</td><td>Có (phương pháp không công bố)</td><td>Thường không</td><td>24 giờ, 7 ngày, xu hướng tháng; công bố sai số và kỹ năng</td></tr>
-      <tr><td>Thang AQI</td><td>VN_AQI</td><td>US AQI</td><td>Thường US AQI</td><td>VN_AQI (QĐ 1459), so QCVN 05:2023 và WHO 2021</td></tr>
-      <tr><td>Mã nguồn, dữ liệu</td><td>Đóng</td><td>Đóng, thương mại</td><td>Một phần mở</td><td>Mở (MIT) kèm bộ dữ liệu</td></tr>
-      <tr><td>Phân tích thêm</td><td>—</td><td>—</td><td>—</td><td>Hoa gió ô nhiễm, phân tích độ nhạy, tra cứu không gian PostGIS, phản ánh người dân</td></tr>
+      <tr><td>Nguồn số liệu</td><td>Trạm quan trắc tự động chuẩn</td><td>Trạm chính thức + cảm biến, có mô hình</td><td>Cảm biến quang học giá rẻ</td><td>Mô hình CAMS/ERA5 + vệ tinh Sentinel-5P + hiệu chỉnh trạm mặt đất OpenAQ</td></tr>
+      <tr><td>Phạm vi không gian</td><td>Tập trung tại vị trí đặt trạm</td><td>Phụ thuộc mật độ trạm khu vực</td><td>Phân bố theo điểm lắp đặt</td><td>Nội suy không gian IDW trên 168 phường/xã (PostGIS)</td></tr>
+      <tr><td>Dự báo &amp; Phân loại</td><td>Thường không công bố dự báo theo giờ</td><td>Có (phương pháp thương mại đóng)</td><td>Thường không</td><td>Dự báo 24 giờ, 7 ngày, phân loại nguy cơ vượt chuẩn; công bố đầy đủ chỉ số kiểm chứng</td></tr>
+      <tr><td>Thang AQI</td><td>VN_AQI</td><td>US AQI</td><td>Thường US AQI</td><td>VN_AQI (QĐ 1459/QĐ-TCMT), đối chiếu QCVN 05:2023 và WHO 2021</td></tr>
+      <tr><td>Mã nguồn, dữ liệu</td><td>Đóng</td><td>Đóng, thương mại</td><td>Một phần mở</td><td>Mở (MIT) kèm bộ dữ liệu kiểm chứng</td></tr>
+      <tr><td>Công cụ phân tích</td><td>—</td><td>—</td><td>—</td><td>Phân tích hướng gió, mô phỏng kịch bản thời tiết, tra cứu không gian PostGIS, phản ánh cộng đồng</td></tr>
     </table></div>
   </div>
 
-  <div class="card"><h3>🏗️ Kiến trúc hệ thống</h3>
+  <div class="card"><h3>Kiến trúc hệ thống</h3>
     <p style="font-size:13.5px;line-height:1.6;margin:0 0 10px">Hệ thống dùng mô hình <b>hướng sự kiện gọn</b>: khi admin thêm điểm hoặc có dữ liệu mới nạp vào CSDL, trigger PostgreSQL (LISTEN/NOTIFY) phát sự kiện lên bus nội bộ; các consumer tự tính AQI, gửi email cảnh báo và ghi nhật ký tập trung.</p>
     <img src="kien_truc_hien_tai.svg" alt="Sơ đồ kiến trúc hiện tại" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff">
-    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">Hướng mở rộng quy mô lớn: nhiều cảm biến thật + Apache Kafka (chưa triển khai; hiện đã có module MQTT với điểm mô phỏng)</summary>
-      <p style="font-size:12.5px;color:#666;margin:8px 0">Với 13 điểm và dữ liệu theo ngày, Kafka là không cần thiết nên đồ án dùng bản gọn tương đương. Giao diện publish/subscribe được giữ nguyên để có thể thay bằng Kafka khi dữ liệu lên đến mức giây/phút.</p>
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">Hướng mở rộng quy mô lớn: tích hợp mạng cảm biến mặt đất thời gian thực + Apache Kafka (kiến trúc định hướng)</summary>
+      <p style="font-size:12.5px;color:#666;margin:8px 0">Với 16 điểm ước tính và chu kỳ đồng bộ theo giờ/ngày, bus sự kiện nội bộ kết hợp PostgreSQL LISTEN/NOTIFY đáp ứng đầy đủ độ trễ dưới 1 giây mà không tốn tài nguyên vận hành cụm broker. Giao diện publish/subscribe được thiết kế tách biệt để sẵn sàng chuyển sang Apache Kafka khi kết nối hàng nghìn cảm biến thời gian thực.</p>
       <img src="kien_truc_mo_rong.svg" alt="Sơ đồ kiến trúc mở rộng" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;background:#fff"></details>
   </div>
 
   <div class="grid2">
-    <div class="card"><h3>🛠️ Công nghệ</h3>
-      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, JWT (cookie HttpOnly)/bcrypt</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY + bus nội bộ, nhật ký tập trung</li><li>CSDL: PostgreSQL + PostGIS</li><li>Dữ liệu: Open-Meteo, Sentinel-5P (Google Earth Engine)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest, hồi quy Ridge (theo ngày, theo chất, từ số đo thật) – scikit-learn</li><li>Số đo thật: OpenAQ (Lãnh sự quán Hoa Kỳ, AirGradient); gió: ERA5</li><li>Giao diện: HTML/CSS/JS, Leaflet, Chart.js; app Android (Capacitor)</li></ul></div>
-    <div class="card"><h3>⚖️ Cam kết &amp; giới hạn dữ liệu</h3>
-      <ul class="list"><li>PM2.5, PM10, O₃ là số liệu <b>mô hình</b> (lưới ~45 km), không phải cảm biến.</li><li>NO₂, CO, SO₂ là <b>cột khí vệ tinh</b>, trễ 2–3 tuần.</li><li>Giá trị theo điểm/phường/xã là <b>ước tính nội suy</b>. Đã đối chiếu với 3 trạm đo thật (OpenAQ): CAMS thấp hơn thực tế ~3–4 µg/m³, tương quan theo ngày thấp (r ≈ 0,2–0,3) — xem <a href="phuong-phap.html#tram-that">Phương pháp</a>.</li><li>Hướng phát triển: mở rộng mô hình học từ số đo thật (hiện 1 điểm CMT8) ra nhiều trạm chuẩn khi có số liệu.</li></ul></div>
+    <div class="card"><h3>Công nghệ</h3>
+      <ul class="list"><li>Backend: FastAPI, SQLAlchemy, xác thực Argon2id + phiên HttpOnly + 2FA TOTP + OAuth2 (Google)</li><li>Sự kiện: PostgreSQL LISTEN/NOTIFY (CDC) + bus nội bộ, SSE thời gian thực, nhật ký tập trung</li><li>CSDL không gian: PostgreSQL 17 + PostGIS 3.6 (168 phường/xã, chỉ mục GiST)</li><li>Dữ liệu: Open-Meteo (CAMS/ERA5), Sentinel-5P (Google Earth Engine), OpenAQ (trạm mặt đất)</li><li>Học máy: HistGradientBoosting (theo giờ), Random Forest &amp; Decision Tree/KNN (theo ngày, hồi quy và phân loại nguy cơ vượt ngưỡng) – scikit-learn</li><li>Giao diện: Web tĩnh (Leaflet, Chart.js, PWA Offline/Web Push) + ứng dụng Android (Capacitor)</li></ul></div>
+    <div class="card"><h3>Đặc điểm &amp; Phạm vi dữ liệu</h3>
+      <ul class="list"><li>PM2.5, PM10, O₃ được tổng hợp từ mô hình tái phân tích và dự báo khí quyển CAMS kết hợp khí tượng ERA5 theo giờ.</li><li>NO₂, CO, SO₂ là dữ liệu mật độ cột khí tầng đối lưu từ vệ tinh Sentinel-5P (TROPOMI) qua Google Earth Engine.</li><li>Bản đồ 168 phường/xã sử dụng thuật toán nội suy nghịch đảo khoảng cách (IDW) và truy vấn hình học trên PostGIS.</li><li>Mô hình học máy được kiểm chứng độc lập với dữ liệu trạm quan trắc mặt đất OpenAQ tại TP.HCM — chi tiết tại trang <a href="phuong-phap.html">Phương pháp &amp; Độ chính xác</a>.</li></ul></div>
   </div>
   <p class="luu-y">* Hệ thống phục vụ mục đích học thuật, không thay thế số liệu công bố chính thức của cơ quan quản lý.</p>
 </div>
@@ -116,7 +112,7 @@ const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token t
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 userBox.innerHTML = token
-  ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  ? `<span>${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 async function goiApi(path, opt = {}) {
@@ -135,7 +131,7 @@ async function goiApi(path, opt = {}) {
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 </script>
 
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

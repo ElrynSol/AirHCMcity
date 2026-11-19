@@ -13,8 +13,20 @@
   d.color = '#475467';
   d.borderColor = 'rgba(16, 24, 40, .07)';
   d.maintainAspectRatio = true;
+  d.devicePixelRatio = Math.max(2, window.devicePixelRatio || 1);
   d.animation.duration = 650;
   d.animation.easing = 'easeOutQuart';
+
+  // Tự động vẽ lại sắc nét khi người dùng mở thẻ <details> chứa biểu đồ hoặc khi phóng to/thu nhỏ
+  document.addEventListener('toggle', function (e) {
+    if (e.target && e.target.tagName === 'DETAILS' && e.target.open) {
+      setTimeout(function () {
+        Object.values(C.instances || {}).forEach(function (ch) {
+          if (ch && ch.canvas && e.target.contains(ch.canvas)) ch.resize();
+        });
+      }, 25);
+    }
+  }, true);
 
   d.elements.line.borderWidth = 2.2;
   d.elements.line.tension = d.elements.line.tension || 0.3;

@@ -377,10 +377,10 @@ def tra_loi_tu_dong(cau_hoi: str, d: dict) -> str:
     if y == "tram":
         xh = d.get("xep_hang") or []
         if not xh:
-            return "Chưa có số liệu các trạm lúc này."
+            return "Chưa có số liệu các điểm ước tính lúc này."
         s = "\n".join(f"- {x['ma']} · {x['ten']}: **{x['aqi']}** ({x['muc']})" for x in xh[:3])
         o = "\n".join(f"- {x['ma']} · {x['ten']}: **{x['aqi']}** ({x['muc']})" for x in xh[-3:][::-1])
-        return f"Sạch nhất lúc này:\n{s}\n\nÔ nhiễm nhất:\n{o}\n\nLưu ý: các trạm gần nhau có thể cùng giá trị vì số liệu mô hình có lưới khoảng 45 km."
+        return f"Điểm ước tính có AQI thấp nhất lúc này:\n{s}\n\nCao nhất:\n{o}\n\nLưu ý: các điểm ước tính gần nhau có thể cùng giá trị vì số liệu mô hình CAMS có lưới khoảng 45 km."
     if y == "du_bao":
         if not db:
             return "Chưa có dự báo theo giờ lúc này."

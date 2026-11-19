@@ -11,12 +11,12 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Bản đồ dự báo bụi mịn</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -80,21 +80,20 @@
   .luu-y { color:var(--text-muted); font-size:12.5px; line-height:1.55; }
 </style>
 </head>
-<body>
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html"><b>🌡️ Bản đồ nhiệt</b></a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html"><b>Bản đồ nhiệt</b></a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -102,66 +101,50 @@
 
 <div id="content">
   <div class="hero-card">
-    <h2>🌡️ Bụi mịn ở phường bạn hôm nay và 2 ngày tới</h2>
-    <div class="sub">Bản đồ tô màu 168 phường/xã TP.HCM theo mức không khí: <b>xanh lá là tốt</b>, vàng là trung bình, <b>cam, đỏ, tím là ô nhiễm</b>.
-      Chọn ngày, tìm phường của bạn để xem lời khuyên.</div>
+    <h2>Bản đồ chất lượng không khí 168 phường/xã TP.HCM</h2>
+    <div class="sub">Tra cứu chỉ số AQI và nồng độ bụi mịn PM2.5 tại từng phường/xã trên địa bàn TP.HCM trong hôm nay và 2 ngày kế tiếp.</div>
   </div>
-  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
-    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
-    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
-    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
-  <div id="trangThai" class="card">Đang tính bản đồ, vui lòng chờ vài giây…</div>
+  <div id="trangThai" class="card">Đang tải bản đồ 168 phường/xã, vui lòng chờ…</div>
   <div id="vung" style="display:none;">
     <div class="card">
       <div class="ngay-tabs" id="tabs" role="tablist"></div>
-      <div class="tom-tat"><div class="bt" id="ttIcon"></div><div><div class="cau" id="ttCau"></div><div class="phu" id="ttPhu"></div></div></div>
+      <div class="tom-tat"><div><div class="cau" id="ttCau"></div><div class="phu" id="ttPhu"></div></div></div>
       <div class="khoi loi-khuyen" id="ttKhuyen"></div>
-      <div id="ttNhac"></div>
     </div>
 
     <div class="card" id="thePhuong">
-      <h3>📍 Phường/xã của bạn</h3>
+      <h3>Tra cứu nhanh theo Phường/Xã hoặc Định vị GPS</h3>
       <div class="tim">
         <input type="search" id="oTim" list="dsPhuong" placeholder="Gõ tên phường/xã, ví dụ: Sài Gòn, Thủ Dầu Một…" aria-label="Tìm phường/xã">
         <datalist id="dsPhuong"></datalist>
-        <button class="btn" id="nutViTri" onclick="viTriCuaToi()">📍 Dùng vị trí của tôi</button>
+        <button class="btn" id="nutViTri" onclick="viTriCuaToi()">Định vị GPS của tôi</button>
       </div>
-      <div id="kqPhuong"><p class="goi-y" style="margin:10px 0 0">Hoặc bấm vào một phường trên bản đồ bên dưới.</p></div>
+      <div id="kqPhuong"><p class="goi-y" style="margin:10px 0 0">Hoặc bấm chọn trực tiếp một phường/xã trên bản đồ bên dưới.</p></div>
     </div>
 
     <div class="card">
-      <h3>🗺️ Bản đồ <span id="bdNgay" style="font-weight:500;color:var(--text-muted);font-size:14px"></span></h3>
+      <h3>Bản đồ phân bố không gian <span id="bdNgay" style="font-weight:500;color:var(--text-muted);font-size:14px"></span></h3>
       <div id="ban-do" role="img" aria-label="Bản đồ mức bụi mịn theo phường/xã"></div>
       <div class="chu-giai" id="chuGiai"></div>
-      <details class="mo-rong"><summary>⚙️ Tùy chọn hiển thị</summary>
+      <details class="mo-rong"><summary>Tùy chọn hiển thị lớp bản đồ</summary>
         <div class="tuy-chon">
-          <label>Kiểu tô <select id="kieu">
-            <option value="phuong">Theo từng phường/xã</option><option value="muc">Lưới theo mức</option><option value="muot">Lưới chuyển màu mịn</option></select></label>
+          <label>Kiểu hiển thị <select id="kieu">
+            <option value="phuong">Theo ranh giới phường/xã</option><option value="muc">Lưới phân vùng</option><option value="muot">Chuyển màu liên tục</option></select></label>
           <label>Độ đậm màu <input type="range" id="doMo" min="20" max="100" value="75" style="vertical-align:middle;"></label>
-          <label><input type="checkbox" id="hienTram" checked> Hiện điểm ước tính</label>
-          <label><input type="checkbox" id="hienXa" checked> Làm mờ nơi xa điểm ước tính (&gt; 15 km)</label>
+          <label><input type="checkbox" id="hienTram" checked> Hiện điểm dữ liệu</label>
+          <label><input type="checkbox" id="hienXa" checked> Làm mờ vùng ngoại vi (&gt; 15 km)</label>
         </div>
       </details>
     </div>
 
     <div class="card" id="theVung">
-      <h3>🏙️ So sánh các khu vực</h3>
+      <h3>Tổng hợp theo khu vực</h3>
       <div class="luoi-kv" id="khuVuc"></div>
       <div class="hai-cot">
-        <div><b>😷 5 nơi ước tính bụi mịn nhiều nhất</b><table class="bang-nho" id="topCao"></table></div>
-        <div><b>🌿 5 nơi ước tính trong lành nhất</b><table class="bang-nho" id="topThap"></table></div>
+        <div><b>5 phường/xã có nồng độ bụi mịn cao nhất</b><table class="bang-nho" id="topCao"></table></div>
+        <div><b>5 phường/xã có không khí trong lành nhất</b><table class="bang-nho" id="topThap"></table></div>
       </div>
-      <div style="margin-top:16px"><b>Bao nhiêu phường/xã ở mỗi mức?</b><div class="thanh-muc" id="thanhMuc"></div><div class="chu-giai" id="chuMuc"></div></div>
-      <p class="luu-y">Xếp hạng chỉ tính các phường/xã cách điểm ước tính gần nhất không quá 15 km. <b>Chênh lệch giữa các phường trong cùng khu vực thường nhỏ hơn sai số nội suy</b> (xem mục "chính xác đến đâu"), nên chỉ nên đọc xếp hạng giữa các khu vực lớn (TP.HCM cũ, Bình Dương cũ, Bà Rịa – Vũng Tàu cũ).</p>
-    </div>
-
-    <div class="card">
-      <h3>🤔 Bản đồ này chính xác đến đâu?</h3>
-      <div id="dienGiai" class="dien-giai"></div>
-      <details class="mo-rong"><summary>📊 Chi tiết kỹ thuật</summary>
-        <div class="so-kt" id="soKt"></div>
-        <p class="luu-y" id="luuY"></p>
-      </details>
+      <div style="margin-top:16px"><b>Phân bố số lượng phường/xã theo cấp độ VN_AQI</b><div class="thanh-muc" id="thanhMuc"></div><div class="chu-giai" id="chuMuc"></div></div>
     </div>
   </div>
 </div>
@@ -179,7 +162,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&a
 const f1 = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
 const theMuc = aqi => { const m = AQI_VN.muc(aqi); return `<span class="muc" style="background:${m.mau};color:${m.chu}">${m.bieuTuong || ''} ${esc(m.ten)}</span>`; };
 const TIN = { cao: 'gần điểm lấy mẫu nên sai số nội suy nhỏ (vẫn là số liệu mô hình, chưa phải đo thật)', trung_binh: 'cách điểm lấy mẫu vừa phải — sai số nội suy lớn hơn',
-  thap: 'xa điểm lấy mẫu — chỉ là ngoại suy, không nên dùng', khong_ro: 'chưa rõ độ tin cậy' };
+  thap: 'khu vực ngoại vi', khong_ro: 'chưa rõ độ tin cậy' };
 
 let D = null, ngayChon = 0, ban = null, lopAnh = null, lopPhuong = null, lopBao = null, lopTram = L.layerGroup(), GEO = null, TT_PHUONG = {}, phuongChon = null, LOP_THEO_MA = {};
 
@@ -231,7 +214,6 @@ function anhLuoi(a, muot) {
   return cv.toDataURL();
 }
 
-// ---- Tóm tắt một câu cho ngày đang chọn
 function veTomTat(a) {
   const nn = nhanNgay(D.ngay[ngayChon]);
   const tin = a.phuong.filter(p => p.aqi != null && (TT_PHUONG[p.ma] || {}).do_tin_cay !== 'thap');
@@ -240,37 +222,28 @@ function veTomTat(a) {
   const mNhieu = AQI_VN.theoTen(tenNhieu) || AQI_VN.muc(null), tong = tin.length || 1;
   const xau = [...tin].sort((x, y) => y.aqi - x.aqi)[0];
   const mXau = xau ? AQI_VN.muc(xau.aqi) : null;
-  document.getElementById('ttIcon').textContent = mNhieu.bieuTuong || '🌫️';
-  document.getElementById('ttCau').innerHTML = `${nn.ten === nn.dm ? 'Ngày ' + nn.dm : nn.ten + ' (' + nn.dm + ')'}: ${soNhieu === tong ? 'toàn bộ' : 'phần lớn'} TP.HCM có không khí ${theMuc(mNhieu.tu)}`;
+  document.getElementById('ttCau').innerHTML = `${nn.ten === nn.dm ? 'Ngày ' + nn.dm : nn.ten + ' (' + nn.dm + ')'}: ${soNhieu === tong ? 'toàn bộ' : 'phần lớn'} TP.HCM có chất lượng không khí ở mức ${theMuc(mNhieu.tu)}`;
   const pmTb = tin.reduce((s, p) => s + p.pm25, 0) / tong;
-  document.getElementById('ttPhu').innerHTML = `${soNhieu} trong ${tong} phường/xã có số liệu đáng tin ở mức “${esc(tenNhieu)}”.` +
-    (xau && mXau.ten !== tenNhieu ? ` Nơi bụi mịn nhiều nhất: <b>${esc((TT_PHUONG[xau.ma] || {}).ten_day_du)}</b> ${theMuc(xau.aqi)}.` : '') +
-    ` Bụi mịn PM2.5 trung bình khoảng <b>${f1(pmTb)} µg/m³</b>` +
-    (pmTb > AQI_VN.qcvnPM25() ? ` — <b>vượt chuẩn Việt Nam</b> (${AQI_VN.qcvnPM25()} µg/m³).` : pmTb > 15 ? ` — đạt chuẩn Việt Nam (dưới ${AQI_VN.qcvnPM25()}) nhưng <b>cao hơn mức khuyến nghị của WHO</b> (15).` : ' — đạt cả chuẩn Việt Nam và khuyến nghị WHO.');
+  document.getElementById('ttPhu').innerHTML = `${soNhieu}/${tong} phường/xã ở mức “${esc(tenNhieu)}”.` +
+    (xau && mXau.ten !== tenNhieu ? ` Khu vực cao nhất: <b>${esc((TT_PHUONG[xau.ma] || {}).ten_day_du)}</b> ${theMuc(xau.aqi)}.` : '') +
+    ` Nồng độ PM2.5 trung bình khoảng <b>${f1(pmTb)} µg/m³</b>` +
+    (pmTb > AQI_VN.qcvnPM25() ? ` (vượt quy chuẩn QCVN ${AQI_VN.qcvnPM25()} µg/m³).` : ` (đạt quy chuẩn QCVN ${AQI_VN.qcvnPM25()} µg/m³).`);
   const mKhuyen = mXau && mXau.den > mNhieu.den ? mXau : mNhieu;
-  document.getElementById('ttKhuyen').innerHTML = `<b>Lời khuyên${mKhuyen !== mNhieu ? ' (theo nơi ô nhiễm nhất)' : ''}:</b><br>
-    👤 <b>Người khỏe mạnh:</b> ${esc(mKhuyen.binhThuong || '--')}<br>👶👴 <b>Trẻ em, người già, người bệnh hô hấp/tim mạch:</b> ${esc(mKhuyen.nhayCam || '--')}`;
-  const nhac = [];
-  if (!a.da_kiem_chung) nhac.push(`Đây là <b>dự báo cho ${nn.tenDai}</b>, càng xa hiện tại càng kém chắc chắn. Nên xem lại vào ngày đó.`);
-  (a.canh_bao || []).forEach(t => nhac.push(esc(t)));
-  document.getElementById('ttNhac').innerHTML = nhac.map(t => `<div class="khoi nhac">⚠️ ${t}</div>`).join('');
+  document.getElementById('ttKhuyen').innerHTML = `<b>Khuyến nghị sức khỏe:</b><br>• <b>Người bình thường:</b> ${esc(mKhuyen.binhThuong || '--')}<br>• <b>Nhóm nhạy cảm (trẻ em, người cao tuổi, bệnh hô hấp):</b> ${esc(mKhuyen.nhayCam || '--')}`;
 }
 
-// ---- Phường của bạn
 function chonPhuong(ma, zoom) {
   const tt = TT_PHUONG[ma]; if (!tt) return;
   phuongChon = ma; try { localStorage.setItem('bdn_phuong', ma); } catch (e) {}
   document.getElementById('oTim').value = tt.ten_day_du;
-  const o = D.anh.map((a, i) => { const p = a.phuong.find(x => x.ma === ma) || {}, m = AQI_VN.muc(p.aqi), nn = nhanNgay(D.ngay[i]);
+  const o = D.anh.map((a, i) => { const p = a.phuong.find(x => x.ma === ma) || {}, nn = nhanNgay(D.ngay[i]);
     return `<div class="o-ngay" style="${i === ngayChon ? 'border:2px solid var(--primary);' : ''}"><div class="n">${nn.ten}${nn.ten !== nn.dm ? ' · ' + nn.dm : ''}</div>
       <div class="g">${f1(p.pm25)} <small>µg/m³</small></div>${theMuc(p.aqi)}</div>`; }).join('');
   const pHom = D.anh[ngayChon].phuong.find(x => x.ma === ma) || {}, m = AQI_VN.muc(pHom.aqi);
   document.getElementById('kqPhuong').innerHTML = `<div style="margin-top:12px;font-size:17px;font-weight:700">${esc(tt.ten_day_du)}
       <span style="font-size:13px;font-weight:500;color:var(--text-muted)">· ${esc(tt.khu_vuc)}</span></div>
     <div class="ba-ngay">${o}</div>
-    <div class="khoi loi-khuyen"><b>${m.bieuTuong || ''} ${nhanNgay(D.ngay[ngayChon]).ten} ở đây nên làm gì?</b><br>
-      👤 ${esc(m.binhThuong || '--')}<br>👶👴 ${esc(m.nhayCam || '--')}</div>
-    <p class="goi-y" style="margin:10px 0 0">Điểm ước tính gần nhất cách <b>${f1(tt.km_tram_gan_nhat)} km</b>: ${TIN[tt.do_tin_cay] || TIN.khong_ro}.</p>`;
+    <div class="khoi loi-khuyen"><b>Khuyến nghị tại ${esc(tt.ten_day_du)} (${nhanNgay(D.ngay[ngayChon]).ten.toLowerCase()}):</b><br>• Người bình thường: ${esc(m.binhThuong || '--')}<br>• Nhóm nhạy cảm: ${esc(m.nhayCam || '--')}</div>`;
   if (lopPhuong) lopPhuong.eachLayer(l => lopPhuong.resetStyle(l));
   const l = LOP_THEO_MA[ma];
   if (l) { l.setStyle({ weight: 3, color: '#0b2545' }); l.bringToFront(); if (zoom) ban.fitBounds(l.getBounds(), { maxZoom: 12 }); }
@@ -284,19 +257,18 @@ function timPhuong() {
 function viTriCuaToi() {
   const nut = document.getElementById('nutViTri');
   if (!navigator.geolocation) { alert('Trình duyệt không hỗ trợ định vị.'); return; }
-  nut.disabled = true; nut.textContent = '⏳ Đang định vị…';
+  nut.disabled = true; nut.textContent = 'Đang định vị…';
   navigator.geolocation.getCurrentPosition(async pos => {
     try {
       const r = await goiApi(`/ranh-gioi/tra-cuu?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
       if (r.phuong) chonPhuong(r.phuong.ma, true);
-      else document.getElementById('kqPhuong').innerHTML = '<p class="goi-y" style="margin:10px 0 0">Vị trí của bạn nằm ngoài TP.HCM.</p>';
+      else document.getElementById('kqPhuong').innerHTML = '<p class="goi-y" style="margin:10px 0 0">Vị trí của bạn nằm ngoài địa phận TP.HCM.</p>';
     } catch (e) { alert(e.message); }
-    nut.disabled = false; nut.textContent = '📍 Dùng vị trí của tôi';
-  }, () => { nut.disabled = false; nut.textContent = '📍 Dùng vị trí của tôi'; alert('Không lấy được vị trí. Hãy cho phép trình duyệt truy cập vị trí, hoặc gõ tên phường.'); },
+    nut.disabled = false; nut.textContent = 'Định vị GPS của tôi';
+  }, () => { nut.disabled = false; nut.textContent = 'Định vị GPS của tôi'; alert('Không lấy được vị trí. Hãy cho phép trình duyệt truy cập vị trí, hoặc gõ tên phường.'); },
   { enableHighAccuracy: true, timeout: 10000 });
 }
 
-// ---- Bản đồ
 function ve() {
   const a = D.anh[ngayChon], kieu = document.getElementById('kieu').value, doMo = document.getElementById('doMo').value / 100;
   document.getElementById('bdNgay').textContent = '· ' + nhanNgay(D.ngay[ngayChon]).tenDai;
@@ -309,9 +281,9 @@ function ve() {
     lopPhuong = L.geoJSON(GEO, {
       style: f => { const p = gt[f.properties.ma], tt = TT_PHUONG[f.properties.ma] || {}, xa = tt.do_tin_cay === 'thap';
         return { color: '#fff', weight: .6, fillColor: p && p.aqi != null ? mauMuc(p.aqi) : '#ccc', fillOpacity: xa && gach ? doMo * .35 : doMo, dashArray: xa && gach ? '3' : null }; },
-      onEachFeature: (f, l) => { const ma = f.properties.ma, p = gt[ma] || {}, tt = TT_PHUONG[ma] || {}, m = AQI_VN.muc(p.aqi);
+      onEachFeature: (f, l) => { const ma = f.properties.ma, p = gt[ma] || {}, m = AQI_VN.muc(p.aqi);
         LOP_THEO_MA[ma] = l;
-        l.bindTooltip(`<b>${esc(f.properties.ten)}</b><br>${m.bieuTuong || ''} ${esc(m.ten)} · ${f1(p.pm25)} µg/m³`, { sticky: true });
+        l.bindTooltip(`<b>${esc(f.properties.ten)}</b><br>${esc(m.ten)} · PM2.5: ${f1(p.pm25)} µg/m³`, { sticky: true });
         l.on('click', () => { chonPhuong(ma, false); if (window.innerWidth < 900) document.getElementById('thePhuong').scrollIntoView({ behavior: 'smooth' }); });
         l.on('mouseover', () => l.setStyle({ weight: 2, color: '#0b2545' }));
         l.on('mouseout', () => { if (lopPhuong && ma !== phuongChon) lopPhuong.resetStyle(l); }); }
@@ -324,61 +296,38 @@ function ve() {
   D.tram.forEach(t => {
     const aq = t.aqi[ngayChon], m = AQI_VN.muc(aq);
     L.circleMarker([t.lat, t.lon], { radius: 7, color: '#222', weight: 1.5, fillColor: mauMuc(aq == null ? 0 : aq), fillOpacity: 1 })
-      .bindTooltip(`📍 Điểm ước tính ${esc(t.ma_tram || '')} · ${esc(t.ten_tram || '')}<br>${m.bieuTuong || ''} ${esc(m.ten)} · ${f1(t.pm25[ngayChon])} µg/m³`).addTo(lopTram);
+      .bindTooltip(`Điểm ${esc(t.ma_tram || '')} · ${esc(t.ten_tram || '')}<br>${esc(m.ten)} · PM2.5: ${f1(t.pm25[ngayChon])} µg/m³`).addTo(lopTram);
   });
   if (document.getElementById('hienTram').checked) lopTram.addTo(ban); else ban.removeLayer(lopTram);
-  veTomTat(a); veDanhGiaVung(a); veDoTinCay(a);
+  veTomTat(a); veDanhGiaVung(a);
   if (phuongChon) chonPhuong(phuongChon, false);
 }
 
 function veDanhGiaVung(a) {
   if (!a.khu_vuc || !a.khu_vuc.length) { document.getElementById('theVung').style.display = 'none'; return; }
-  document.getElementById('khuVuc').innerHTML = a.khu_vuc.map(k => { const m = AQI_VN.muc(k.aqi_tb);
+  document.getElementById('khuVuc').innerHTML = a.khu_vuc.map(k => {
     return `<div class="kv"><div class="kv-ten">${esc(k.khu_vuc)}</div><div style="margin-top:6px">${theMuc(k.aqi_tb)}
-        <span style="font-size:13px;color:var(--text-muted)">· trung bình ${f1(k.pm25_tb)} µg/m³</span></div>
-      <div class="kv-ct">😷 Nhiều bụi nhất: <b>${esc(k.phuong_cao_nhat)}</b> (${f1(k.pm25_cao_nhat)})<br>🌿 Trong lành nhất: <b>${esc(k.phuong_thap_nhat)}</b> (${f1(k.pm25_thap_nhat)})</div></div>`; }).join('');
+        <span style="font-size:13px;color:var(--text-muted)">· TB ${f1(k.pm25_tb)} µg/m³</span></div>
+      <div class="kv-ct">Cao nhất: <b>${esc(k.phuong_cao_nhat)}</b> (${f1(k.pm25_cao_nhat)} µg/m³)<br>Thấp nhất: <b>${esc(k.phuong_thap_nhat)}</b> (${f1(k.pm25_thap_nhat)} µg/m³)</div></div>`; }).join('');
   const tin = a.phuong.filter(p => (TT_PHUONG[p.ma] || {}).do_tin_cay !== 'thap').sort((x, y) => y.pm25 - x.pm25);
   const dong = p => { const t = TT_PHUONG[p.ma] || {};
     return `<tr class="bam" onclick="chonPhuong('${esc(p.ma)}', true)"><td>${esc(t.ten_day_du)}<br><small>${esc(t.khu_vuc)}</small></td>
       <td class="r"><b>${f1(p.pm25)}</b> <small>µg/m³</small></td><td class="r">${theMuc(p.aqi)}</td></tr>`; };
-  const dau = '<tr><th>Phường/xã</th><th class="r">Bụi mịn</th><th class="r">Mức</th></tr>';
+  const dau = '<tr><th>Phường/xã</th><th class="r">PM2.5</th><th class="r">Mức AQI</th></tr>';
   document.getElementById('topCao').innerHTML = dau + tin.slice(0, 5).map(dong).join('');
   document.getElementById('topThap').innerHTML = dau + tin.slice(-5).reverse().map(dong).join('');
   const dem = D.thang_mau.map(m => ({ m, n: a.phuong.filter(p => p.aqi != null && mucCua(p.aqi) === m).length })).filter(x => x.n);
   const tong = dem.reduce((s, x) => s + x.n, 0) || 1;
   document.getElementById('thanhMuc').innerHTML = dem.map(x => `<div style="flex:${x.n};background:${x.m.mau}" title="${esc(x.m.muc)}: ${x.n}"></div>`).join('');
-  document.getElementById('chuMuc').innerHTML = dem.map(x => `<span><i style="background:${x.m.mau}"></i>${(AQI_VN.theoTen(x.m.muc) || {}).bieuTuong || ''} ${esc(x.m.muc)}: <b>${x.n}</b> phường/xã (${Math.round(x.n / tong * 100)}%)</span>`).join('');
-}
-
-function veDoTinCay(a) {
-  const so = a.sai_so_noi_suy, md = D.mo_hinh, ci = md.ky_nang_ci95, dem = { cao: 0, trung_binh: 0, thap: 0 };
-  (D.ranh_gioi.phuong || []).forEach(p => dem[p.do_tin_cay] = (dem[p.do_tin_cay] || 0) + 1);
-  const tong = (D.ranh_gioi.phuong || []).length;
-  const y = [];
-  y.push(`<li><b>Số liệu lấy từ mô hình khí quyển châu Âu (CAMS)</b>, chưa phải máy đo đặt tại từng phường. Bản đồ cho biết <b>xu hướng chung</b> của cả vùng,
-    chưa đủ chi tiết để kết luận cho từng con phố.</li>`);
-  y.push(`<li><b>Càng gần điểm ước tính càng đáng tin.</b> ${dem.cao}/${tong} phường/xã cách điểm ước tính dưới 5 km; ${dem.thap} phường/xã ở xa (trên 15 km,
-    như Côn Đảo và các xã ven biển) được tô mờ vì chỉ là ước đoán.</li>`);
-  if (so) y.push(`<li><b>Sai số giữa các nơi khoảng ±${f1(so.RMSE_idw)} µg/m³.</b> Hai phường chỉ chênh nhau vài đơn vị thì nên coi là <b>như nhau</b>.
-    ${a.chenh_max_min < so.RMSE_idw * 1.5 ? 'Hôm nay các khu vực khá giống nhau, màu khác nhau chủ yếu do cách tính.' : 'Hôm nay có khác biệt rõ giữa các khu vực.'}</li>`);
-  y.push(md.ky_nang != null && ci && ci.thap > 0
-    ? '<li><b>Dự báo cho ngày mai tốt hơn</b> cách đoán đơn giản “mai giống hôm nay”.</li>'
-    : '<li><b>Dự báo cho các ngày tới chỉ nên tham khảo:</b> độ chính xác hiện ngang với cách đoán “mai giống hôm nay”. Hãy xem lại bản đồ mỗi ngày.</li>');
-  document.getElementById('dienGiai').innerHTML = '<ul>' + y.join('') + '</ul>';
-  document.getElementById('soKt').innerHTML = `
-    <div>Sai số nội suy (che từng điểm, đoán lại)<b>RMSE ± ${so ? f1(so.RMSE_idw) : '--'}</b>${so ? `so với lấy trung bình các điểm ±${f1(so.RMSE_trung_binh_cac_tram_con_lai)}` : ''}</div>
-    <div>Chênh lệch cao nhất – thấp nhất giữa các điểm<b>${f1(a.chenh_max_min)} µg/m³</b></div>
-    <div>Phường ≤ 5 km / 5–15 km / &gt; 15 km<b>${dem.cao} / ${dem.trung_binh} / ${dem.thap}</b></div>
-    <div>Kỹ năng dự báo so với “mai = hôm nay”<b>${md.ky_nang != null ? (md.ky_nang > 0 ? '+' : '') + f1(md.ky_nang * 100) + '%' : '--'}</b>${ci ? `KTC 95%: ${f1(ci.thap * 100)}% … ${f1(ci.cao * 100)}%` : ''}</div>`;
+  document.getElementById('chuMuc').innerHTML = dem.map(x => `<span><i style="background:${x.m.mau}"></i>${esc(x.m.muc)}: <b>${x.n}</b> phường/xã (${Math.round(x.n / tong * 100)}%)</span>`).join('');
 }
 
 function dungTab() {
   document.getElementById('tabs').innerHTML = D.ngay.map((d, i) => { const nn = nhanNgay(d), a = D.anh[i];
     const tin = a.phuong.filter(p => p.aqi != null && (TT_PHUONG[p.ma] || {}).do_tin_cay !== 'thap');
     const tbAqi = tin.length ? tin.reduce((s, p) => s + p.aqi, 0) / tin.length : null, m = AQI_VN.muc(tbAqi);
-    return `<button class="ngay-tab${i === ngayChon ? ' on' : ''}" role="tab" aria-selected="${i === ngayChon}" onclick="chonNgay(${i})">
-      <div class="t1">${nn.ten}</div><div class="t2">${nn.ten !== nn.dm ? nn.dm + ' · ' : ''}${a.da_kiem_chung ? 'theo số liệu mới nhất' : 'dự báo, để tham khảo'}</div>
-      <div class="t3"><span class="cham" style="background:${m.mau}"></span>${m.bieuTuong || ''} ${esc(m.ten)}</div></button>`; }).join('');
+    return `<button class="ngay-tab${i === ngayChon ? ' on' : ''}" role="tab" aria-selected="${i === ngayChon}" onclick="chonNgay(${i})"><div class="t1">${nn.ten}</div><div class="t2">${nn.ten !== nn.dm ? nn.dm + ' · ' : ''}${a.da_kiem_chung ? 'Hiện trạng' : 'Dự báo'}</div>
+      <div class="t3"><span class="cham" style="background:${m.mau}"></span>${esc(m.ten)}</div></button>`; }).join('');
 }
 function chonNgay(i) { ngayChon = i; dungTab(); ve(); }
 
@@ -393,16 +342,10 @@ function chonNgay(i) { ngayChon = i; dungTab(); ve(); }
     const oTim = document.getElementById('oTim');
     oTim.addEventListener('change', timPhuong); oTim.addEventListener('keydown', e => { if (e.key === 'Enter') timPhuong(); });
     ban = L.map('ban-do', { zoomSnap: .5 });
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16, attribution: 'Tiles © Esri · Ranh giới: thanglequoc/vietnamese-provinces-database' }).addTo(ban);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16, attribution: 'Tiles © Esri' }).addTo(ban);
     if (D.ranh_gioi.duong_bao) lopBao = L.geoJSON(D.ranh_gioi.duong_bao, { style: { color: '#0b2545', weight: 2, fill: false }, interactive: false }).addTo(ban);
     ban.fitBounds(lopBao ? lopBao.getBounds() : [[D.luoi.lat0, D.luoi.lon0], [D.luoi.lat1, D.luoi.lon1]], { padding: [10, 10] });
-    document.getElementById('chuGiai').innerHTML = D.thang_mau.map(m => `<span><i style="background:${m.mau}"></i>${(AQI_VN.theoTen(m.muc) || {}).bieuTuong || ''} ${esc(m.muc)}</span>`).join('') +
-      '<span><i style="background:repeating-linear-gradient(45deg,#ccc 0 2px,#fff 2px 5px)"></i>Xa điểm ước tính (ước đoán)</span><span>⚫ Điểm ước tính</span>';
-    const md = D.mo_hinh;
-    document.getElementById('luuY').innerHTML = D.luu_y.map(esc).join('<br>') +
-      `<br>Bước 1: dự báo theo thời gian cho ${md.so_tram} điểm (Random Forest, kiểm tra từ ${esc(md.kiem_tra_tu)}). Bước 2: nội suy theo không gian bằng IDW (nghịch đảo bình phương khoảng cách).` +
-      '<br>Giá trị mỗi phường lấy tại điểm đại diện nằm trong phường (PostGIS ST_PointOnSurface); khoảng cách tới điểm tính bằng ST_Distance trên mặt cầu, điểm gần nhất tìm bằng KNN.' +
-      '<br>Thang màu: AQI Việt Nam (QĐ 1459/QĐ-TCMT); PM2.5 quy đổi sang AQI theo bảng ngưỡng của QĐ 1459.';
+    document.getElementById('chuGiai').innerHTML = D.thang_mau.map(m => `<span><i style="background:${m.mau}"></i>${esc(m.muc)}</span>`).join('');
     ['doMo', 'hienTram', 'kieu', 'hienXa'].forEach(id => document.getElementById(id).addEventListener('input', ve));
     dungTab(); ve();
     let luu = null; try { luu = localStorage.getItem('bdn_phuong'); } catch (e) {}
@@ -410,7 +353,7 @@ function chonNgay(i) { ngayChon = i; dungTab(); ve(); }
   } catch (e) { document.getElementById('trangThai').innerHTML = `<p class="loi">${esc(e.message)}</p>`; }
 })();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

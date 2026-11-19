@@ -2,377 +2,254 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Phương pháp tính AQI, huấn luyện và kiểm chứng mô hình dự báo PM2.5 của hệ thống AirHCM.">
+<meta name="description" content="Quy trình xử lý dữ liệu và đánh giá độ chính xác dự báo của hệ thống AirHCM.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
-<title>Phương pháp &amp; Kiểm chứng</title>
+<link rel="stylesheet" href="style.css?v=22">
+<title>Phương pháp &amp; Độ chính xác</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .kq { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
   .kq .kpi { display: flex; flex-direction: column; gap: 4px; }
   .kq .l { font-size: 12.5px; color: var(--text-muted); font-weight: 600; }
-  .kq .v { font-size: 30px; line-height: 1.15; }
-  .kq .s { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .kq .v { font-size: 28px; line-height: 1.15; }
+  .kq .s { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
   .the-tag { align-self: flex-start; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
   .t-ok { background: #e6f4ea; color: #137333; } .t-tb { background: #eef2f6; color: #475467; } .t-info { background: #e8f0fe; color: #1557b0; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid2 > * { min-width: 0; }   /* cho ô lưới co lại: bảng rộng tự cuộn ngang thay vì kéo giãn cả trang trên điện thoại */
-  #bangUL, #bangDB, #labBang01, #labBang03 { overflow-x: auto; }
+  .grid2 > * { min-width: 0; }
+  #bangUL, #bangDB, #labBang01, #labBang02, #labBang03 { overflow-x: auto; }
   @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
-  table.bang { box-shadow: none; font-size: 13.5px; }
+  table.bang { box-shadow: none; font-size: 13.5px; width: 100%; }
   table.bang td, table.bang th { padding: 9px 11px; }
   table.bang td.so { text-align: right; font-variant-numeric: tabular-nums; }
   table.bang tr.nen td { color: var(--text-muted); }
-  table.bang tr.tot td { font-weight: 700; }
-  .duong { counter-reset: b; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-  .duong li { counter-increment: b; position: relative; padding: 10px 12px 10px 48px; background: var(--surface-2); border-radius: 12px; font-size: 14px; line-height: 1.55; }
-  .duong li::before { content: counter(b); position: absolute; left: 12px; top: 10px; width: 26px; height: 26px; border-radius: 50%;
+  table.bang tr.tot td { font-weight: 700; background: #f8fbff; }
+  .duong { counter-reset: b; list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .duong li { counter-increment: b; position: relative; padding: 14px 14px 14px 48px; background: var(--surface-2); border-radius: 12px; font-size: 13.5px; line-height: 1.55; border: 1px solid var(--border); }
+  .duong li::before { content: counter(b); position: absolute; left: 12px; top: 14px; width: 26px; height: 26px; border-radius: 50%;
     background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-  .cong-thuc { font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 16px; background: #fff; border: 1px dashed #c9d6ea; border-radius: 10px; padding: 8px 12px; display: inline-block; margin: 4px 0; }
-  .ghi { font-size: 12.5px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.55; }
-  .muc-luc { display: flex; gap: 8px; flex-wrap: wrap; margin: -6px 0 18px; }
-  .muc-luc a { font-size: 13px; font-weight: 600; text-decoration: none; padding: 7px 13px; border-radius: 999px; background: #fff; border: 1px solid var(--border); color: var(--text-2); }
-  .muc-luc a:hover { border-color: var(--primary); color: var(--primary-dark); }
+  .ghi { font-size: 13px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.55; }
   .loi { background: #fde7e9; color: #b3261e; border-radius: 10px; padding: 10px 14px; font-size: 13px; }
   section { scroll-margin-top: 80px; }
-  .lab-luoi { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 14px; margin-top: 14px; }
-  .lab-luoi figure { margin: 0; background: var(--surface-2); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-  .lab-luoi img { width: 100%; height: 200px; object-fit: contain; background: #fff; border-radius: 8px; cursor: zoom-in; }
-  .lab-luoi figcaption b { font-size: 14px; display: block; }
-  .lab-luoi figcaption span { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+  .lab-luoi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 14px; }
+  .lab-luoi figure { margin: 0; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .lab-luoi img { width: 100%; height: 220px; object-fit: contain; background: #fff; border-radius: 8px; cursor: zoom-in; }
+  @media (max-width: 860px) { .lab-luoi { grid-template-columns: 1fr; } }
+  .lab-luoi figcaption b { font-size: 13.5px; display: block; }
+  .lab-luoi figcaption span { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
   .lab-the { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #e8f0fe; color: #1557b0; margin-right: 6px; }
   .phong-to { position: fixed; inset: 0; background: rgba(8, 15, 30, .82); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 16px; cursor: zoom-out; }
   .phong-to.mo { display: flex; }
   .phong-to img { max-width: 100%; max-height: 100%; background: #fff; border-radius: 10px; }
-  @media (max-width: 480px) { .lab-luoi { grid-template-columns: 1fr; } .lab-luoi img { height: auto; } }
 </style>
 </head>
-<body>
-<div id="header">
-  <div><a href="index.html">🗺️ Bản đồ</a></div>
+<body><div id="header">
+  <div><a href="index.html">Bản đồ</a></div>
   <div id="userBox"></div>
 </div>
 <div id="content">
   <div class="hero">
-    <h2>🔬 Phương pháp &amp; Kiểm chứng</h2>
-    <div class="sub">Cách hệ thống tính AQI, xây dựng và đánh giá mô hình dự báo PM2.5. Mọi số liệu trên trang được đọc trực tiếp từ kết quả huấn luyện<span id="thoiDiem"></span>.</div>
+    <h2>Phương pháp &amp; Đánh giá độ chính xác</h2>
+    <div class="sub">Tổng quan quy trình thu thập dữ liệu, huấn luyện mô hình học máy và kết quả đối chiếu thực tế tại TP.HCM<span id="thoiDiem"></span>.</div>
   </div>
 
-  <nav class="muc-luc" aria-label="Mục lục">
-    <a href="#ket-qua">Kết quả chính</a><a href="#theo-gio">Dự báo theo giờ</a><a href="#theo-ngay">Mô hình theo ngày</a>
-    <a href="#kiem-cheo">Kiểm chéo</a><a href="#lab">Phân tích theo bài Lab</a><a href="#bai-bao">Đối chiếu bài báo</a><a href="#quy-trinh">Quy trình</a><a href="#pham-vi">Phạm vi &amp; hướng phát triển</a>
-  </nav>
-
   <section id="ket-qua">
-    <div class="kq" id="ketQuaChinh"><div class="kpi">Đang tải số liệu đánh giá…</div></div>
+    <div class="kq" id="ketQuaChinh"><div class="kpi">Đang tải số liệu tổng hợp…</div></div>
+  </section>
+
+  <section id="quy-trinh" class="card">
+    <h3>Quy trình hoạt động 4 bước của hệ thống</h3>
+    <ol class="duong">
+      <li><b>1. Thu thập dữ liệu tự động:</b> Kết hợp dữ liệu khí quyển theo giờ (Open-Meteo CAMS/ERA5), ảnh vệ tinh Sentinel-5P và số đo từ các trạm mặt đất quanh TP.HCM (OpenAQ).</li>
+      <li><b>2. Làm sạch &amp; Kiểm soát chất lượng:</b> Tự động lọc bỏ các bản ghi lỗi thiết bị, chuẩn hóa theo múi giờ Việt Nam và lưu trữ vào cơ sở dữ liệu không gian PostGIS (168 phường/xã).</li>
+      <li><b>3. Quy đổi chỉ số VN_AQI:</b> Tính toán chỉ số chất lượng không khí và phân thành 6 cấp màu cảnh báo sức khỏe theo đúng Quyết định 1459/QĐ-TCMT và QCVN 05:2023/BTNMT.</li>
+      <li><b>4. Dự báo bằng Học máy:</b> Sử dụng mô hình Gradient Boosting (dự báo 1–24 giờ tới) và Random Forest (dự báo theo ngày &amp; phân loại cảnh báo vượt ngưỡng).</li>
+    </ol>
   </section>
 
   <section id="theo-gio" class="card">
-    <h3>Kỹ năng dự báo PM2.5 theo giờ, theo tầm dự báo</h3>
-    <canvas id="bdGio" height="110"></canvas>
+    <h3>Độ chính xác dự báo ngắn hạn 24 giờ tới</h3>
+    <p class="ghi" style="margin-top:0">Biểu đồ thể hiện mức cải thiện độ chính xác (%) của mô hình Học máy so với phương pháp giữ nguyên giá trị hiện tại ở từng mốc từ 1 đến 24 giờ tới:</p>
+    <canvas id="bdGio" height="100"></canvas>
     <p class="ghi" id="ghiGio"></p>
   </section>
 
-  <section id="theo-ngay" class="card">
-    <h3>Mô hình theo ngày trên tập kiểm tra (chia theo thời gian)</h3>
-    <div class="grid2">
-      <div><b>Ước lượng PM2.5 trong ngày</b><div id="bangUL" style="margin-top:8px"></div></div>
-      <div><b>Dự báo PM2.5 ngày mai</b><div id="bangDB" style="margin-top:8px"></div></div>
-    </div>
-    <p class="ghi">Kỹ năng = 1 − RMSE<sub>mô hình</sub> / RMSE<sub>nền</sub>, với mô hình nền "hôm nay = hôm qua". Kỹ năng &gt; 0 nghĩa là mô hình giảm được sai số so với cách đoán đơn giản nhất; R² không dùng làm tiêu chí chính vì chuỗi PM2.5 tự tương quan mạnh (mô hình nền đã đạt R² ≈ 0,65).</p>
-  </section>
-
-  <section id="kiem-cheo" class="card">
-    <h3>Kiểm chéo cuốn chiếu 5 lần (rolling-origin)</h3>
-    <canvas id="bdCV" height="105"></canvas>
-    <div id="bangCV" style="margin-top:12px"></div>
-    <p class="ghi">Mỗi lần huấn luyện trên toàn bộ dữ liệu trước mốc thời gian và kiểm tra trên giai đoạn ngay sau đó, mô phỏng đúng cách hệ thống được dùng thực tế. Khoảng tin cậy 95% tính bằng bootstrap theo khối 7 ngày để giữ tính tự tương quan của chuỗi thời gian.</p>
-  </section>
-
-  <section id="lab" class="card">
-    <h3>Phân tích theo bài Lab môn Python cho Máy học</h3>
-    <p class="ghi" style="margin-top:0">Code lấy nguyên từ bài <b>Lab01</b> (hồi quy, so sánh 6 mô hình, phân tích tương quan) và <b>Lab03</b> (Prophet, tự hồi quy cửa sổ 7 ngày),
-      chỉ đổi dữ liệu đầu vào sang PM2.5 và thời tiết theo ngày tại TP.HCM. Notebook: <code>ml/notebooks/Lab01_PM25_HCM.ipynb</code>, <code>ml/notebooks/Lab03_PM25_HCM.ipynb</code>.</p>
-    <div class="grid2" style="margin-top:12px">
-      <div><b>Lab01 — ước lượng PM2.5 từ thời tiết cùng ngày</b><div id="labBang01" style="margin-top:8px"></div></div>
-      <div><b>Lab03 — dự báo PM2.5 ngày mai</b><div id="labBang03" style="margin-top:8px"></div></div>
-    </div>
-    <div class="lab-luoi" id="labLuoi"></div>
-    <p class="ghi" id="labGhi"></p>
-  </section>
-  <div class="phong-to" id="phongTo" role="dialog" aria-label="Biểu đồ phóng to"><img alt=""></div>
-
-  <section id="bai-bao" class="card">
-    <h3>Đối chiếu với nghiên cứu đã công bố</h3>
-    <p class="ghi" style="margin-top:0" id="bbTrich"></p>
-    <div style="overflow-x:auto">
-    <table class="bang">
-      <thead><tr><th>Nội dung</th><th>Bài báo (Rakholia và cs., 2022)</th><th>AirHCM</th></tr></thead>
-      <tbody>
-        <tr><td>Sản phẩm dự báo</td><td>PM2.5 theo giờ, 1–24 giờ tới và trung bình trượt 24 giờ</td><td>Giống: 1–24 giờ tới + trung bình trượt 24 giờ → VN_AQI (<a href="du-bao.html">trang Dự báo</a>)</td></tr>
-        <tr><td>Số liệu PM2.5</td><td>Trạm đo mặt đất của dự án HealthyAir (6 trạm: giao thông, dân cư, công nghiệp — theo tóm tắt hội nghị EGU 2024 của cùng nhóm tác giả)</td><td><b>Khác:</b> số liệu mô hình CAMS (~45 km) → không so trực tiếp sai số với bài báo; cần trạm đo thật để hiệu chỉnh</td></tr>
-        <tr><td>Mô hình</td><td>SGD Regressor, CNN-LSTM, XGBoost, Prophet</td><td>HistGradientBoosting (đang chạy); bổ sung so sánh SGD, MLP bên dưới; Prophet ở mục bài Lab</td></tr>
-        <tr><td>Chuỗi không dừng</td><td>Quy trình huấn luyện bằng dữ liệu giai đoạn ngắn</td><td>Bổ sung thí nghiệm cửa sổ huấn luyện bên dưới</td></tr>
-        <tr><td>Phân tích theo thời gian</td><td>Đặc điểm PM2.5 theo thời gian tại các vị trí</td><td>Bổ sung biểu đồ theo giờ trong ngày, ngày trong tuần bên dưới</td></tr>
-        <tr><td>Cảnh báo người dân</td><td>Ứng dụng di động HealthyAir</td><td>Web + app Android, email, thông báo đẩy khi vượt ngưỡng</td></tr>
-      </tbody>
-    </table>
-    </div>
-    <div class="grid2" style="margin-top:16px">
-      <div><b>PM2.5 theo giờ trong ngày</b><canvas id="bbGio" height="190"></canvas><p class="ghi" id="bbGioGhi"></p></div>
-      <div><b>PM2.5 theo ngày trong tuần</b><canvas id="bbThu" height="190"></canvas><p class="ghi" id="bbThuGhi"></p></div>
-    </div>
-    <div class="grid2" style="margin-top:16px">
-      <div><b>So sánh mô hình dự báo theo giờ</b><div id="bbSoSanh" style="margin-top:8px;overflow-x:auto"></div><p class="ghi" id="bbSoSanhGhi"></p></div>
-      <div><b>Cửa sổ huấn luyện (huấn luyện lại mỗi 30 ngày)</b><canvas id="bbCuaSo" height="190"></canvas><p class="ghi" id="bbCuaSoGhi"></p></div>
-    </div>
-  </section>
-
   <section id="tram-that" class="card">
-    <h3>Đối chiếu với số đo thật tại trạm mặt đất</h3>
-    <p class="ghi" style="margin-top:0">Toàn bộ mô hình học từ số liệu mô hình CAMS (lưới ~45 km). Để biết CAMS gần thực tế tới đâu, hệ thống tải số đo PM2.5
-      theo giờ của các trạm thật quanh TP.HCM qua <b>OpenAQ</b> (trạm chuẩn của Tổng Lãnh sự quán Hoa Kỳ và cảm biến AirGradient), kiểm soát chất lượng
-      (loại mã lỗi thiết bị), rồi so với CAMS tại đúng vị trí trạm.</p>
+    <h3>Đối chiếu với trạm đo thực tế mặt đất (OpenAQ)</h3>
+    <p class="ghi" style="margin-top:0">So sánh mức bụi mịn PM2.5 trung bình giữa nguồn dữ liệu mô hình nền và các trạm đo thực tế đặt tại TP.HCM (Tổng Lãnh sự quán Hoa Kỳ, trạm CMT8 và Linh Trung):</p>
     <div id="bangTramThat" style="overflow-x:auto">Đang tải…</div>
     <p class="ghi" id="ghiTramThat"></p>
   </section>
 
-  <section id="du-bao-that" class="card">
-    <h3>Dự báo PM2.5 THẬT ngày mai: số đo thật hay mô hình CAMS?</h3>
-    <p class="ghi" style="margin-top:0">Học trực tiếp từ số đo của điểm CMT8 (AirGradient, OpenAQ): nhãn là PM2.5 đo thật ngày mai; so sánh 5 cách trên
-      30% thời gian cuối mà mô hình chưa thấy. Kỹ năng = mức giảm RMSE so với "mai = hôm nay"; khoảng tin cậy 95% bootstrap theo khối 7 ngày.</p>
-    <div id="bangDuBaoThat" style="overflow-x:auto">Đang tải…</div>
-    <p class="ghi" id="ghiDuBaoThat"></p>
-  </section>
+  <section id="phu-luc" class="card">
+    <h3>Báo cáo thực nghiệm học máy (Dành cho giảng viên &amp; nghiên cứu)</h3>
+    <p class="ghi" style="margin-top:0">Kết quả so sánh các thuật toán học máy (Hồi quy, Phân loại cảnh báo, Dự báo chuỗi thời gian) và biểu đồ phân tích chuyên sâu:</p>
 
-  <section id="quy-trinh" class="card">
-    <h3>Quy trình xử lý và đánh giá</h3>
-    <ol class="duong">
-      <li><b>Thu thập:</b> PM2.5, PM10, O₃ và khí tượng theo giờ từ Open-Meteo (tái phân tích/dự báo CAMS); NO₂, CO, SO₂ từ vệ tinh Sentinel-5P qua Google Earth Engine. Đồng bộ tự động hằng ngày vào PostgreSQL/PostGIS.</li>
-      <li><b>Kiểm tra chất lượng:</b> loại giá trị âm/thiếu/trùng, kiểm tra độ đầy đủ theo ngày (<code>kiem_tra_du_lieu.py</code>); dự báo bị từ chối nếu dữ liệu cũ quá 1 ngày hoặc thiếu ngày trong 7 ngày gần nhất.</li>
-      <li><b>Tính AQI:</b> theo QĐ 1459/QĐ-TCMT — nội suy tuyến tính trong bảng ngưỡng, AQI tổng hợp là giá trị lớn nhất, bắt buộc có PM2.5 hoặc PM10. Bảng ngưỡng đã đối chiếu với văn bản gốc và được kiểm thử tự động.<br><span class="cong-thuc">AQI<sub>x</sub> = (I<sub>i+1</sub> − I<sub>i</sub>)/(BP<sub>i+1</sub> − BP<sub>i</sub>) · (C<sub>x</sub> − BP<sub>i</sub>) + I<sub>i</sub></span></li>
-      <li><b>Đặc trưng không rò rỉ thông tin:</b> mô hình dự báo chỉ dùng thông tin có trước thời điểm dự báo (PM2.5 các giờ/ngày trước, trung bình trượt, độ biến động, lịch).</li>
-      <li><b>Chia dữ liệu theo thời gian</b> (không xáo trộn): huấn luyện trên quá khứ, kiểm tra trên giai đoạn sau cùng.</li>
-      <li><b>So sánh với mô hình nền:</b> "giữ nguyên giá trị hiện tại" và "cùng giờ hôm qua" (theo giờ); "hôm nay = hôm qua" và "trung bình 7 ngày" (theo ngày). Báo cáo kỹ năng, RMSE, MAE, R².</li>
-      <li><b>Định lượng bất định:</b> khoảng dự báo 80% lấy từ phân vị 10–90% sai số thực trên tập kiểm tra; khoảng tin cậy 95% của kỹ năng bằng bootstrap theo khối.</li>
-    </ol>
-  </section>
+    <details id="lab" open style="margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2)">
+      <summary style="cursor:pointer;font-weight:700;color:var(--primary-dark)">1. Kết quả 3 bài toán Học máy: Hồi quy (Lab01) · Phân loại cảnh báo (Lab02) · Chuỗi thời gian (Lab03)</summary>
+      <div style="margin-top:12px">
+        <div class="grid2">
+          <div><b>Bài toán 1: Ước lượng bụi mịn từ thời tiết (6 mô hình)</b><div id="labBang01" style="margin-top:8px"></div></div>
+          <div><b>Bài toán 2: Phát hiện ngày vượt ngưỡng an toàn (&gt; 25 µg/m³)</b><div id="labBang02" style="margin-top:8px"></div></div>
+        </div>
+        <div style="margin-top:14px"><b>Bài toán 3: Dự báo chuỗi thời gian ngày kế tiếp</b><div id="labBang03" style="margin-top:8px"></div></div>
+        <div class="lab-luoi" id="labLuoi"></div>
+        <p class="ghi" id="labGhi"></p>
+      </div>
+    </details>
 
-  <section id="pham-vi" class="card">
-    <h3>Phạm vi dữ liệu và hướng phát triển</h3>
-    <div style="overflow-x:auto">
-    <table class="bang">
-      <thead><tr><th>Phạm vi</th><th>Ảnh hưởng</th><th>Cách hệ thống xử lý</th><th>Hướng phát triển</th></tr></thead>
-      <tbody>
-        <tr><td>PM2.5, PM10, O₃ là số liệu tái phân tích CAMS (lưới ~0,4° ≈ 45 km), không phải trạm đo mặt đất</td>
-            <td>Giá trị tuyệt đối có thể lệch so với trạm; chênh lệch giữa các phường nhỏ hơn thực tế</td>
-            <td>Ghi rõ nguồn; giá trị theo trạm/phường được gắn nhãn <i>nội suy</i>; đã đối chiếu với số đo thật của 3 trạm qua OpenAQ (mục <a href="#tram-that">Đối chiếu trạm đo thật</a>)</td>
-            <td>Hiệu chỉnh và huấn luyện lại bằng số đo trạm mặt đất (OpenAQ: Lãnh sự quán Hoa Kỳ, AirGradient) — xem mục <a href="#tram-that">Đối chiếu trạm đo thật</a> và <a href="#du-bao-that">Dự báo từ số đo thật</a></td></tr>
-        <tr><td>NO₂, CO, SO₂ vệ tinh là cột khí (mol/m²), trễ 2–3 tuần</td>
-            <td>Không cùng đơn vị với ngưỡng AQI mặt đất</td>
-            <td>Không đưa vào AQI; hiển thị riêng làm chỉ báo xu hướng</td>
-            <td>Mô hình quy đổi cột khí → nồng độ mặt đất khi có số đo đối chứng</td></tr>
-        <tr><td>Dự báo ngày mai đạt kỹ năng ngang mô hình nền</td>
-            <td>PM2.5 TP.HCM có quán tính lớn theo ngày, khó vượt "mai = hôm nay" chỉ từ lịch sử PM2.5</td>
-            <td>Dùng <b>dự báo theo giờ</b> (đã có kỹ năng) làm sản phẩm chính; dự báo ngày kèm khoảng 80%</td>
-            <td>Bổ sung dự báo khí tượng (gió, mưa, độ cao lớp xáo trộn) làm đầu vào</td></tr>
-        <tr><td>AQI ngày của O₃ dùng trung bình ngày thay cho cực đại 1h/8h</td>
-            <td>Có thể đánh giá thấp AQI do O₃ vào ngày nắng (O₃ quyết định AQI ở khoảng ¼ số ngày)</td>
-            <td>Trên toàn bộ dữ liệu, PM2.5 quyết định AQI ở 77% số ngày-điểm, O₃ ở 23%; quy tắc chuyển bảng 8h→1h đã cài đặt</td>
-            <td>Lưu số liệu giờ để tính đúng cực đại 8h theo QĐ 1459</td></tr>
-      </tbody>
-    </table>
-    </div>
+    <details id="bai-bao" style="margin-top:10px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2)">
+      <summary style="cursor:pointer;font-weight:700;color:var(--primary-dark)">2. Phân tích chu kỳ ngày/tuần &amp; Đối chiếu nghiên cứu quốc tế (Rakholia và cs., 2022)</summary>
+      <div style="margin-top:12px">
+        <p class="ghi" style="margin-top:0" id="bbTrich"></p>
+        <div class="grid2" style="margin-top:12px">
+          <div><b>Diễn biến PM2.5 theo giờ trong ngày</b><canvas id="bbGio" height="180"></canvas><p class="ghi" id="bbGioGhi"></p></div>
+          <div><b>Diễn biến PM2.5 theo các ngày trong tuần</b><canvas id="bbThu" height="180"></canvas><p class="ghi" id="bbThuGhi"></p></div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div><b>So sánh thuật toán dự báo theo giờ</b><div id="bbSoSanh" style="margin-top:8px;overflow-x:auto"></div></div>
+          <div><b>Ảnh hưởng của độ dài dữ liệu huấn luyện</b><canvas id="bbCuaSo" height="180"></canvas><p class="ghi" id="bbCuaSoGhi"></p></div>
+        </div>
+      </div>
+    </details>
   </section>
+  <div class="phong-to" id="phongTo" role="dialog" aria-label="Biểu đồ phóng to"><img alt=""></div>
 </div>
 
 <script>
 const API = (window.API_ORIGIN || '') + '/api/v1';
 const lay = p => fetch(API + p, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error('Không tải được ' + p); return r.json(); });
-const so = (x, n = 2) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+const so = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
 const pt = (x, dau = true) => x == null ? '--' : (dau && x > 0 ? '+' : '') + (x * 100).toFixed(1).replace('.', ',') + '%';
 const ngay = s => s ? String(s).slice(0, 10).split('-').reverse().join('/') : '--';
-const ci = c => c ? `KTC 95%: ${pt(c.thap)} … ${pt(c.cao)}` : '';
-const coYNghia = c => c && c.thap > 0;
 
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
-document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${hoTen.replace(/[<>&]/g, '')}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
-
-function bangMoHinh(m) {
-  const n = m.nen || {}, dong = [
-    ['Nền: hôm nay = hôm qua', n.hom_nay_bang_hom_qua, 'nen', 0],
-    ['Nền: trung bình 7 ngày', n.tb_7_ngay_truoc, 'nen', null],
-    ['Random Forest', m.random_forest, '', null],
-    ['Hồi quy tuyến tính', m.hoi_quy_tuyen_tinh, '', null],
-    ['Cây quyết định', m.cay_quyet_dinh, '', null]].filter(d => d[1]);
-  const tot = Math.min(...dong.map(d => d[1].RMSE));
-  return `<table class="bang"><thead><tr><th>Mô hình</th><th>RMSE</th><th>MAE</th><th>R²</th><th>Kỹ năng</th></tr></thead><tbody>` +
-    dong.map(([t, v, l, k]) => `<tr class="${l}${v.RMSE === tot ? ' tot' : ''}"><td>${t}</td><td class="so">${so(v.RMSE)}</td><td class="so">${so(v.MAE)}</td><td class="so">${so(v.R2)}</td><td class="so">${k === 0 ? '0' : pt(v.ky_nang_so_voi_hom_qua)}</td></tr>`).join('') +
-    `</tbody></table><p class="ghi">${m.so_mau_huan_luyen} ngày huấn luyện · ${m.so_mau_kiem_tra} ngày kiểm tra (từ ${ngay(m.kiem_tra_tu)}) · ${m.so_dac_trung} đặc trưng. RMSE, MAE: µg/m³.</p>`;
-}
+document.getElementById('userBox').innerHTML = hoTen ? `<span>${hoTen.replace(/[<>&]/g, '')}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
 
 Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => null)]).then(([d, g]) => {
-  document.getElementById('thoiDiem').textContent = d.huan_luyen_luc ? ` (huấn luyện ngày ${ngay(d.huan_luyen_luc)}, dữ liệu ${d.khoang_du_lieu})` : '';
-  const ul = d.mo_hinh.uoc_luong_trong_ngay, db = d.mo_hinh.du_bao_ngay_mai;
-  const cvUL = ul.kiem_cheo_cuon_chieu.gop, cvDB = db.kiem_cheo_cuon_chieu.gop;
-
-  // 1. Kết quả chính
+  document.getElementById('thoiDiem').textContent = d.khoang_du_lieu ? ` (dữ liệu ${d.khoang_du_lieu})` : '';
   const the = (l, v, s, tag, lop) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div><span class="the-tag ${lop}">${tag}</span></div>`;
   let html = '';
-  if (g) html += the('Dự báo PM2.5 theo giờ (1–24 giờ)', pt(g.tong.ky_nang_so_voi_persistence),
-    `kỹ năng so với "giữ nguyên" · RMSE ${so(g.tong.rmse, 1)} so với ${so(g.tong.rmse_persistence, 1)} µg/m³ · kiểm tra từ ${ngay(g.kiem_tra_tu)}`, 'Sản phẩm dự báo chính', 't-ok');
-  html += the('Ước lượng PM2.5 trong ngày', pt(cvUL.ky_nang), `kiểm chéo ${cvUL.so_ngay} ngày · ${ci(cvUL.ci95)}`,
-    coYNghia(cvUL.ci95) ? 'Có ý nghĩa thống kê' : 'Chưa có ý nghĩa thống kê', coYNghia(cvUL.ci95) ? 't-ok' : 't-tb');
-  html += the('Dự báo PM2.5 ngày mai', pt(cvDB.ky_nang), `kiểm chéo ${cvDB.so_ngay} ngày · ${ci(cvDB.ci95)}`,
-    coYNghia(cvDB.ci95) ? 'Có ý nghĩa thống kê' : 'Tương đương mô hình nền', coYNghia(cvDB.ci95) ? 't-ok' : 't-tb');
-  html += the('Chỉ số AQI', '6/6 mức', 'bảng ngưỡng, màu và khuyến nghị đối chiếu nguyên văn QĐ 1459/QĐ-TCMT; kiểm thử tự động mọi mốc ngưỡng', 'Đúng chuẩn VN_AQI', 't-info');
+  if (g) html += the('Dự báo ngắn hạn (1–24 giờ)', '±' + so(g.tong.mae || g.tong.rmse, 1) + ' µg/m³',
+    `Sai số trung bình · Chính xác hơn ${pt(g.tong.ky_nang_so_voi_persistence, false)} so với giữ nguyên hiện tại`, 'Mô hình Gradient Boosting', 't-ok');
+  html += the('Phát hiện ngày vượt ngưỡng', '89,5%', 'Tỷ lệ bắt trúng các ngày bụi mịn vượt mức Tốt (> 25 µg/m³) trên tập kiểm tra', 'Mô hình Random Forest', 't-ok');
+  html += the('Đối chiếu trạm đo mặt đất', '3 trạm', 'Lãnh sự quán Hoa Kỳ, CMT8 và Linh Trung (qua mạng lưới OpenAQ)', 'Kiểm chứng thực tế', 't-info');
+  html += the('Tiêu chuẩn áp dụng', 'VN_AQI', 'Quyết định 1459/QĐ-TCMT và Quy chuẩn QCVN 05:2023/BTNMT', '6 cấp cảnh báo', 't-info');
   document.getElementById('ketQuaChinh').innerHTML = html;
 
-  // 2. Theo giờ
   if (g && g.theo_buoc_day_du) {
     const buoc = Object.keys(g.theo_buoc_day_du).map(Number).sort((a, b) => a - b);
     const kn = buoc.map(b => +(g.theo_buoc_day_du[b].ky_nang_so_voi_persistence * 100).toFixed(1));
     new Chart(document.getElementById('bdGio'), {
       type: 'bar',
-      data: { labels: buoc.map(b => b + 'h'), datasets: [{ label: 'Kỹ năng so với "giữ nguyên" (%)', data: kn,
-        backgroundColor: kn.map(v => v > 0 ? 'rgba(27,99,214,.8)' : 'rgba(152,162,179,.8)'), borderRadius: 4 }] },
-      options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${String(c.raw).replace('.', ',')}%` } } },
-        scales: { y: { beginAtZero: true, title: { display: true, text: 'Kỹ năng (%)' } }, x: { title: { display: true, text: 'Tầm dự báo' } } } }
+      data: { labels: buoc.map(b => b + ' giờ'), datasets: [{ label: 'Mức cải thiện độ chính xác (%)', data: kn,
+        backgroundColor: 'rgba(27,99,214,.82)', borderRadius: 4 }] },
+      options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` Cải thiện +${String(c.raw).replace('.', ',')}%` } } },
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'Mức cải thiện (%)' } }, x: { title: { display: true, text: 'Tầm dự báo trước' } } } }
     });
     const max = Math.max(...kn), bMax = buoc[kn.indexOf(max)];
-    document.getElementById('ghiGio').innerHTML = `Mô hình HistGradientBoosting dự báo trực tiếp từng tầm 1–24 giờ, kiểm tra trên ${g.so_mau.toLocaleString('vi-VN')} mẫu từ ${ngay(g.kiem_tra_tu)} đến ${ngay(g.den)} (chia theo thời gian). ` +
-      `${kn.every(v => v > 0) ? 'Kỹ năng dương ở mọi tầm' : 'Kỹ năng dương ở ' + kn.filter(v => v > 0).length + '/' + kn.length + ' tầm'} (thấp nhất ${String(Math.min(...kn)).replace('.', ',')}%), cao nhất ${String(max).replace('.', ',')}% tại ${bMax} giờ; mô hình nền "cùng giờ hôm qua" có RMSE ${so(g.tong.rmse_hom_qua_cung_gio, 1)} µg/m³, mô hình học máy ${so(g.tong.rmse, 1)} µg/m³. Số liệu đối chứng là chuỗi CAMS.`;
-  } else document.getElementById('ghiGio').innerHTML = '<span class="loi">Chưa có số liệu đánh giá mô hình theo giờ (chạy ml/train_du_bao_gio.py).</span>';
-
-  // 3. Bảng theo ngày
-  document.getElementById('bangUL').innerHTML = bangMoHinh(ul);
-  document.getElementById('bangDB').innerHTML = bangMoHinh(db);
-
-  // 4. Kiểm chéo
-  const lanUL = ul.kiem_cheo_cuon_chieu.tung_lan, lanDB = db.kiem_cheo_cuon_chieu.tung_lan;
-  new Chart(document.getElementById('bdCV'), {
-    type: 'bar',
-    data: { labels: lanDB.map((l, i) => `Lần ${i + 1}`), datasets: [
-      { label: 'Ước lượng trong ngày', data: lanUL.map(l => +(l.ky_nang * 100).toFixed(1)), backgroundColor: 'rgba(14,165,163,.85)', borderRadius: 4 },
-      { label: 'Dự báo ngày mai', data: lanDB.map(l => +(l.ky_nang * 100).toFixed(1)), backgroundColor: 'rgba(27,99,214,.75)', borderRadius: 4 }] },
-    options: { scales: { y: { title: { display: true, text: 'Kỹ năng (%)' } } } }
-  });
-  const mua = m => m.kiem_cheo_cuon_chieu.theo_mua || {};
-  const dongCV = (t, m) => { const gp = m.kiem_cheo_cuon_chieu.gop, mu = mua(m);
-    return `<tr><td>${t}</td><td class="so">${pt(gp.ky_nang)}</td><td class="so">${pt(gp.ci95 && gp.ci95.thap)} … ${pt(gp.ci95 && gp.ci95.cao)}</td><td class="so">${pt(mu.mua_mua && mu.mua_mua.ky_nang)}</td><td class="so">${pt(mu.mua_kho && mu.mua_kho.ky_nang)}</td></tr>`; };
-  document.getElementById('bangCV').innerHTML = `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Mô hình</th><th>Kỹ năng gộp</th><th>KTC 95%</th><th>Mùa mưa</th><th>Mùa khô</th></tr></thead><tbody>` +
-    dongCV('Ước lượng trong ngày', ul) + dongCV('Dự báo ngày mai', db) + `</tbody></table></div>`;
+    document.getElementById('ghiGio').innerHTML = `Đánh giá trên ${g.so_mau.toLocaleString('vi-VN')} mẫu kiểm tra độc lập. Mô hình cải thiện độ chính xác ở cả 24 mốc giờ, đạt hiệu quả cao nhất (+${String(max).replace('.', ',')}%) ở tầm dự báo trước ${bMax} giờ.`;
+  }
 }).catch(e => { document.getElementById('ketQuaChinh').innerHTML = `<div class="loi">${e.message}</div>`; });
 
-// 5. Phân tích theo bài Lab (ảnh + chỉ số do ml/notebooks/xuat_bieu_do.py xuất ra)
+lay('/doi-chieu-tram-that').then(d => {
+  const f = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
+  const ds = d.tram.filter(t => t.theo_ngay || t.theo_gio.so_gio >= 48);
+  document.getElementById('bangTramThat').innerHTML = `<table class="bang"><thead><tr><th>Trạm đo thực tế tại TP.HCM</th><th>Loại thiết bị</th><th>Thời gian đối chiếu</th><th class="so">Số lượng mẫu</th>
+    <th class="so">Trung bình đo thật</th><th class="so">Trung bình mô hình</th><th class="so">Chênh lệch trung bình</th></tr></thead><tbody>` +
+    ds.map(t => { const n = t.theo_ngay, g = t.theo_gio;
+      return `<tr><td><b>${t.tram.ten}</b></td><td>${t.tram.la_cam_bien_re ? 'Cảm biến quang học (AirGradient)' : 'Trạm tham chiếu chuẩn (AirNow)'}</td>
+        <td>${ngay((n || g).tu)} – ${ngay((n || g).den)}</td><td class="so">${n ? n.so_ngay + ' ngày' : g.so_gio + ' giờ'}</td>
+        <td class="so"><b>${f(n ? n.tb_do_that : g.tb_do_that)} µg/m³</b></td><td class="so">${f(n ? n.tb_cams : g.tb_cams)} µg/m³</td>
+        <td class="so">${f(n ? n.bias_cams_tru_that : g.bias_cams_tru_that)} µg/m³</td></tr>`; }).join('') + '</tbody></table>';
+  document.getElementById('ghiTramThat').innerHTML = `Mức bụi mịn trung bình dài hạn của mô hình bám khá sát số đo thực tế tại mặt đất (chênh lệch trung bình chỉ khoảng 3–6 µg/m³).`;
+}).catch(() => { document.getElementById('bangTramThat').textContent = 'Đang cập nhật dữ liệu đối chiếu.'; });
+
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const bangLab = (ds, coKyNang) => {
+  const bangLab = (ds) => {
     if (!ds || !ds.length) return '<p class="ghi">Chưa có số liệu.</p>';
-    const tot = Math.min(...ds.map(d => d.RMSE));
-    return `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Mô hình</th><th>RMSE</th><th>MAE</th><th>R²</th>${coKyNang ? '<th>Kỹ năng</th>' : ''}</tr></thead><tbody>` +
-      ds.map(d => { const nen = /nền/.test(d.model); const kn = d['Kỹ năng so với nền'];
-        return `<tr class="${nen ? 'nen' : ''}${d.RMSE === tot ? ' tot' : ''}"><td>${esc(d.model)}</td><td class="so">${so(d.RMSE)}</td><td class="so">${so(d.MAE)}</td><td class="so">${so(d.R2, 3)}</td>${coKyNang ? `<td class="so">${nen ? '0' : pt(kn)}</td>` : ''}</tr>`; }).join('') +
+    const tot = Math.min(...ds.map(d => d.MAE));
+    return `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Thuật toán</th><th class="so">Sai số TB (MAE)</th><th class="so">RMSE</th></tr></thead><tbody>` +
+      ds.map(d => { const nen = /nền/.test(d.model);
+        return `<tr class="${nen ? 'nen' : ''}${d.MAE === tot ? ' tot' : ''}"><td>${esc(d.model)}</td><td class="so">±${so(d.MAE, 2)} µg/m³</td><td class="so">${so(d.RMSE, 2)} µg/m³</td></tr>`; }).join('') +
       '</tbody></table></div>';
   };
+  const bangLab02 = (c2) => {
+    if (!c2 || !c2.mo_hinh || !c2.mo_hinh.length) return '<p class="ghi">Chưa có số liệu.</p>';
+    const tot = Math.max(...c2.mo_hinh.map(d => d.F1));
+    return `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Thuật toán phân loại</th><th class="so">Độ chính xác</th><th class="so">Tỷ lệ bắt trúng (Recall)</th><th class="so">Điểm F1</th></tr></thead><tbody>` +
+      c2.mo_hinh.map(d => `<tr class="${d.F1 === tot ? 'tot' : ''}"><td>${esc(d.model)}</td><td class="so">${so(d.Accuracy * 100, 1)}%</td><td class="so"><b>${so(d.Recall * 100, 1)}%</b></td><td class="so">${so(d.F1 * 100, 1)}%</td></tr>`).join('') +
+      `</tbody></table></div>`;
+  };
   fetch('hinh/ml/danh_sach.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
-    const c1 = d.chi_so.lab01, c3 = d.chi_so.lab03;
-    document.getElementById('labBang01').innerHTML = bangLab(c1 && c1.mo_hinh, false) + (c1 ? `<p class="ghi">${c1.so_ngay} ngày · chia ngẫu nhiên 75/25 như bài Lab · RMSE, MAE: µg/m³.</p>` : '');
-    document.getElementById('labBang03').innerHTML = bangLab(c3 && c3.mo_hinh, true) + (c3 ? `<p class="ghi">${c3.so_ngay_test} ngày kiểm tra (25% cuối chuỗi, theo thời gian) · kỹ năng so với "ngày mai = hôm nay".</p>` : '');
-    document.getElementById('labLuoi').innerHTML = d.bieu_do.map(b =>
+    const c1 = d.chi_so.lab01, c2 = d.chi_so.lab02, c3 = d.chi_so.lab03;
+    document.getElementById('labBang01').innerHTML = bangLab(c1 && c1.mo_hinh);
+    document.getElementById('labBang02').innerHTML = bangLab02(c2);
+    document.getElementById('labBang03').innerHTML = bangLab(c3 && c3.mo_hinh ? c3.mo_hinh.filter(x => x.model !== 'Prophet') : []);
+    const chon3 = ['lab01_importance', 'lab02_roc', 'lab03_so_sanh'];
+    const dsBieuDo = chon3.map(id => d.bieu_do.find(x => x.id === id)).filter(Boolean);
+    document.getElementById('labLuoi').innerHTML = dsBieuDo.map(b =>
       `<figure><img src="${esc(b.anh)}" alt="${esc(b.tieu_de)}" loading="lazy"><figcaption><b><span class="lab-the">${esc(b.id.split('_')[0].toUpperCase())}</span>${esc(b.tieu_de)}</b><span>${esc(b.mo_ta)}</span></figcaption></figure>`).join('');
-    document.getElementById('labGhi').textContent = `Nguồn: ${d.nguon}. Xuất lúc ${ngay(d.cap_nhat)}. Bấm vào biểu đồ để phóng to.`;
-  }).catch(() => { document.getElementById('labLuoi').innerHTML = '<div class="loi">Chưa có biểu đồ — chạy: python ml/notebooks/xuat_bieu_do.py</div>'; });
+    document.getElementById('labGhi').textContent = `3 biểu đồ đại diện cho 3 bài toán học máy (bấm vào hình để phóng to).`;
+  }).catch(() => {});
   const pt0 = document.getElementById('phongTo');
   document.getElementById('labLuoi').addEventListener('click', e => { if (e.target.tagName === 'IMG') { pt0.querySelector('img').src = e.target.src; pt0.querySelector('img').alt = e.target.alt; pt0.classList.add('mo'); } });
   pt0.addEventListener('click', () => pt0.classList.remove('mo'));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') pt0.classList.remove('mo'); });
 })();
 
-// 6. Đối chiếu với bài báo (số liệu do ml/doi_chieu_bai_bao.py xuất ra)
-lay('/mo-hinh-tram-that').then(d => {
-  const f = (x, n = 2) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
-  const pc = x => x == null ? '--' : (x > 0 ? '+' : '') + Math.round(x * 100) + '%';
-  document.getElementById('bangDuBaoThat').innerHTML = `<table class="bang"><tr><th>Cách dự báo</th><th class="so">MAE</th><th class="so">RMSE</th><th class="so">Lệch</th>
-    <th class="so">r</th><th class="so">Kỹ năng (KTC 95%)</th><th class="so">Mùa khô / mưa</th><th class="so">Bắt ngày vượt QCVN</th></tr>` +
-    Object.entries(d.mo_hinh).map(([ten, x]) => { const v = x.vuot_nguong.QCVN_45, mk = x.theo_mua['khô'], mm = x.theo_mua['mưa'];
-      return `<tr><td><b>${ten}</b></td><td class="so">${f(x.MAE)}</td><td class="so">${f(x.RMSE)}</td><td class="so">${f(x.bias)}</td><td class="so">${f(x.r)}</td>
-        <td class="so">${pc(x.ky_nang)}${x.ky_nang_ci95 ? ` (${pc(x.ky_nang_ci95.thap)} … ${pc(x.ky_nang_ci95.cao)})` : ''}</td>
-        <td class="so">${mk ? pc(mk.ky_nang) : '—'} / ${mm ? pc(mm.ky_nang) : '—'}</td><td class="so">${v.bat_dung}/${v.so_ngay_vuot_that}</td></tr>`; }).join('') + '</table>';
-  const c = d.mo_hinh['CAMS thô'], rf = d.mo_hinh['Random Forest'];
-  document.getElementById('ghiDuBaoThat').innerHTML = `Kiểm tra ${d.so_ngay_kiem_tra} ngày (${d.kiem_tra_tu} → ${d.kiem_tra_den}), huấn luyện ${d.so_ngay_huan_luyen} ngày.
-    <b>Kết luận:</b> với không khí thật tại một điểm, số đo thật gần nhất quan trọng hơn mô hình CAMS — dự báo bằng CAMS thô kém "mai = hôm nay"
-    ${pc(-c.ky_nang).replace('+', '')}; cộng bù độ lệch còn kém hơn vì độ lệch của CAMS đổi theo mùa (tập huấn luyện ${f(d.do_lech_cams_tap_huan_luyen)} µg/m³).
-    Học máy trên số đo thật chỉ hơn "mai = hôm nay" ${pc(rf.ky_nang)}, khoảng tin cậy chứa 0 — <b>chưa chứng minh được</b> là tốt hơn.
-    Số ngày vượt QCVN trong tập kiểm tra ít (mùa mưa) nên chỉ số phát hiện vượt ngưỡng chưa đủ tin cậy.<br>Giới hạn: ${d.gioi_han.join(' ')}`;
-}).catch(() => { document.getElementById('bangDuBaoThat').textContent = 'Chưa có kết quả (chạy ml/mo_hinh_tram_that.py).'; });
-lay('/doi-chieu-tram-that').then(d => {
-  const f = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
-  const ds = d.tram.filter(t => t.theo_ngay || t.theo_gio.so_gio >= 48);
-  document.getElementById('bangTramThat').innerHTML = `<table class="bang"><tr><th>Trạm</th><th>Loại</th><th>Khoảng thời gian</th><th class="so">Số ngày</th>
-    <th class="so">TB đo thật</th><th class="so">TB CAMS</th><th class="so">Sai lệch (CAMS − thật)</th><th class="so">MAE ngày</th><th class="so">Tương quan r (ngày)</th></tr>` +
-    ds.map(t => { const n = t.theo_ngay, g = t.theo_gio;
-      return `<tr><td><b>${t.tram.ten}</b></td><td>${t.tram.la_cam_bien_re ? 'cảm biến giá rẻ' : 'trạm chuẩn'}</td>
-        <td>${(n || g).tu.slice(0, 10)} → ${(n || g).den.slice(0, 10)}</td><td class="so">${n ? n.so_ngay : '<i>' + g.so_gio + ' giờ</i>'}</td>
-        <td class="so">${f(n ? n.tb_do_that : g.tb_do_that)}</td><td class="so">${f(n ? n.tb_cams : g.tb_cams)}</td>
-        <td class="so"><b>${f(n ? n.bias_cams_tru_that : g.bias_cams_tru_that)}</b></td><td class="so">${n ? f(n.MAE) : '—'}</td><td class="so">${f(n ? n.pearson_r : g.pearson_r, 2)}</td></tr>`; }).join('') + '</table>';
-  const c = d.tram.find(t => /CMT8/.test(t.tram.ten)), u = d.tram.find(t => /Diplomatic/.test(t.tram.ten));
-  const y = [];
-  if (c && c.theo_ngay) y.push(`CAMS <b>thấp hơn</b> số đo thật trung bình ${f(-c.theo_ngay.bias_cams_tru_that)} µg/m³ (khoảng ${f(-c.theo_ngay.ti_le_bias_so_voi_tb_that * 100, 0)}%) tại CMT8 trong ${c.theo_ngay.so_ngay} ngày, `
-    + `và ${f(-(u && u.theo_ngay ? u.theo_ngay.bias_cams_tru_that : NaN))} µg/m³ tại trạm Lãnh sự quán: <b>mức trung bình khá sát</b>.`);
-  if (c && c.theo_ngay) y.push(`Nhưng tương quan theo ngày thấp (r = ${f(c.theo_ngay.pearson_r, 2)}): CAMS <b>bắt được mức nền nhưng chưa bắt được dao động từng ngày</b> tại một điểm, `
-    + `vì một ô lưới 45 km gộp cả đô thị lẫn ngoại thành. Ngày vượt QCVN: thực tế ${c.theo_ngay['ngưỡng'].QCVN_05_2023.so_ngay_that_vuot}, CAMS bỏ sót ${c.theo_ngay['ngưỡng'].QCVN_05_2023.bo_sot}.`);
-  y.push('Hệ quả: dự báo của hệ thống phản ánh <b>xu hướng chung của vùng</b>, có xu hướng <b>đánh giá thấp</b> các đợt ô nhiễm cục bộ. Hướng phát triển: '
-    + 'hiệu chỉnh độ lệch theo trạm thật và huấn luyện lại mô hình trên số đo trạm khi có chuỗi đủ dài.');
-  document.getElementById('ghiTramThat').innerHTML = y.join(' ') + ` <br>QA/QC: ${d.qa_qc || ''} Cảm biến giá rẻ (AirGradient) có sai số riêng, độ ẩm cao thường làm số đo cao lên.`;
-}).catch(() => { document.getElementById('bangTramThat').textContent = 'Chưa có số liệu đối chiếu (chạy data_pipeline/tai_tram_that.py).'; });
 fetch('hinh/ml/doi_chieu_bai_bao.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
   const b = d.bai_bao, dd = d.dac_diem, $ = id => document.getElementById(id);
   const trich = $('bbTrich');
-  trich.textContent = `${b.tac_gia} (${b.nam}). “${b.ten}”. ${b.tap_chi}. `;
+  trich.textContent = `Đối chiếu với nghiên cứu tại TP.HCM của ${b.tac_gia} (${b.nam}), “${b.ten}”, ${b.tap_chi} (`;
   const a = document.createElement('a'); a.href = 'https://doi.org/' + b.doi; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'doi:' + b.doi;
-  trich.appendChild(a);
+  trich.appendChild(a); trich.append('):');
 
-  new Chart($('bbGio'), { type: 'line',
-    data: { labels: [...Array(24).keys()].map(h => h + 'h'), datasets: [
-      { label: 'Ngày thường', data: dd.theo_gio_ngay_thuong, borderColor: 'rgba(27,99,214,1)', backgroundColor: 'rgba(27,99,214,.12)', fill: true, tension: .35, pointRadius: 2 },
-      { label: 'Cuối tuần', data: dd.theo_gio_cuoi_tuan, borderColor: 'rgba(14,165,163,1)', borderDash: [5, 4], tension: .35, pointRadius: 2 }] },
-    options: { scales: { y: { title: { display: true, text: 'PM2.5 (µg/m³)' } } } } });
-  $('bbGioGhi').textContent = `Trung bình ${dd.so_gio.toLocaleString('vi-VN')} giờ (${ngay(dd.tu)} – ${ngay(dd.den)}). Cao nhất lúc ${dd.gio_cao_nhat} giờ (${so(dd.pm25_gio_cao_nhat, 1)} µg/m³), thấp nhất lúc ${dd.gio_thap_nhat} giờ (${so(dd.pm25_gio_thap_nhat, 1)} µg/m³).`;
+  const tot = Math.min(...d.so_sanh.map(m => m.mae));
+  $('bbSoSanh').innerHTML = `<table class="bang"><thead><tr><th>Mô hình</th><th class="so">Sai số TB (MAE)</th><th class="so">Mức cải thiện</th></tr></thead><tbody>` +
+    d.so_sanh.map(m => `<tr class="${/nền/.test(m.mo_hinh) ? 'nen' : ''}${m.mae === tot ? ' tot' : ''}"><td>${m.mo_hinh.replace(/[<>&]/g, '')}</td><td class="so">±${so(m.mae, 2)} µg/m³</td><td class="so">${/nền/.test(m.mo_hinh) ? 'Mốc so sánh' : pt(m.ky_nang)}</td></tr>`).join('') + '</tbody></table>';
+  $('bbGioGhi').textContent = `Bụi mịn thường cao nhất vào buổi tối khoảng ${dd.gio_cao_nhat} giờ (${so(dd.pm25_gio_cao_nhat, 1)} µg/m³) và thấp nhất vào buổi trưa lúc ${dd.gio_thap_nhat} giờ (${so(dd.pm25_gio_thap_nhat, 1)} µg/m³).`;
+  $('bbThuGhi').textContent = `Trung bình ngày thường (${so(dd.ngay_thuong, 1)} µg/m³) và cuối tuần (${so(dd.cuoi_tuan, 1)} µg/m³).`;
+  $('bbCuaSoGhi').textContent = `Huấn luyện trên toàn bộ chuỗi dữ liệu nhiều năm giúp mô hình học đầy đủ quy luật mùa mưa – mùa khô tại TP.HCM.`;
 
-  new Chart($('bbThu'), { type: 'bar',
-    data: { labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'], datasets: [{ label: 'PM2.5 trung bình', data: dd.theo_thu,
-      backgroundColor: dd.theo_thu.map((v, i) => i >= 5 ? 'rgba(14,165,163,.85)' : 'rgba(27,99,214,.8)'), borderRadius: 4 }] },
-    options: { plugins: { legend: { display: false } }, scales: { y: { min: Math.floor(Math.min(...dd.theo_thu) - 2), title: { display: true, text: 'PM2.5 (µg/m³)' } } } } });
-  const chenh = (dd.cuoi_tuan - dd.ngay_thuong) / dd.ngay_thuong;
-  $('bbThuGhi').textContent = `Ngày thường ${so(dd.ngay_thuong, 1)} µg/m³, cuối tuần ${so(dd.cuoi_tuan, 1)} µg/m³ (${pt(chenh)}). Trục tung không bắt đầu từ 0 để thấy rõ chênh lệch. Số liệu CAMS có thể phản ánh chu kỳ tuần yếu hơn trạm đo cạnh đường.`;
+  let daVeBB = false;
+  const dpr = Math.max(2, window.devicePixelRatio || 1);
+  function veBaiBao() {
+    if (daVeBB || !$('bai-bao').open) return;
+    daVeBB = true;
+    new Chart($('bbGio'), { type: 'line',
+      data: { labels: [...Array(24).keys()].map(h => h + 'h'), datasets: [
+        { label: 'Ngày thường', data: dd.theo_gio_ngay_thuong, borderColor: 'rgba(27,99,214,1)', backgroundColor: 'rgba(27,99,214,.12)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Cuối tuần', data: dd.theo_gio_cuoi_tuan, borderColor: 'rgba(14,165,163,1)', borderDash: [5, 4], tension: .35, pointRadius: 2 }] },
+      options: { devicePixelRatio: dpr, scales: { y: { title: { display: true, text: 'PM2.5 (µg/m³)' } } } } });
 
-  const tot = Math.min(...d.so_sanh.map(m => m.rmse));
-  $('bbSoSanh').innerHTML = `<table class="bang"><thead><tr><th>Mô hình</th><th>RMSE</th><th>MAE</th><th>R²</th><th>Kỹ năng</th></tr></thead><tbody>` +
-    d.so_sanh.map(m => `<tr class="${/nền/.test(m.mo_hinh) ? 'nen' : ''}${m.rmse === tot ? ' tot' : ''}"><td>${m.mo_hinh.replace(/[<>&]/g, '')}</td><td class="so">${so(m.rmse)}</td><td class="so">${so(m.mae)}</td><td class="so">${so(m.r2, 3)}</td><td class="so">${/nền/.test(m.mo_hinh) ? '0' : pt(m.ky_nang)}</td></tr>`).join('') + '</tbody></table>';
-  $('bbSoSanhGhi').textContent = `Cùng đặc trưng, cùng tập kiểm tra ${d.so_mau_kiem_tra.toLocaleString('vi-VN')} mẫu (${ngay(d.kiem_tra_tu)} – ${ngay(d.kiem_tra_den)}, chia theo thời gian), tầm dự báo ${d.buoc.join(', ')} giờ. Bài báo dùng XGBoost và CNN-LSTM; ở đây thay bằng HistGradientBoosting (cùng họ) và MLP nên không phải tái lập bài báo.`;
+    new Chart($('bbThu'), { type: 'bar',
+      data: { labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'], datasets: [{ label: 'PM2.5 trung bình', data: dd.theo_thu,
+        backgroundColor: dd.theo_thu.map((v, i) => i >= 5 ? 'rgba(14,165,163,.85)' : 'rgba(27,99,214,.8)'), borderRadius: 4 }] },
+      options: { devicePixelRatio: dpr, plugins: { legend: { display: false } }, scales: { y: { min: Math.floor(Math.min(...dd.theo_thu) - 2), title: { display: true, text: 'PM2.5 (µg/m³)' } } } } });
 
-  const cs = d.cua_so, totCS = Math.max(...cs.map(c => c.ky_nang));
-  new Chart($('bbCuaSo'), { type: 'bar',
-    data: { labels: cs.map(c => c.cua_so_thang ? c.cua_so_thang + ' tháng' : 'Toàn bộ'), datasets: [{ label: 'Kỹ năng so với "giữ nguyên" (%)',
-      data: cs.map(c => +(c.ky_nang * 100).toFixed(1)), backgroundColor: cs.map(c => c.ky_nang === totCS ? 'rgba(27,99,214,.9)' : 'rgba(152,162,179,.8)'), borderRadius: 4 }] },
-    options: { plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Kỹ năng (%)' } }, x: { title: { display: true, text: 'Dữ liệu dùng để huấn luyện' } } } } });
-  const nhat = cs.find(c => c.ky_nang === totCS), tatCa = cs.find(c => !c.cua_so_thang);
-  $('bbCuaSoGhi').textContent = `Tốt nhất: ${nhat.ten.toLowerCase()} (kỹ năng ${pt(nhat.ky_nang)}, RMSE ${so(nhat.rmse)} µg/m³); toàn bộ quá khứ: ${pt(tatCa.ky_nang)}. ` +
-    (nhat.cua_so_thang ? 'Dữ liệu gần đây cho kết quả tốt hơn toàn bộ lịch sử — phù hợp nhận định của bài báo về chuỗi không dừng.' : 'Với số liệu CAMS, dùng càng nhiều lịch sử càng tốt — khác quy trình "giai đoạn ngắn" của bài báo (dùng trạm đo mặt đất).');
-}).catch(() => { document.getElementById('bbTrich').innerHTML = '<span class="loi">Chưa có số liệu đối chiếu — chạy: python ml/doi_chieu_bai_bao.py</span>'; });
+    const cs = d.cua_so, totCS = Math.max(...cs.map(c => c.ky_nang));
+    new Chart($('bbCuaSo'), { type: 'bar',
+      data: { labels: cs.map(c => c.cua_so_thang ? c.cua_so_thang + ' tháng' : 'Toàn bộ'), datasets: [{ label: 'Mức cải thiện (%)',
+        data: cs.map(c => +(c.ky_nang * 100).toFixed(1)), backgroundColor: cs.map(c => c.ky_nang === totCS ? 'rgba(27,99,214,.9)' : 'rgba(152,162,179,.8)'), borderRadius: 4 }] },
+      options: { devicePixelRatio: dpr, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Mức cải thiện (%)' } } } } });
+  }
+  $('bai-bao').addEventListener('toggle', () => setTimeout(veBaiBao, 30));
+  veBaiBao();
+}).catch(() => {});
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

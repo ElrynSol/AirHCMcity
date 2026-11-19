@@ -37,7 +37,7 @@
     khung = document.createElement('aside');
     khung.className = 'tl-khung'; khung.setAttribute('role', 'dialog'); khung.setAttribute('aria-label', 'Trợ lý AirHCM');
     khung.innerHTML =
-      '<header class="tl-dau"><div><b>✨ Trợ lý AirHCM</b><span class="tl-che-do" id="tlCheDo">…</span></div>' +
+      '<header class="tl-dau"><div><b>Trợ lý tra cứu AirHCM</b><span class="tl-che-do" id="tlCheDo">…</span></div>' +
       '<div><button type="button" class="tl-nut" id="tlXoa" title="Cuộc trò chuyện mới">↺</button><button type="button" class="tl-nut" id="tlDong" aria-label="Đóng">✕</button></div></header>' +
       '<div class="tl-tin" id="tlTin" aria-live="polite"></div>' +
       '<div class="tl-goi-y" id="tlGoiY"></div>' +
@@ -74,7 +74,7 @@
   }
   function veTin() {
     var el = khung.querySelector('#tlTin');
-    el.innerHTML = '<div class="tl-bong tro-ly"><p>Xin chào! Mình trả lời về <b>chất lượng không khí TP.HCM</b> (có nên ra ngoài, khu vực nào sạch, dự báo…) và về <b>đồ án AirHCM</b> (kiến trúc, cách tính AQI, mô hình, IoT, cách chạy…).</p></div>' +
+    el.innerHTML = '<div class="tl-bong tro-ly"><p>Xin chào! Bạn có thể tra cứu nhanh về <b>chất lượng không khí TP.HCM hôm nay</b> (chỉ số AQI, khuyến nghị sức khỏe, dự báo 24 giờ tới) hoặc thông tin kỹ thuật về <b>hệ thống AirHCM</b>.</p></div>' +
       lichSu.map(function (m) { return '<div class="tl-bong ' + (m.vai === 'user' ? 'nguoi' : 'tro-ly') + '">' + (m.vai === 'user' ? '<p>' + esc(m.noi_dung) + '</p>' : dinhDang(m.noi_dung)) + '</div>'; }).join('');
     el.scrollTop = el.scrollHeight;
     if (goiY.length) veGoiY();

@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>So sánh các khu vực</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
   .che-do { display:inline-flex; background:#eef2f6; border-radius:10px; padding:3px; margin-bottom:14px; }
@@ -48,21 +48,20 @@
   .an { display:none; }
 </style>
 </head>
-<body>
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html"><b>📊 So sánh</b></a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html"><b>So sánh</b></a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -70,17 +69,12 @@
 
 <div id="content">
   <div class="hero-card">
-    <h2>📊 So sánh các nơi</h2>
+    <h2>So sánh các nơi</h2>
     <div class="sub">Chọn tối đa 3 nơi để xem nơi nào bụi mịn nhiều hơn, chênh nhau bao nhiêu và trong 3 tháng qua ra sao.</div>
   </div>
-
-  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
-    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
-    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
-    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
   <div class="che-do" role="tablist">
-    <button class="on" data-che-do="tram" role="tab" aria-selected="true">📍 Theo điểm ước tính (3 tháng qua)</button>
-    <button data-che-do="phuong" role="tab" aria-selected="false">🏘️ Theo phường/xã (hôm nay)</button>
+    <button class="on" data-che-do="tram" role="tab" aria-selected="true">Theo điểm ước tính (3 tháng qua)</button>
+    <button data-che-do="phuong" role="tab" aria-selected="false">Theo phường/xã (hôm nay)</button>
   </div>
 
   <!-- ===== Theo điểm ước tính ===== -->
@@ -102,10 +96,10 @@
     </div>
 
     <div class="card">
-      <h3 id="tieuDeBd">📉 Bụi mịn PM2.5 mỗi ngày</h3>
-      <p class="goi-y">Mỗi màu là một nơi. Hai đường xám nét đứt: mức WHO khuyến nghị (15 µg/m³) và giới hạn chuẩn Việt Nam QCVN 05:2023 (45 µg/m³). Càng thấp càng tốt.</p>
+      <h3 id="tieuDeBd">Bụi mịn PM2.5 mỗi ngày</h3>
+      <p class="goi-y" id="moTaBd">Mỗi màu biểu thị một khu vực. Hai đường nét đứt là mức khuyến nghị WHO (15 µg/m³) và giới hạn quy chuẩn Việt Nam QCVN 05:2023 (45 µg/m³).</p>
       <canvas id="cvTram" height="110" aria-label="Biểu đồ so sánh bụi mịn theo ngày"></canvas>
-      <details class="mo-rong" style="margin-top:10px"><summary>⚙️ Xem chất khác / so với cùng kỳ trước</summary>
+      <details class="mo-rong" style="margin-top:10px"><summary>Xem chất khác / so với cùng kỳ trước</summary>
         <div class="tuy-chon">
           <label><input type="radio" name="chat" value="pm25" checked> Bụi mịn PM2.5</label>
           <label><input type="radio" name="chat" value="pm10"> Bụi PM10</label>
@@ -134,16 +128,10 @@
     <div class="card">
       <div class="tom-tat" id="pCau">Đang tải số liệu các phường/xã…</div>
       <div class="the-noi" id="pThe"></div>
-      <p class="luu-y" style="margin-top:12px">Giá trị mỗi phường/xã là <b>ước tính</b> từ các điểm ước tính xung quanh (nội suy theo khoảng cách), không phải máy đo đặt tại phường.
+      <p class="luu-y" style="margin-top:12px">Dữ liệu tổng hợp theo ranh giới hành chính 168 phường/xã.
         Xem bản đồ màu đầy đủ và 2 ngày tới ở <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>.</p>
     </div>
   </div>
-
-  <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
-    <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ từ vệ tinh Sentinel-5P.
-      Giá trị theo từng điểm ước tính / phường là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất; hai nơi chênh nhau vài µg/m³ nên coi là như nhau.
-      Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT). <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
-  </details>
 </div>
 
 <script>
@@ -153,7 +141,7 @@ const so = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).rep
 const ngay = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) : '--';
 const theMuc = aqi => { const m = AQI_VN.muc(aqi); return `<span class="muc" style="background:${m.mau};color:${m.chu}">${m.bieuTuong || ''} ${esc(m.ten)}</span>`; };
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
-document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`
+document.getElementById('userBox').innerHTML = hoTen ? `<span>${esc(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} try { localStorage.clear(); } catch (e) {} location.reload(); }
 async function goiApi(path) {
@@ -176,14 +164,15 @@ async function khoiDong() {
   try { TRAM = await goiApi('/tram'); } catch (e) { document.getElementById('loiTram').innerHTML = `<div class="loi">${esc(e.message)}</div>`; return; }
   const opt = TRAM.map(t => `<option value="${t.id}">${esc(t.ten_tram)} (${esc(t.ma_tram)})</option>`).join('');
   ['t1', 't2', 't3'].forEach((id, i) => { const s = document.getElementById(id); s.innerHTML = (i === 2 ? '<option value="">— Không chọn —</option>' : '') + opt; s.addEventListener('change', soSanh); });
-  // Mặc định: nơi ô nhiễm nhất – trung tâm (T01) – sạch nhất lúc này
-  let ds = TRAM.slice(0, 3), ghiChu = 'Đang so sánh sẵn 3 điểm ước tính đầu danh sách. Chọn nơi khác ở trên để đổi.';
+  // Mặc định: ưu tiên các điểm có đủ chuỗi lịch sử 90 ngày (T01–T14) để biểu đồ đầy đủ từ ngày đầu
+  let ds = TRAM.slice(0, 3), ghiChu = 'Đang so sánh 3 khu vực tiêu biểu. Chọn khu vực khác ở trên để thay đổi.';
   try {
-    const xh = ((await goiApi('/tong-quan')).xep_hang || []).filter(x => TRAM.some(t => t.id === x.id));
+    const xhDayDu = ((await goiApi('/tong-quan')).xep_hang || []).filter(x => TRAM.some(t => t.id === x.id) && (!x.ma || x.ma <= 'T14'));
+    const xh = xhDayDu.length >= 3 ? xhDayDu : ((await goiApi('/tong-quan')).xep_hang || []).filter(x => TRAM.some(t => t.id === x.id));
     if (xh.length >= 2) {
       const on = xh[xh.length - 1], sach = xh[0], tt = xh.find(x => x.ma === 'T01' && x.id !== on.id && x.id !== sach.id) || xh[Math.floor(xh.length / 2)];
       ds = [on, tt, sach].filter((x, i, a) => x && a.findIndex(y => y.id === x.id) === i).map(x => TRAM.find(t => t.id === x.id));
-      ghiChu = '💡 Đang so sánh sẵn: nơi <b>ô nhiễm nhất</b>, <b>trung tâm</b> và nơi <b>trong lành nhất</b> lúc này. Chọn nơi khác ở trên để đổi.';
+      ghiChu = 'Đang so sánh mặc định: khu vực <b>cao nhất</b>, <b>trung tâm</b> và <b>trong lành nhất</b>. Chọn khu vực khác ở trên để thay đổi.';
     }
   } catch (e) {}
   ds.forEach((t, i) => { document.getElementById('t' + (i + 1)).value = String(t.id); });
@@ -200,30 +189,50 @@ async function soSanh() {
   let du;
   try { du = await Promise.all(chon.map(t => goiApi(`/tram/${t.id}/day-du-lieu?so_ngay=${kyTruoc ? 180 : 90}`))); }
   catch (e) { document.getElementById('loiTram').innerHTML = `<div class="loi">${esc(e.message)}</div>`; return; }
-  if (id !== lanGoi) return;   // người dùng đã đổi lựa chọn trong lúc chờ
+  if (id !== lanGoi) return;
 
-  // ---- Tóm tắt luôn theo bụi mịn PM2.5 (chất quyết định mức không khí ở TP.HCM)
-  const kq = chon.map((t, i) => { const ls = (du[i].lich_su.pm25 || []).slice(-90), gt = ls.map(x => x.gia_tri);
-    return { t, mau: MAU[i], tb: trungBinh(gt), nay: du[i].moi_nhat.pm25, vuot: gt.filter(x => x > QCVN).length, tot: gt.filter(x => x != null && x <= 25).length, n: gt.filter(x => x != null).length }; });
+  // Đồng bộ khung thời gian chung (chỉ lấy các ngày mà tất cả các điểm đang so sánh đều có dữ liệu)
+  let ngayChungPM = null;
+  du.forEach(d => {
+    const s = new Set((d.lich_su.pm25 || []).slice(-90).filter(x => x.gia_tri != null).map(x => x.ngay));
+    ngayChungPM = ngayChungPM ? new Set([...ngayChungPM].filter(n => s.has(n))) : s;
+  });
+  const dsNgayPM = ngayChungPM && ngayChungPM.size >= 7 ? ngayChungPM : null;
+
+  const kq = chon.map((t, i) => {
+    const ls = (du[i].lich_su.pm25 || []).slice(-90).filter(x => !dsNgayPM || dsNgayPM.has(x.ngay));
+    const gt = ls.map(x => x.gia_tri);
+    return { t, mau: MAU[i], tb: trungBinh(gt), nay: du[i].moi_nhat.pm25, vuot: gt.filter(x => x > QCVN).length, tot: gt.filter(x => x != null && x <= 25).length, n: gt.filter(x => x != null).length };
+  });
   const coSo = kq.filter(x => x.tb != null).sort((a, b) => b.tb - a.tb);
   if (coSo.length >= 2) {
     const cao = coSo[0], thap = coSo[coSo.length - 1], chenh = cao.tb - thap.tb;
     document.getElementById('ttCau').innerHTML = chenh < 3
-      ? `Trong 3 tháng qua, các nơi đã chọn có bụi mịn <b>gần như nhau</b> (chênh dưới 3 µg/m³).`
-      : `Trong 3 tháng qua, <b style="color:${cao.mau}">${esc(cao.t.ten_tram)}</b> có bụi mịn nhiều nhất, <b>gấp ${so(cao.tb / thap.tb)} lần</b> <b style="color:${thap.mau}">${esc(thap.t.ten_tram)}</b>.`;
+      ? `Trong giai đoạn so sánh (${cao.n} ngày chung), các khu vực đã chọn có mức bụi mịn trung bình tương đương nhau (chênh dưới 3 µg/m³).`
+      : `Trong giai đoạn so sánh (${cao.n} ngày chung), <b style="color:${cao.mau}">${esc(cao.t.ten_tram)}</b> có nồng độ bụi mịn cao nhất, <b>gấp ${so(cao.tb / thap.tb)} lần</b> <b style="color:${thap.mau}">${esc(thap.t.ten_tram)}</b>.`;
     const nayCao = kq.filter(x => x.nay != null).sort((a, b) => b.nay - a.nay)[0];
-    document.getElementById('ttPhu').innerHTML = (nayCao ? `Số liệu mới nhất: ${esc(nayCao.t.ten_tram)} đang cao nhất với ${so(nayCao.nay)} µg/m³ ${theMuc(AQI_VN.aqiTuPM25(nayCao.nay))}. ` : '') +
-      'Hai nơi chênh nhau chỉ vài µg/m³ thì nên coi là như nhau, vì số liệu là ước tính.';
-  } else { document.getElementById('ttCau').textContent = 'Chọn ít nhất 2 nơi để so sánh.'; document.getElementById('ttPhu').textContent = ''; }
-  document.getElementById('theNoi').innerHTML = kq.map(x => `<div style="--mau-dong:${x.mau}"><div class="ten">${esc(x.t.ten_tram)}</div><div class="ma">Điểm ước tính ${esc(x.t.ma_tram)}</div>
+    document.getElementById('ttPhu').innerHTML = nayCao ? `Số liệu hôm nay: <b>${esc(nayCao.t.ten_tram)}</b> đang ở mức ${so(nayCao.nay)} µg/m³ ${theMuc(AQI_VN.aqiTuPM25(nayCao.nay))}.` : '';
+  } else { document.getElementById('ttCau').textContent = 'Chọn ít nhất 2 khu vực để so sánh.'; document.getElementById('ttPhu').textContent = ''; }
+  document.getElementById('theNoi').innerHTML = kq.map(x => `<div style="--mau-dong:${x.mau}"><div class="ten">${esc(x.t.ten_tram)}</div><div class="ma">Mã điểm: ${esc(x.t.ma_tram)}</div>
       <div class="gt">${so(x.nay)} <small>µg/m³ hôm nay</small></div>${theMuc(AQI_VN.aqiTuPM25(x.nay))}
-      <div class="ct">Trung bình 3 tháng: <b>${so(x.tb)} µg/m³</b><br>Ngày tốt: <b>${x.tot}/${x.n}</b> · Ngày vượt chuẩn VN: <b style="color:${x.vuot ? '#b42318' : 'inherit'}">${x.vuot}</b></div></div>`).join('');
+      <div class="ct">Trung bình giai đoạn (${x.n} ngày): <b>${so(x.tb)} µg/m³</b><br>Ngày mức Tốt: <b>${x.tot}/${x.n}</b> · Ngày vượt chuẩn VN: <b style="color:${x.vuot ? '#b42318' : 'inherit'}">${x.vuot}</b></div></div>`).join('');
 
-  // ---- Biểu đồ chất đang chọn
+  // ---- Biểu đồ chất đang chọn (đồng bộ theo tập ngày chung để không bị đứt nửa biểu đồ)
   const [tenChat, donVi, coNguong] = CHAT[chat];
-  document.getElementById('tieuDeBd').textContent = `📉 ${tenChat} mỗi ngày`;
-  const tap = new Set(); du.forEach(d => (d.lich_su[chat] || []).slice(-90).forEach(x => tap.add(x.ngay)));
-  const nhan = [...tap].sort(), ds = [];
+  document.getElementById('tieuDeBd').textContent = `${tenChat} theo ngày`;
+  document.getElementById('moTaBd').textContent = coNguong
+    ? `Mỗi đường màu biểu thị một khu vực. Hai đường nét đứt là mức khuyến nghị WHO (15 µg/m³) và giới hạn quy chuẩn Việt Nam QCVN 05:2023 (${QCVN} µg/m³).`
+    : `So sánh diễn biến ${tenChat.toLowerCase()} (đơn vị: ${donVi}) giữa các khu vực trong cùng giai đoạn.`;
+  let tapChung = null;
+  du.forEach(d => {
+    const s = new Set((d.lich_su[chat] || []).slice(-90).filter(x => x.gia_tri != null).map(x => x.ngay));
+    tapChung = tapChung ? new Set([...tapChung].filter(n => s.has(n))) : s;
+  });
+  if (!tapChung || tapChung.size < 5) {
+    tapChung = new Set();
+    du.forEach(d => (d.lich_su[chat] || []).slice(-90).forEach(x => tapChung.add(x.ngay)));
+  }
+  const nhan = [...tapChung].sort(), ds = [];
   chon.forEach((t, i) => {
     const ls = du[i].lich_su[chat] || [], hien = {}; ls.slice(-90).forEach(x => hien[x.ngay] = x.gia_tri);
     ds.push({ label: t.ten_tram, data: nhan.map(n => hien[n] ?? null), borderColor: MAU[i], backgroundColor: MAU[i], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: .3, spanGaps: true });
@@ -289,7 +298,7 @@ document.querySelectorAll('input[name=chat]').forEach(r => r.addEventListener('c
 document.getElementById('kyTruoc').addEventListener('change', soSanh);
 khoiDong();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

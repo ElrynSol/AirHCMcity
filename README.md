@@ -24,24 +24,25 @@ Giải thích các thư mục con: `models/README.md` (mô hình, kết quả `.
 ## Dữ liệu (trung thực về bản chất)
 | Chỉ số | Nguồn | Bản chất |
 |---|---|---|
-| PM2.5, PM10, O₃, thời tiết | Open-Meteo (mô hình CAMS toàn cầu), lưới ~0,4° ≈ 45 km | Mô hình, chưa kiểm chứng đo đạc mặt đất |
+| PM2.5, PM10, O₃, thời tiết | Open-Meteo (mô hình CAMS toàn cầu), lưới ~0,4° ≈ 45 km | Mô hình tái phân tích; đã đối chiếu với 3 trạm đo mặt đất thực tế qua OpenAQ |
+| Số đo PM2.5 thực tế mặt đất | OpenAQ (Tổng Lãnh sự quán Hoa Kỳ, AirGradient CMT8 & Linh Trung) | Số đo thực tế theo giờ (đã lọc QA/QC); dùng đối chiếu sai số CAMS và huấn luyện mô hình điểm CMT8 |
 | NO₂, CO, SO₂ | Sentinel-5P qua Google Earth Engine | Cột khí vệ tinh (mol/m²), trễ 2–3 tuần |
-| Giá trị theo trạm / phường-xã | Hiệu chỉnh không gian + nội suy IDW | Ước tính |
+| Giá trị theo điểm / phường-xã | Hiệu chỉnh không gian + nội suy IDW | Ước tính xu hướng vùng |
 
-AQI tính theo VN_AQI — QĐ 1459/QĐ-TCMT (bảng ngưỡng, 6 mức màu, khuyến nghị sức khỏe) từ PM2.5, PM10, O₃; ngưỡng so sánh nồng độ theo QCVN 05:2023/BTNMT. Xem trang **Dữ liệu** trên web để biết tình trạng cập nhật.
+AQI tính theo VN_AQI — QĐ 1459/QĐ-TCMT (bảng ngưỡng, 6 mức màu, khuyến nghị sức khỏe) từ PM2.5, PM10, O₃; ngưỡng so sánh nồng độ theo QCVN 05:2023/BTNMT (45 µg/Nm³ từ 01/01/2026). Xem trang **Nguồn & Trạng thái dữ liệu** trên web để biết tình trạng cập nhật.
 
 ## Kiến trúc
 ```
-Nguồn dữ liệu (Open-Meteo, GEE) → script nạp (download_*, load_to_db, dong_bo_hang_ngay)
+Nguồn dữ liệu (Open-Meteo, GEE, OpenAQ) → script nạp (download_*, tai_tram_that, dong_bo_hang_ngay)
         → PostgreSQL/PostGIS → FastAPI (backend/) → Web tĩnh (frontend/, Leaflet + Chart.js)
-                                  ↘ cảnh báo email (dịch vụ nền) ↘ mô hình Random Forest (models/)
+                                  ↘ cảnh báo email/Web Push ↘ mô hình học máy (models/)
 ```
 ```
-backend/        API FastAPI: main.py · core/ (cấu hình, bảo mật, mail, nhật ký, bus sự kiện) · routers/ · services/
+backend/        API FastAPI: main.py · core/ (cấu hình, bảo mật, ngưỡng QCVN, mail, nhật ký, bus sự kiện) · routers/ · services/
 frontend/       23 trang web + nav.js, style.css, tro-ly.js, sw.js (PWA)
-ml/             tinh_aqi, predict, train_model, train_du_bao_gio, train_diem, train_downscale_model, phan_cum_tram
+ml/             tinh_aqi, predict, train_model, train_du_bao_gio, mo_hinh_tram_that, du_bao_da_chat, danh_gia_xac_suat
 models/         mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
-data_pipeline/  download_*, gee_extract, run_pipeline, load_to_db, dong_bo_hang_ngay, kiem_tra_du_lieu, doi_chieu_tram_that
+data_pipeline/  download_*, gee_extract, tai_tram_that, doi_chieu_tram_that, dong_bo_hang_ngay, du_lieu_mo
 mobile/         app Android (Capacitor) + AirHCM.apk
 tests/          201 kiểm thử pytest (gồm kiểm thử giao diện tĩnh)
 dong_goi/       Dockerfile, docker-compose.yml, tao_ban_nop.py (tạo bản nộp .zip sạch)
@@ -74,8 +75,8 @@ Mở `http://localhost:8000`. Kiểm tra máy có đủ điều kiện chạy (P
   Khóa Google (`gee-key.json`) và bản sao lưu CSDL đặt ở `%USERPROFILE%\.airhcm\` (ngoài thư mục đồng bộ đám mây như OneDrive), `.env` trỏ tới bằng `GEE_KEY_FILE`.
 
 ## Giới hạn đã biết
-- Chưa đối chiếu với trạm đo mặt đất; giá trị theo trạm/phường-xã là ước tính.
-- Dự báo theo ngày (Random Forest) chưa chứng minh được là hơn cách đoán “ngày mai = hôm nay” (xem mục dưới); dự báo theo giờ mới có kỹ năng được kiểm chứng.
+- Dữ liệu nền toàn thành phố lấy từ mô hình CAMS (~45 km), giá trị theo điểm/phường-xã là ước tính nội suy; đã đối chiếu với 3 trạm đo mặt đất thực tế (OpenAQ) cho thấy CAMS sát mức trung bình dài hạn (lệch −2,9 đến −4,3 µg/m³) nhưng làm phẳng đỉnh ô nhiễm từng ngày (r ≈ 0,16–0,29).
+- Dự báo theo ngày (Random Forest) trên toàn chuỗi tương đương mô hình nền “ngày mai = hôm nay”; dự báo theo giờ (1–24h, kỹ năng +31%) và dự báo theo chất (Ridge Regression, kỹ năng +5% đến +7%) có ý nghĩa thống kê.
 - Hệ thống phục vụ học thuật, không thay thế số liệu công bố chính thức.
 
 ## Kiến trúc hướng sự kiện (gọn) và nhật ký tập trung

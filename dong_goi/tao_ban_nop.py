@@ -32,7 +32,7 @@ DUONG_DAN_BO = {"tools/cu",            # công cụ cũ dùng một lần (đã 
                 "ml/notebooks/data"}   # dữ liệu ngày do notebook tự tạo lại từ du_lieu/gio_cache.csv
 # File bí mật / dữ liệu cá nhân / nhật ký máy
 TEP_BO = {".env", "gee-key.json", "backup.sql", "mlflow.db", "log_dong_bo.txt", "local.properties", ".dong_bo.lock",
-          "ĐCCT_NgôHoàngDũng_12_ĐH_THMT.docx"}   # tài liệu của người khác để lẫn trong thư mục, không thuộc đồ án
+          "ĐCCT_NgôHoàngDũng_12_ĐH_THMT.docx", "Lab01.ipynb", "BTTH2.ipynb", "BTTH3.ipynb"}   # bài tập gốc để tham khảo, không thuộc bản nộp
 DUOI_BO = {".pyc", ".log", ".sql", ".gz", ".pem", ".key", ".keystore", ".jks"}
 
 DUOI_VAN_BAN = {".py", ".js", ".html", ".css", ".md", ".txt", ".json", ".toml", ".yml", ".yaml", ".bat", ".ps1",

@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0b2545">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
@@ -17,7 +17,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.js"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Tra cứu không gian</title>
 <style>
   .luoi-kg { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -53,25 +53,24 @@
   .xung-dot { width: 22px; height: 22px; border-radius: 50%; background: #d93025; border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(217,48,37,.35); }
 </style>
 </head>
-<body>
-<div id="header">
-  <div><a href="index.html">🗺️ Bản đồ</a></div>
+<body><div id="header">
+  <div><a href="index.html">Bản đồ</a></div>
   <div id="userBox"></div>
 </div>
 <div id="content">
   <div class="hero">
-    <h2>🧭 Tra cứu không gian</h2>
+    <h2>Tra cứu không gian</h2>
     <div class="sub">Định vị, quét vùng tròn / khung / đa giác để tìm điểm ước tính, phản ánh và phường/xã trong vùng; đo khoảng cách và chỉ đường. Mọi phép tính không gian chạy trên PostGIS.</div>
   </div>
 
   <div class="luoi-kg">
     <section class="card">
       <div class="cong-cu" role="toolbar" aria-label="Công cụ quét">
-        <button type="button" class="chinh" id="nutGps">📍 Vị trí của tôi</button>
-        <button type="button" data-kieu="tron" class="on">⭕ Vòng tròn</button>
-        <button type="button" data-kieu="khung">⬜ Khung chữ nhật</button>
-        <button type="button" data-kieu="da_giac">🔷 Đa giác</button>
-        <button type="button" id="nutXoa">🗑️ Xóa vùng</button>
+        <button type="button" class="chinh" id="nutGps">Vị trí của tôi</button>
+        <button type="button" data-kieu="tron" class="on">Vòng tròn</button>
+        <button type="button" data-kieu="khung">Khung chữ nhật</button>
+        <button type="button" data-kieu="da_giac">Đa giác</button>
+        <button type="button" id="nutXoa">Xóa vùng</button>
       </div>
       <div class="thanh" id="thanhBanKinh">
         <span>Bán kính</span><input type="range" id="banKinh" min="200" max="20000" step="100" value="3000" aria-label="Bán kính quét">
@@ -79,7 +78,7 @@
       </div>
       <div class="thanh">
         <label><input type="checkbox" id="tuSua"> Tự sửa vùng tự cắt</label>
-        <label><input type="checkbox" id="theoMoc" checked> Đo khoảng cách từ cột mốc 📌</label>
+        <label><input type="checkbox" id="theoMoc" checked> Đo khoảng cách từ cột mốc </label>
       </div>
       <div id="map" role="application" aria-label="Bản đồ quét không gian"></div>
       <p class="huong-dan" id="huongDan"></p>
@@ -112,7 +111,7 @@ map.pm.setLang('vi');
 map.pm.setGlobalOptions({ allowSelfIntersection: true, snappable: false, templineStyle: { color: '#1b63d6' }, hintlineStyle: { color: '#1b63d6', dashArray: '5,5' } });
 
 let kieu = 'tron', vung = null, moc = null, lopKq = L.layerGroup().addTo(map), lopDuong = null, lopXungDot = null, hen = null, dangQuet = 0;
-const iconMoc = L.divIcon({ className: '', html: '<div class="moc-icon">📌</div>', iconSize: [26, 26], iconAnchor: [6, 25] });
+const iconMoc = L.divIcon({ className: '', html: '<div class="moc-icon"></div>', iconSize: [26, 26], iconAnchor: [6, 25] });
 
 // Cột mốc = vị trí người dùng (kéo được). Mọi khoảng cách đo từ đây; vòng tròn lấy cột mốc làm tâm.
 function datMoc(lat, lon, nguon) {
@@ -142,7 +141,7 @@ function chonKieu(k) {
   document.querySelectorAll('[data-kieu]').forEach(b => b.classList.toggle('on', b.dataset.kieu === k));
   $('thanhBanKinh').style.display = k === 'tron' ? '' : 'none';
   xoaVung();
-  if (k === 'tron') { $('huongDan').textContent = 'Chạm bản đồ để đặt cột mốc 📌 làm tâm. Kéo cột mốc hoặc thanh bán kính để quét lại.'; if (moc) veTron(); }
+  if (k === 'tron') { $('huongDan').textContent = 'Chạm bản đồ để đặt cột mốc  làm tâm. Kéo cột mốc hoặc thanh bán kính để quét lại.'; if (moc) veTron(); }
   else if (k === 'khung') { $('huongDan').textContent = 'Kéo trên bản đồ để vẽ khung. Sau khi vẽ, kéo các góc để chỉnh — kết quả tự cập nhật.'; map.pm.enableDraw('Rectangle', { pathOptions: { color: '#1b63d6', fillOpacity: .08 } }); }
   else { $('huongDan').textContent = 'Chạm từng điểm để vẽ đa giác, chạm lại điểm đầu để khép kín. Kéo các đỉnh để chỉnh; nếu các cạnh chéo nhau, hệ thống báo xung đột và đánh dấu điểm cắt.'; map.pm.enableDraw('Polygon', { pathOptions: { color: '#1b63d6', fillOpacity: .08 } }); }
 }
@@ -161,13 +160,13 @@ map.on('click', e => { if (kieu === 'tron') datMoc(e.latlng.lat, e.latlng.lng, '
 
 $('nutGps').onclick = () => {
   if (!navigator.geolocation) { loi('Thiết bị không hỗ trợ định vị. Hãy chạm bản đồ để đặt cột mốc.'); return; }
-  const n = $('nutGps'); n.disabled = true; n.textContent = '📍 Đang định vị…';
+  const n = $('nutGps'); n.disabled = true; n.textContent = 'Đang định vị…';
   navigator.geolocation.getCurrentPosition(p => {
-    n.disabled = false; n.textContent = '📍 Vị trí của tôi';
+    n.disabled = false; n.textContent = 'Vị trí của tôi';
     datMoc(p.coords.latitude, p.coords.longitude, 'GPS ±' + Math.round(p.coords.accuracy) + ' m');
     map.setView([p.coords.latitude, p.coords.longitude], 14);
   }, e => {
-    n.disabled = false; n.textContent = '📍 Vị trí của tôi';
+    n.disabled = false; n.textContent = 'Vị trí của tôi';
     loi(e.code === 1 ? 'Bạn chưa cho phép dùng vị trí. Hãy chạm bản đồ để đặt cột mốc.' : 'Không lấy được vị trí (định vị cần HTTPS hoặc localhost). Hãy chạm bản đồ để đặt cột mốc.');
   }, { enableHighAccuracy: true, timeout: 12000 });
 };
@@ -213,10 +212,10 @@ function veKq(d) {
     <div>Điểm ước tính<b>${t.so_tram}</b></div>
     <div>AQI trung bình<b style="color:${m ? m.dam : 'inherit'}">${t.aqi_tb ?? '--'}</b>${m ? m.ten : 'không có điểm'}</div>
     <div>Phường/xã<b>${t.so_phuong}</b></div><div>Phản ánh<b>${t.so_phan_anh}</b></div>
-    <div>Đo từ<b style="font-size:13px">${d.cot_moc.la_vi_tri_nguoi_dung ? '📌 cột mốc' : 'tâm vùng'}</b>${esc(d.cot_moc.la_vi_tri_nguoi_dung ? nguonMoc : '')}</div>`;
+    <div>Đo từ<b style="font-size:13px">${d.cot_moc.la_vi_tri_nguoi_dung ? ' cột mốc' : 'tâm vùng'}</b>${esc(d.cot_moc.la_vi_tri_nguoi_dung ? nguonMoc : '')}</div>`;
   lopKq.clearLayers();
   const li = (html, nut) => { const e = document.createElement('li'); e.innerHTML = html; if (nut) e.append(nut); return e; };
-  const nutDuong = (lat, lon, ten) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = '🚗 Chỉ đường'; b.onclick = () => chiDuong(lat, lon, ten); return b; };
+  const nutDuong = (lat, lon, ten) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Chỉ đường'; b.onclick = () => chiDuong(lat, lon, ten); return b; };
   const dsT = $('dsTram'); dsT.textContent = '';
   if (!d.tram.length) dsT.append(li('<div class="tt"><small>Không có điểm nào trong vùng — thử mở rộng vùng quét.</small></div>'));
   d.tram.forEach(x => {
@@ -238,7 +237,7 @@ function veKq(d) {
 
 async function chiDuong(lat, lon, ten) {
   const tu = moc ? moc.getLatLng() : (vung && vung.getLatLng ? vung.getLatLng() : null);
-  if (!tu) { loi('Hãy đặt cột mốc 📌 (vị trí của bạn) trước khi chỉ đường.'); return; }
+  if (!tu) { loi('Hãy đặt cột mốc  (vị trí của bạn) trước khi chỉ đường.'); return; }
   const o = $('duong'); o.style.display = ''; o.textContent = 'Đang tìm đường…';
   try {
     const q = new URLSearchParams({ tu_lat: tu.lat, tu_lon: tu.lng, den_lat: lat, den_lon: lon });
@@ -246,7 +245,7 @@ async function chiDuong(lat, lon, ten) {
     if (lopDuong) map.removeLayer(lopDuong);
     lopDuong = L.geoJSON(d.geojson, { style: { color: '#7c3aed', weight: 5, opacity: .85, dashArray: d.nguon === 'osrm' ? null : '8,8' } }).addTo(map);
     map.fitBounds(lopDuong.getBounds().pad(.25));
-    o.innerHTML = `<b>🚗 Tới ${esc(ten)}</b>: ${km(d.km)}${d.phut != null ? ` · khoảng ${Math.round(d.phut)} phút lái xe` : ''}
+    o.innerHTML = `<b>Tới ${esc(ten)}</b>: ${km(d.km)}${d.phut != null ? ` · khoảng ${Math.round(d.phut)} phút lái xe` : ''}
       <br><small>${d.nguon === 'osrm' ? 'Tuyến đường theo OSRM (dữ liệu OpenStreetMap).' : esc(d.ghi_chu)}</small>
       <br><a href="${esc(d.google_maps)}" target="_blank" rel="noopener">Mở chỉ đường trong Google Maps ↗</a>`;
   } catch (e) { o.textContent = 'Không tìm được đường đi.'; }
@@ -254,7 +253,7 @@ async function chiDuong(lat, lon, ten) {
 
 chonKieu('tron');
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

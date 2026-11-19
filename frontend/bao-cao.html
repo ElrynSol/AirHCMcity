@@ -11,12 +11,12 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Báo cáo Chất lượng Không khí</title>
 <style>
   :root { --accent: #1a73e8; }
@@ -57,22 +57,20 @@
   }
 </style>
 </head>
-<body>
-
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html"><b>📄 Báo cáo</b></a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html"><b>Báo cáo</b></a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -80,17 +78,17 @@
 
 <div id="content">
   <div class="hero-card">
-    <h2>📄 Báo cáo chất lượng không khí</h2>
-    <div class="sub">Bản tóm tắt dễ hiểu cho người dân · xuất dữ liệu chi tiết cho người nghiên cứu</div>
+    <h2>Xuất báo cáo &amp; Dữ liệu chất lượng không khí</h2>
+    <div class="sub">Tải dữ liệu lịch sử ra file Excel (.xlsx), xuất báo cáo PDF chi tiết hoặc in nhanh bản tin một trang</div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" id="tabTomTat" onclick="doiTab('TomTat')">📋 Tóm tắt dễ hiểu</div>
-    <div class="tab" id="tabExcel" onclick="doiTab('Excel')">📊 Xuất dữ liệu Excel</div>
+    <div class="tab active" id="tabExcel" onclick="doiTab('Excel')">Tải dữ liệu Excel / PDF chi tiết</div>
+    <div class="tab" id="tabTomTat" onclick="doiTab('TomTat')">Bản in tóm tắt 1 trang (A4)</div>
   </div>
 
-  <!-- ===== TAB 1: TÓM TẮT CHO NGƯỜI DÂN ===== -->
-  <div class="panel active" id="panelTomTat">
+  <!-- ===== TAB 1: TÓM TẮT CHO NGƯỜI DÂN (BẢN IN) ===== -->
+  <div class="panel" id="panelTomTat">
     <div id="inTieuDe">Hệ thống Giám sát &amp; Dự báo Chất lượng Không khí TP.HCM</div>
     <div class="card no-print">
       <div class="form-row" style="margin-bottom:0;">
@@ -102,27 +100,27 @@
     <div class="tom-tat" id="tomTatChinh">Đang tải...</div>
 
     <div class="card" style="margin-top:16px;">
-      <h3>💡 Bạn nên làm gì?</h3>
+      <h3>Bạn nên làm gì?</h3>
       <div id="loiKhuyen" style="font-size:14px;line-height:1.7;">Đang tải...</div>
     </div>
 
     <div class="card">
-      <h3 id="tieuDe7Ngay">📅 7 ngày gần đây</h3>
+      <h3 id="tieuDe7Ngay">7 ngày gần đây</h3>
       <div id="xuHuong7Ngay" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:6px;">Đang tải...</div>
     </div>
 
     <div class="card">
-      <h3>🔮 Dự báo ngày mai (trung tâm TP.HCM)</h3>
+      <h3>Dự báo ngày mai (trung tâm TP.HCM)</h3>
       <div id="duBaoNgayMai">Đang tải...</div>
     </div>
 
-    <div class="card" id="khoiGio" style="page-break-inside:avoid;">
-      <h3>🤖 Dự báo PM2.5 theo giờ (24 giờ tới) và so sánh ngưỡng</h3>
-      <div id="duBaoGioBaoCao">Đang tải...</div>
-    </div>
+    <details class="card" id="khoiGio" style="page-break-inside:avoid;">
+      <summary style="cursor:pointer;font-weight:700;color:var(--accent)">Phụ lục: Bảng dự báo PM2.5 theo giờ (24 giờ tới) và so sánh ngưỡng (bấm để mở)</summary>
+      <div id="duBaoGioBaoCao" style="margin-top:10px">Đang tải...</div>
+    </details>
 
     <div class="card">
-      <h3>📖 Giải thích dễ hiểu</h3>
+      <h3>Giải thích dễ hiểu</h3>
       <dl class="gl">
         <dt>AQI là gì?</dt><dd>Chỉ số chất lượng không khí, từ 0 trở lên. Càng cao thì không khí càng ô nhiễm: 0–50 Tốt, 51–100 Trung bình, 101–150 Kém, 151–200 Xấu, 201–300 Rất xấu, trên 300 Nguy hại.</dd>
         <dt>PM2.5 (bụi mịn) là gì?</dt><dd>Hạt bụi rất nhỏ trong không khí, có thể đi sâu vào phổi. Đây thường là chất ảnh hưởng nhiều nhất đến sức khỏe ở đô thị.</dd>
@@ -130,17 +128,15 @@
       </dl>
     </div>
 
-    <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
-
     <div class="no-print" style="margin-top:6px;">
-      <button class="btn" onclick="xuatPDF()">📄 Xuất PDF</button>
+      <button class="btn" onclick="xuatPDF()">Xuất PDF</button>
       <span class="luu-y">Hộp thoại in sẽ mở: ở mục "Máy in", chọn "Lưu dưới dạng PDF" (Save as PDF). Bản PDF gồm cả dự báo theo giờ và so sánh ngưỡng WHO/QCVN.</span>
     </div>
     <div class="luu-y" id="thoiDiemLap"></div>
   </div>
 
   <!-- ===== TAB 2: XUẤT EXCEL ===== -->
-  <div class="panel" id="panelExcel">
+  <div class="panel active" id="panelExcel">
     <div class="card">
       <div class="form-row">
         <label>Chọn điểm (giữ Ctrl để chọn nhiều) <span class="chon-tat-ca" onclick="chonTatCa()">Chọn tất cả</span></label>
@@ -150,8 +146,8 @@
         <label for="soNgay">Số ngày gần nhất</label>
         <input type="number" id="soNgay" value="30" min="1" max="365">
       </div>
-      <button class="btn" onclick="xuatBaoCao()">⬇️ Xuất Excel</button>
-      <button class="btn" onclick="xuatPdfServer()" style="margin-left:8px;">⬇️ Xuất PDF (chi tiết)</button>
+      <button class="btn" onclick="xuatBaoCao()">Xuất Excel</button>
+      <button class="btn" onclick="xuatPdfServer()" style="margin-left:8px;">Xuất PDF (chi tiết)</button>
       <div class="luu-y">Mỗi điểm tải về một file. Nếu trình duyệt hỏi cho phép tải nhiều file, hãy chọn "Cho phép". Bản PDF (chi tiết) do máy chủ tạo trực tiếp, không cần hộp thoại in.</div>
     </div>
   </div>
@@ -171,7 +167,7 @@ async function goiApi(path) {
 const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token thật nằm trong cookie HttpOnly, JS không đọc được
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
-if (token) userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+if (token) userBox.innerHTML = `<span style="margin-right:12px;">${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
 else userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
@@ -182,7 +178,7 @@ function doiTab(t) {
   });
 }
 
-const iconMuc = { 'Tốt': '😊', 'Trung bình': '🙂', 'Kém': '😷', 'Xấu': '😨', 'Rất xấu': '🤢', 'Nguy hại': '⚠️' };
+const iconMuc = { 'Tốt': '', 'Trung bình': '', 'Kém': '', 'Xấu': '', 'Rất xấu': '', 'Nguy hại': '' };
 const mauVien = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));  // màu chuẩn QĐ 1459
 const mauNen = { 'Tốt': '#e8f5e9', 'Trung bình': '#fff8e1', 'Kém': '#fff3e0', 'Xấu': '#ffebee', 'Rất xấu': '#f3e5f5', 'Nguy hại': '#ede7f6' };
 const cauMuc = {
@@ -228,19 +224,19 @@ async function taoTomTat() {
     const cao = co.reduce((a, b) => b.aqi > a.aqi ? b : a);
     ten = 'Toàn thành phố (trung bình các điểm)';
     chat = cao.chat_gay_o_nhiem; ngay = cao.ngay_do;
-    document.getElementById('tieuDe7Ngay').textContent = '📅 AQI trung bình 7 ngày gần đây';
+    document.getElementById('tieuDe7Ngay').textContent = ' AQI trung bình 7 ngày gần đây';
     taiXuHuongTP();
   } else {
     const d = dsAQI.find(x => String(x.tram_id) === String(v));
     const t = dsTram.find(x => String(x.id) === String(v));
     if (!d) { box.innerHTML = 'Điểm này chưa có dữ liệu AQI.'; loiKhuyen.textContent = ''; return; }
     ten = `${t.ma_tram} - ${t.ten_tram}`; aqi = d.aqi; muc = d.muc_do; chat = d.chat_gay_o_nhiem; ngay = d.ngay_do;
-    document.getElementById('tieuDe7Ngay').textContent = '📅 PM2.5 7 ngày gần đây (µg/m³)';
+    document.getElementById('tieuDe7Ngay').textContent = ' PM2.5 7 ngày gần đây (µg/m³)';
     taiXuHuongTram(v);
   }
   box.style.borderColor = mauVien[muc] || '#999'; box.style.background = mauNen[muc] || '#f9f9f9';
   box.innerHTML = `
-    <div class="icon">${iconMuc[muc] || '❔'}</div>
+    <div class="icon">${iconMuc[muc] || ''}</div>
     <div>
       <div class="tieu-de">${ten}</div>
       <div><span class="aqi">AQI ${aqi ?? '--'}</span> · <b class="muc-${AQI_VN.theoTen(muc).lop}">${muc ?? '--'}</b></div>
@@ -284,11 +280,8 @@ function taiDuBaoGioBaoCao() {
     const kg = k => k ? `${k.tu.slice(11, 16)}–${k.den.slice(11, 16)} (TB ${k.pm25_tb})` : '--';
     box.innerHTML = `
       <table class="bang-nho"><thead><tr><th>Thời điểm</th><th>PM2.5 dự báo (µg/m³)</th><th>Khoảng 80%</th><th>AQI (24h trượt)</th></tr></thead><tbody>${dong}</tbody></table>
-      <div style="margin-top:8px;font-size:13px;line-height:1.7;">
-        Trung bình 24 giờ tới: <b>${d.tb_24h_toi} µg/m³</b> · Ngưỡng WHO 2021 (24h): <b>${ng.who_24h}</b> → ${d.tb_24h_toi > ng.who_24h ? '<b style="color:#c62828">vượt</b>' : '<b style="color:#2e7d32">không vượt</b>'};
-        QCVN 05:2023 (24h): <b>${ng.qcvn_24h}</b> → ${d.tb_24h_toi > ng.qcvn_24h ? '<b style="color:#c62828">vượt</b>' : '<b style="color:#2e7d32">không vượt</b>'}.<br>
-        Số giờ dự báo &gt; WHO: ${d.so_gio_tren_who}/24 · &gt; QCVN: ${d.so_gio_tren_qcvn}/24.<br>
-        Khung 3 giờ nên ra ngoài: <b>${kg(d.khung_tot)}</b> · nên tránh: <b>${kg(d.khung_xau)}</b>.
+      <div style="margin-top:8px;font-size:13px;line-height:1.7;">Trung bình 24 giờ tới: <b>${d.tb_24h_toi} µg/m³</b> · Ngưỡng WHO 2021 (24h): <b>${ng.who_24h}</b> → ${d.tb_24h_toi > ng.who_24h ? '<b style="color:#c62828">vượt</b>' : '<b style="color:#2e7d32">không vượt</b>'};
+        QCVN 05:2023 (24h): <b>${ng.qcvn_24h}</b> → ${d.tb_24h_toi > ng.qcvn_24h ? '<b style="color:#c62828">vượt</b>' : '<b style="color:#2e7d32">không vượt</b>'}.<br>Số giờ dự báo &gt; WHO: ${d.so_gio_tren_who}/24 · &gt; QCVN: ${d.so_gio_tren_qcvn}/24.<br>Khung 3 giờ nên ra ngoài: <b>${kg(d.khung_tot)}</b> · nên tránh: <b>${kg(d.khung_xau)}</b>.
       </div>
       <div class="luu-y">${d.luu_y}</div>`;
   }).catch(e => { box.innerHTML = `<span class="loi">${e.message}</span>`; });
@@ -328,7 +321,7 @@ function xuatPdfServer() {
 
 khoiTao();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

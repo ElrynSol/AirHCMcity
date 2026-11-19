@@ -77,7 +77,7 @@ a:hover { color: var(--primary-dark); }
 #header {
   position: sticky; top: 0; z-index: 2000;
   height: var(--header-h);
-  padding: 0 16px;
+  padding: 0 max(20px, calc((100% - 1280px) / 2 + 20px));
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   background: linear-gradient(110deg, var(--navy) 0%, #123f7a 45%, var(--primary) 100%);
   color: #fff;
@@ -86,14 +86,14 @@ a:hover { color: var(--primary-dark); }
 #header > div:first-child, #header > .nav-gon {
   display: flex; align-items: center; gap: 2px;
   flex: 1 1 auto; min-width: 0;
-  overflow-x: auto; scrollbar-width: none;
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
 }
-#header > div:first-child::-webkit-scrollbar { display: none; }
+#header > div:first-child::-webkit-scrollbar, #header > .nav-gon::-webkit-scrollbar { display: none; }
 #header a {
   flex: 0 0 auto; white-space: nowrap;
   color: rgba(255,255,255,.88); text-decoration: none;
-  margin: 0; padding: 7px 12px; border-radius: 9px;
-  font-size: 14px; font-weight: 500;
+  margin: 0; padding: 7px 10px; border-radius: 9px;
+  font-size: 13.5px; font-weight: 500;
   transition: background .2s, color .2s;
 }
 #header a:hover { background: rgba(255,255,255,.14); color: #fff; }
@@ -102,42 +102,43 @@ a:hover { color: var(--primary-dark); }
 
 /* Logo / tên hệ thống (nav.js chèn) */
 #header .nav-brand {
-  display: flex; align-items: center; gap: 9px; padding: 4px 14px 4px 2px; margin-right: 6px;
+  flex: 0 0 auto; white-space: nowrap;
+  display: flex; align-items: center; gap: 9px; padding: 4px 12px 4px 2px; margin-right: 4px;
   font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -.01em;
   border-right: 1px solid rgba(255,255,255,.16); border-radius: 0;
 }
 #header .nav-brand:hover { background: none; }
 #header .nav-brand img { width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
 #header .nav-brand small { display: block; font-size: 10.5px; font-weight: 500; opacity: .7; letter-spacing: .02em; }
+@media (max-width: 1120px) { #header .nav-brand small { display: none; } }
 #header .nav-mo-btn {
   display: none; align-items: center; justify-content: center;
   width: 40px; height: 40px; border: 0; border-radius: 10px; cursor: pointer;
   background: rgba(255,255,255,.12); color: #fff; font-size: 20px; line-height: 1;
 }
 
-#userBox { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
-#userBox span { margin: 0 !important; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .92; }
+#userBox { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin-left: 6px; }
+#userBox span { margin: 0 !important; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .92; }
 #userBox button {
   background: #fff; color: var(--primary-dark); border: 0;
-  padding: 8px 16px; border-radius: 9px; cursor: pointer;
-  font: 600 13.5px var(--font); white-space: nowrap;
+  padding: 7px 14px; border-radius: 9px; cursor: pointer;
+  font: 600 13px var(--font); white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0,0,0,.14);
   transition: transform .15s, box-shadow .15s;
 }
 #userBox button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.22); }
-#userBox .hop-tk { color: #fff; text-decoration: none; font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis;
-  white-space: nowrap; padding: 6px 10px; border-radius: 9px; opacity: .95; }
+#userBox .hop-tk { color: #fff; text-decoration: none; font-weight: 600; max-width: 190px; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; padding: 6px 8px; border-radius: 9px; opacity: .95; }
 #userBox .hop-tk:hover { background: rgba(255,255,255,.12); opacity: 1; }
 #userBox .hop-tk-bt { font-style: normal; margin-right: 6px; }
 #userBox .hop-tk .hop-tk-ten { display: inline; max-width: none; opacity: 1; }
 @media (max-width: 760px) { #userBox .hop-tk .hop-tk-ten { display: none; } #userBox .hop-tk-bt { margin: 0; font-size: 18px; } }
 
 /* ===== Menu nhóm (nav.js): 5 mục, dropdown ===== */
-#header > div.nav-gon { overflow: visible; }
 #header .nav-nhom { position: static; flex: 0 0 auto; }
 #header .nav-nut {
-  background: none; border: 0; cursor: pointer; font: 500 14px var(--font);
-  color: rgba(255,255,255,.88); padding: 7px 12px; border-radius: 9px; white-space: nowrap;
+  background: none; border: 0; cursor: pointer; font: 500 13.5px var(--font);
+  color: rgba(255,255,255,.88); padding: 7px 10px; border-radius: 9px; white-space: nowrap;
   transition: background .2s;
 }
 #header .nav-nut:hover, #header .nav-nhom.mo .nav-nut { background: rgba(255,255,255,.14); color: #fff; }
@@ -185,7 +186,7 @@ a:hover { color: var(--primary-dark); }
 
 /* ===== Khung trang con: tiêu đề (hero) luôn đứng đầu, nội dung rộng thống nhất ===== */
 #content {
-  width: 100%; max-width: 1080px; margin: 0 auto; padding: 28px 20px 8px;
+  width: 100%; max-width: 1280px; margin: 0 auto; padding: 28px 20px 8px;
   display: flex; flex-direction: column;
 }
 #content > .hero, #content > .hero-card { order: -1; }
@@ -331,7 +332,7 @@ tbody tr:last-child td { border-bottom: 0; }
   font-size: 12.5px; line-height: 1.7;
 }
 .chan-trang .ct-trong {
-  max-width: 1080px; margin: 0 auto; padding: 22px 20px 26px;
+  max-width: 1280px; margin: 0 auto; padding: 22px 20px 26px;
   display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 24px;
 }
 .chan-trang h4 { margin: 0 0 6px; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .01em; }

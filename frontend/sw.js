@@ -1,6 +1,6 @@
 /* Service worker: chạy offline phần giao diện, API ưu tiên mạng (có bản lưu gần nhất khi mất mạng),
    nhận thông báo đẩy (Web Push) khi AQI vượt ngưỡng — kể cả lúc đã đóng trang. */
-const PHIEN_BAN = 'aqi-v6-13';  // v6.1: đăng nhập Google / Facebook / Zalo
+const PHIEN_BAN = 'aqi-v6-22';  // v6.8: làm lại trang tải app, ẩn trang trạng thái dữ liệu vào Quản trị, quét sạch toàn bộ emoji và khung rỗng
 const LOI = ['./', 'tong-quan.html', 'chart-theme.js', 'index.html', 'du-bao.html', 'kich-ban.html', 'ban-do-nhiet.html', 'tram.html', 'so-sanh.html', 'canh-bao.html',
   'thong-ke.html', 'bao-cao.html', 'gioi-thieu.html', 'phuong-phap.html', 'phan-anh.html', 'phan-anh-layer.js', 'tai-app.html', 'tra-cuu-khong-gian.html', 'hoa-gio.html', 'khao-sat.html', 'trang-thai-du-lieu.html', 'login.html', 'tai-khoan.html', 'chinh-sach-rieng-tu.html',
   'style.css', 'app-config.js', 'aqi-vn.js', 'song-truc-tiep.js', 'tro-ly.js', 'pwa.js', 'nav.js', 'thong-bao-day.js',
@@ -11,7 +11,7 @@ const CDN = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com',
 const duocLuu = r => r.ok && !/no-store|private/i.test(r.headers.get('Cache-Control') || '');
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(PHIEN_BAN).then(c => Promise.all(LOI.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(PHIEN_BAN).then(c => Promise.all(LOI.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => null)))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== PHIEN_BAN).map(k => caches.delete(k)))).then(() => self.clients.claim()));

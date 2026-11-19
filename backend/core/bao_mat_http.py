@@ -69,4 +69,6 @@ class BaoMatHTTP(BaseHTTPMiddleware):
         # cấm lưu ở bộ nhớ đệm trình duyệt/proxy/service worker (máy dùng chung không lộ dữ liệu sau khi đăng xuất)
         if request.url.path.startswith("/api/v1/auth") or getattr(request.state, "sid", None):
             h["Cache-Control"] = "private, no-store"
+        elif request.url.path.endswith((".html", ".js", ".css", ".svg")) or request.url.path == "/":
+            h["Cache-Control"] = "no-cache, must-revalidate"
         return resp

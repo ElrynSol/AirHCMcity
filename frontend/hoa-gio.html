@@ -11,12 +11,12 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Hoa gió ô nhiễm</title>
 <style>
   .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
@@ -50,26 +50,24 @@
   .canh-bao { font-size:13.5px; color:var(--text-2); background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:10px 14px; line-height:1.6; }
 </style>
 </head>
-<body>
-<div id="header">
-  <div><a href="tong-quan.html">🏠 Tổng quan</a></div>
+<body><div id="header">
+  <div><a href="tong-quan.html">Tổng quan</a></div>
   <div id="userBox"></div>
 </div>
 
 <div id="content">
   <div class="hero-card">
-    <h2>🧭 Gió thổi từ đâu, bụi mịn đến từ đâu?</h2>
-    <div class="sub">Hoa gió cho biết gió ở TP.HCM thường thổi từ hướng nào. Hoa gió ô nhiễm cho biết khi gió thổi từ mỗi hướng thì
-      khả năng bụi mịn PM2.5 cao là bao nhiêu, giúp khoanh vùng hướng có nguồn ô nhiễm nghi vấn.</div>
+    <h2>Phân tích Hoa gió &amp; Hướng phát tán bụi mịn</h2>
+    <div class="sub">Tổng hợp hướng gió chủ đạo tại TP.HCM và tỷ lệ thời gian nồng độ PM2.5 vượt ngưỡng theo từng hướng gió.</div>
   </div>
 
   <div class="thanh-cong-cu">
     <div class="nhom-nut" id="chonKy"><button data-v="30">30 ngày</button><button data-v="90" class="on">3 tháng</button><button data-v="365">1 năm</button></div>
-    <label>Bụi mịn "cao" là trên
+    <label>Mốc so sánh PM2.5:
       <select id="chonNguong">
-        <option value="15">15 µg/m³ (mức WHO khuyên)</option>
-        <option value="25" selected>25 µg/m³ (hết mức "Tốt")</option>
-        <option value="45">45 µg/m³ (ngưỡng QCVN 05:2023)</option>
+        <option value="15">15 µg/m³ (khuyến nghị WHO)</option>
+        <option value="25" selected>25 µg/m³ (giới hạn mức Tốt)</option>
+        <option value="45">45 µg/m³ (quy chuẩn QCVN)</option>
       </select></label>
     <div class="nhom-nut" id="chonHuong"><button data-v="8" class="on">8 hướng</button><button data-v="16">16 hướng</button></div>
   </div>
@@ -82,50 +80,28 @@
 
   <div class="hai-hoa">
     <div class="card">
-      <h3>🌬️ Hoa gió: gió thổi từ đâu?</h3>
-      <p class="goi-y">Cánh càng dài là gió thổi từ hướng đó càng nhiều giờ. Màu cho biết gió mạnh hay nhẹ.</p>
+      <h3>Hoa gió khí tượng (Hướng &amp; tốc độ gió)</h3>
+      <p class="goi-y">Cánh càng dài biểu thị gió thổi từ hướng đó càng thường xuyên; màu sắc phân theo cấp tốc độ gió.</p>
       <div id="hoaGio"></div>
       <div class="chu-giai" id="cgGio"></div>
     </div>
     <div class="card">
-      <h3>😷 Hoa gió ô nhiễm: gió từ đâu thì bụi cao?</h3>
-      <p class="goi-y" id="gyONhiem">Cánh càng dài là khi gió thổi từ hướng đó, càng nhiều giờ bụi mịn vượt ngưỡng đã chọn.</p>
+      <h3>Hoa gió chất lượng không khí (Theo hướng gió)</h3>
+      <p class="goi-y" id="gyONhiem">Cánh càng dài biểu thị khi gió thổi từ hướng đó thì tỷ lệ giờ có bụi mịn cao càng lớn.</p>
       <div id="hoaONhiem"></div>
       <div class="chu-giai" id="cgONhiem"></div>
     </div>
   </div>
 
-  <div class="canh-bao" style="margin:14px 0">⚠️ <b>Đọc cho đúng:</b> hoa gió ô nhiễm là <b>quan hệ thống kê</b> giữa hướng gió và bụi mịn.
-    Nó gợi ý hướng có nguồn ô nhiễm <b>nghi vấn</b> để ưu tiên kiểm tra, <b>không chứng minh</b> một nhà máy hay khu vực cụ thể gây ô nhiễm.</div>
-
   <div class="card">
-    <h3>📋 Số liệu từng hướng</h3>
+    <h3>Thống kê chi tiết theo từng hướng gió</h3>
     <div style="overflow-x:auto"><table class="bang" id="bang"></table></div>
-    <p class="goi-y" style="margin-top:8px">Dòng chữ mờ: hướng có dưới 10 giờ số liệu, chưa đủ để kết luận.</p>
   </div>
 
-  <details class="card mo-rong"><summary>🔬 Hướng × tốc độ gió (CBPF) và công thức tính</summary>
+  <details class="card mo-rong"><summary>Phân bố bụi mịn kết hợp theo Hướng gió × Tốc độ gió</summary>
     <div class="kt" style="margin-top:10px">
-      <p><b>CBPF</b> (hàm xác suất có điều kiện hai biến): tỉ lệ giờ có PM2.5 vượt phân vị 75% của cả kỳ (<span id="p75"></span> µg/m³),
-        tính riêng theo hướng và lớp tốc độ gió. Ô đậm ở <b>gió mạnh</b> gợi ý nguồn ở xa (vận chuyển vùng); ô đậm ở <b>gió nhẹ</b> gợi ý nguồn gần.</p>
+      <p>Tỷ lệ thời gian bụi mịn vượt mức cao (&gt; <span id="p75"></span> µg/m³) khi phân tách đồng thời theo cả hướng gió và tốc độ gió. Ô màu đậm ở cột <b>gió mạnh</b> cho thấy bụi mịn di chuyển từ vùng lân cận tới; ô màu đậm ở cột <b>gió nhẹ</b> cho thấy bụi tích tụ tại chỗ.</p>
       <div style="overflow-x:auto"><table class="bang" id="bangCbpf"></table></div>
-      <h4>Công thức (quy ước khí tượng WMO)</h4>
-      <p>Từ thành phần gió U (về hướng Đông) và V (về hướng Bắc): <code>WS = √(U² + V²)</code>;
-        <code>WD = (degrees(atan2(−U, −V)) + 360) mod 360</code>, là hướng gió <b>thổi từ</b>, Bắc = 0°, Đông = 90°.
-        Ví dụ U = −2, V = −1 → WS = 2,236 m/s, WD = 63,4° (gió Đông Bắc).</p>
-      <p>Với mỗi hướng k: tần suất <code>F_k = n_k / N × 100%</code>; nồng độ trung bình <code>C̄_k = ΣC_t / n_k</code>;
-        xác suất vượt ngưỡng có điều kiện <code>P_k = #{C_t &gt; T, WD_t ∈ k} / n_k</code>. F_k và P_k là hai đại lượng khác nhau:
-        một hướng có thể ít gió (F_k nhỏ) nhưng mỗi lần gió từ đó thì bụi cao (P_k lớn). Giờ lặng gió (WS &lt; 0,5 m/s) tách thành lớp riêng.</p>
-      <p id="nguonSoLieu"></p>
-      <h4>Thang bằng chứng truy vết nguồn thải</h4>
-      <table class="bang">
-        <tr><th>Mức</th><th>Phương pháp</th><th>Kết luận được</th><th>AirHCM</th></tr>
-        <tr><td>A. Dấu hiệu</td><td>Tương quan nhiều chất, chu kỳ giờ cao điểm</td><td>Nghi ngờ loại nguồn; không phải nhân quả</td><td><span class="muc-bc mot-phan">Một phần</span></td></tr>
-        <tr><td>B. Gió và không gian</td><td>Hoa gió ô nhiễm, CBPF</td><td>Hướng / vùng nguồn tiềm năng</td><td><span class="muc-bc co">Có (trang này)</span></td></tr>
-        <tr><td>C. Vận chuyển</td><td>Quỹ đạo ngược HYSPLIT</td><td>Khối khí đi qua đâu</td><td><span class="muc-bc chua">Chưa</span></td></tr>
-        <tr><td>D. Dấu vân tay hóa học</td><td>PMF/CMB với ion, kim loại, OC/EC</td><td>Nhóm nguồn và tỉ lệ đóng góp</td><td><span class="muc-bc chua">Chưa (cần mẫu phòng thí nghiệm)</span></td></tr>
-        <tr><td>E. Mô hình vật lý</td><td>WRF-Chem/CMAQ, gắn nhãn nguồn</td><td>Tác động kịch bản theo nguồn</td><td><span class="muc-bc chua">Chưa</span></td></tr>
-      </table>
     </div>
   </details>
 </div>
@@ -136,7 +112,7 @@ const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const so = (x, n = 1) => x == null || isNaN(x) ? '--' : Number(x).toFixed(n).replace('.', ',');
 const pt = x => x == null ? '--' : Math.round(x * 100) + '%';
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
-document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
+document.getElementById('userBox').innerHTML = hoTen ? `<span>${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
 let ky = 90, soHuong = 8, lan = 0;
 const MAU_TOC_DO = ['#9ec5f4', '#3987e5', '#184f95'];   // một sắc xanh nhạt → đậm (thứ tự tốc độ)
 const MAU_ON = '#eb6834', MAU_IT = '#d0d5dd';
@@ -191,20 +167,18 @@ async function tai() {
   document.getElementById('gyONhiem').textContent = `Cánh càng dài là khi gió thổi từ hướng đó, càng nhiều giờ bụi mịn vượt ${nguong} µg/m³ (thang 0–100%).`;
   document.getElementById('cgONhiem').innerHTML = `<span><i style="background:${MAU_ON}"></i>% số giờ vượt ${nguong} µg/m³</span><span><i style="background:${MAU_IT}"></i>ít số liệu (&lt; 10 giờ)</span>`;
 
-  document.getElementById('bang').innerHTML = `<tr><th>Gió thổi từ</th><th class="r">Số giờ</th><th class="r">Tần suất F<sub>k</sub></th><th class="r">Tốc độ TB</th>
-    <th class="r">Bụi mịn TB C̄<sub>k</sub></th><th class="r">Xác suất vượt P<sub>k</sub></th></tr>` +
-    hs.map(h => `<tr class="${h.it_so_lieu ? 'mo' : ''}"><td><b>${esc(h.ten)}</b> <small style="color:var(--text-muted)">${so(h.goc, 1)}°</small></td><td class="r">${h.so_gio}</td>
+  document.getElementById('bang').innerHTML = `<tr><th>Hướng gió</th><th class="r">Số giờ ghi nhận</th><th class="r">Tỷ lệ thời gian</th><th class="r">Tốc độ gió TB</th>
+    <th class="r">Bụi mịn PM2.5 TB</th><th class="r">Tỷ lệ giờ vượt ngưỡng</th></tr>` +
+    hs.map(h => `<tr class="${h.it_so_lieu ? 'mo' : ''}"><td><b>${esc(h.ten)}</b></td><td class="r">${h.so_gio} giờ</td>
       <td class="r">${so(h.tan_suat)}%</td><td class="r">${so(h.toc_do_tb)} m/s</td><td class="r">${so(h.pm25_tb)} µg/m³</td><td class="r"><b>${pt(h.xac_suat_vuot)}</b></td></tr>`).join('') +
-    `<tr><td><b>Lặng gió</b> <small style="color:var(--text-muted)">&lt; 0,5 m/s</small></td><td class="r">${d.lang_gio.so_gio}</td><td class="r">${so(d.lang_gio.tan_suat)}%</td><td class="r">—</td>
+    `<tr><td><b>Lặng gió</b> <small style="color:var(--text-muted)">(&lt; 0,5 m/s)</small></td><td class="r">${d.lang_gio.so_gio} giờ</td><td class="r">${so(d.lang_gio.tan_suat)}%</td><td class="r">—</td>
       <td class="r">${so(d.lang_gio.pm25_tb)} µg/m³</td><td class="r"><b>${pt(d.lang_gio.xac_suat_vuot)}</b></td></tr>`;
 
   document.getElementById('p75').textContent = so(d.p75_pm25);
   const lop = hs[0].theo_toc_do.map(l => l.lop);
-  document.getElementById('bangCbpf').innerHTML = `<tr><th>Gió từ</th>${lop.map(l => `<th class="r">${esc(l)}</th>`).join('')}</tr>` +
+  document.getElementById('bangCbpf').innerHTML = `<tr><th>Hướng gió</th>${lop.map(l => `<th class="r">${esc(l)}</th>`).join('')}</tr>` +
     hs.map(h => `<tr><td>${esc(h.ten)}</td>${h.theo_toc_do.map(l => l.cbpf == null ? '<td class="r" style="color:#98a2b3">—</td>'
-      : `<td><div class="o-cbpf" style="background:rgba(235,104,52,${(0.08 + l.cbpf * 0.85).toFixed(2)});color:${l.cbpf > .55 ? '#fff' : '#101828'}" title="${l.so_gio} giờ">${pt(l.cbpf)}</div></td>`).join('')}</tr>`).join('');
-  document.getElementById('nguonSoLieu').innerHTML = `<b>Số liệu:</b> gió 10 m theo giờ — ${esc(d.nguon_gio)}; PM2.5 theo giờ — ${esc(d.nguon_pm25)};
-    ${d.so_gio} giờ từ ${esc(d.tu)} đến ${esc(d.den)} tại trung tâm TP.HCM. Mức bằng chứng: ${esc(d.muc_bang_chung)}.<br>${d.gioi_han.map(esc).join('<br>')}`;
+      : `<td><div class="o-cbpf" style="background:rgba(235,104,52,${(0.08 + l.cbpf * 0.85).toFixed(2)});color:${l.cbpf >.55 ? '#fff' : '#101828'}" title="${l.so_gio} giờ">${pt(l.cbpf)}</div></td>`).join('')}</tr>`).join('');
 }
 
 function nhom(id, cb) { document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
@@ -213,7 +187,7 @@ nhom('chonKy', v => ky = v); nhom('chonHuong', v => soHuong = v);
 document.getElementById('chonNguong').addEventListener('change', tai);
 tai();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

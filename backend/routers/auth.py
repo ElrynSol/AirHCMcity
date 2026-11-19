@@ -348,13 +348,13 @@ class XacNhanOtp(BaseModel):
     mat_khau_moi: str = Field(max_length=128)
 
 
-THONG_BAO_CHUNG = "Nếu email đã đăng ký, mã OTP đã được gửi tới hộp thư. Mã có hiệu lực 10 phút."
+THONG_BAO_CHUNG = "Nếu email đã đăng ký, mã OTP đã được gửi tới hộp thư (kiểm tra cả mục Spam). Mã có hiệu lực 10 phút."
 
 
 @router.post("/api/v1/auth/quen-mat-khau")
 def quen_mat_khau(body: QuenMatKhau, request: Request, db: Session = Depends(get_db)):
     """Luôn trả cùng một thông báo (không cho biết email có tồn tại hay không).
-    Chế độ demo (trả mã OTP ngay trên màn hình) CHỈ bật khi OTP_DEMO=1 — tuyệt đối không bật trên máy chủ công khai."""
+    Mã OTP CHỈ hiện trên màn hình khi OTP_DEMO=1 (máy cá nhân) — tuyệt đối không bật trên máy chủ công khai."""
     email = chuan_hoa_email(str(body.email))
     ip = ip_cua(request)
     cho = ratelimit.vuot_gioi_han("otp_ip", ip, toi_da=10, cua_so_giay=3600)
@@ -365,7 +365,7 @@ def quen_mat_khau(body: QuenMatKhau, request: Request, db: Session = Depends(get
 
     user = db.query(models.NguoiDung).filter(models.NguoiDung.email == email).first()
     if not user or user.bi_khoa:
-        logbus.ghi("WARN", "auth", "otp_email_khong_ton_tai", "Yêu cầu OTP cho email chưa đăng ký", nguoi_dung=email, ip=ip)
+        logbus.ghi("WARN", "auth", "otp_email_khong_ton_tai", "Yêu cầu OTP cho email chưa đăng ký/bị khóa", nguoi_dung=email, ip=ip)
         return {"message": THONG_BAO_CHUNG}
 
     ma = phien.tao_otp(db, email, ip)
@@ -377,7 +377,7 @@ def quen_mat_khau(body: QuenMatKhau, request: Request, db: Session = Depends(get
     logbus.ghi("INFO", "auth", "tao_otp", "Tạo mã OTP đặt lại mật khẩu" + ("" if da_gui else " (chưa gửi được email)"),
                nguoi_dung=email, ip=ip)
     if not da_gui and _bat("OTP_DEMO"):
-        return {"message": "Chế độ demo (OTP_DEMO=1): chưa cấu hình gửi email, mã hiển thị bên dưới", "otp_demo": ma}
+        return {"message": "Chế độ demo (OTP_DEMO=1): chưa gửi được email, mã hiển thị bên dưới", "otp_demo": ma}
     return {"message": THONG_BAO_CHUNG}
 
 

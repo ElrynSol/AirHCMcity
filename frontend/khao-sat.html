@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#0b2545">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
+<script src="app-config.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Khảo sát người dùng</title>
 <style>
   .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
@@ -38,11 +38,10 @@
   .luu-y { color:var(--text-muted); font-size:12.5px; line-height:1.6; }
 </style>
 </head>
-<body>
-<div id="header"><div><a href="tong-quan.html">🏠 Tổng quan</a></div><div id="userBox"></div></div>
+<body><div id="header"><div><a href="tong-quan.html">Tổng quan</a></div><div id="userBox"></div></div>
 <div id="content">
   <div class="hero-card">
-    <h2>📝 Bạn thấy AirHCM dễ dùng không?</h2>
+    <h2>Bạn thấy AirHCM dễ dùng không?</h2>
     <div class="sub">10 câu hỏi, khoảng 2 phút, không cần đăng nhập. Kết quả dùng để đánh giá đồ án theo thang đo chuẩn quốc tế SUS.</div>
   </div>
 
@@ -58,11 +57,9 @@
   </form>
 
   <div class="card">
-    <h3>📊 Kết quả đến nay</h3>
+    <h3>Tổng hợp đánh giá từ người dùng</h3>
     <div id="tongHop">Đang tải…</div>
-    <p class="luu-y">Điểm SUS = 2,5 × [Σ(câu lẻ − 1) + Σ(5 − câu chẵn)], thang 0–100. Mốc tham chiếu: trung bình các phần mềm ≈ 68;
-      ≥ 80,3 thuộc nhóm tốt nhất (hạng A); dưới 51 là kém. Nguồn: Brooke (1996); Bangor, Kortum &amp; Miller (2009); Sauro (2011).
-      Hệ thống không lưu địa chỉ IP, chỉ lưu mã băm để chống gửi trùng.</p>
+    <p class="luu-y">Thang điểm khả dụng SUS (System Usability Scale) từ 0 đến 100: điểm từ 68 trở lên đạt mức Tốt, từ 80,3 trở lên đạt hạng Xuất sắc (Hạng A).</p>
   </div>
 </div>
 
@@ -72,7 +69,7 @@ const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const so = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
 const NHAN = ['Rất không đồng ý', 'Không đồng ý', 'Phân vân', 'Đồng ý', 'Rất đồng ý'];
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
-document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
+document.getElementById('userBox').innerHTML = hoTen ? `<span>${esc(hoTen)}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
 
 fetch(API + '/khao-sat/cau-hoi').then(r => r.json()).then(d => {
   document.getElementById('vaiTro').innerHTML = '<option value="">— Chọn —</option>' + Object.entries(d.vai_tro).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
@@ -91,7 +88,7 @@ document.getElementById('phieu').addEventListener('submit', async ev => {
       body: JSON.stringify({ vai_tro: document.getElementById('vaiTro').value, tra_loi: tl, y_kien: document.getElementById('yKien').value || null }) });
     const d = await r.json();
     if (!r.ok) throw new Error(d.detail || 'Lỗi máy chủ');
-    kq.innerHTML = `<div class="kq ok">✅ Cảm ơn bạn! Điểm của bạn: <b>${so(d.diem_sus)}/100</b> — hạng ${esc(d.xep_hang)}.</div>`;
+    kq.innerHTML = `<div class="kq ok">Cảm ơn bạn! Điểm của bạn: <b>${so(d.diem_sus)}/100</b> — hạng ${esc(d.xep_hang)}.</div>`;
     document.getElementById('phieu').reset(); taiTongHop();
   } catch (e) { kq.innerHTML = `<div class="kq loi">${esc(e.message)}</div>`; }
   nut.disabled = false;
@@ -101,17 +98,15 @@ function taiTongHop() {
   fetch(API + '/khao-sat/ket-qua').then(r => r.json()).then(d => {
     const el = document.getElementById('tongHop');
     if (!d.so_phieu) { el.innerHTML = '<p class="goi-y">Chưa có phiếu nào. Hãy là người đầu tiên!</p>'; return; }
-    el.innerHTML = `<div class="o-so"><div>Số phiếu<b>${d.so_phieu}</b></div><div>Điểm SUS trung bình<b>${so(d.sus_tb)}</b>${d.ci95 ? `KTC 95%: ${so(d.ci95[0])}–${so(d.ci95[1])}` : ''}</div>
-      <div>Xếp hạng<b style="font-size:18px">${esc(d.xep_hang)}</b>so với mốc 68 (trung bình)</div></div>
+    el.innerHTML = `<div class="o-so"><div>Số lượt đánh giá<b>${d.so_phieu}</b></div><div>Điểm SUS trung bình<b>${so(d.sus_tb)} / 100</b></div>
+      <div>Mức xếp hạng<b style="font-size:18px">${esc(d.xep_hang)}</b>(mốc chuẩn quốc tế: 68)</div></div>
       <table class="bang">${d.theo_cau.map((c, i) => `<tr><td style="width:55%">${i + 1}. ${esc(c.cau)}</td><td style="width:30%"><div class="ray"><span style="width:${(c.tb - 1) / 4 * 100}%;background:${c.tich_cuc ? '#2a78d6' : '#eb6834'}"></span></div></td>
-        <td style="text-align:right;white-space:nowrap">${so(c.tb, 2)}/5 ${c.tich_cuc ? '<small>(cao = tốt)</small>' : '<small>(thấp = tốt)</small>'}</td></tr>`).join('')}</table>
-      ${Object.keys(d.theo_vai_tro).length ? `<p class="goi-y" style="margin:10px 0 0">Theo nhóm: ${Object.entries(d.theo_vai_tro).map(([k, v]) => `${esc(k)} ${so(v.sus_tb)} (${v.so_phieu} phiếu)`).join(' · ')}</p>` : ''}
-      ${d.so_phieu < 10 ? '<p class="goi-y" style="margin:6px 0 0">Dưới 10 phiếu: kết quả chưa đủ tin cậy.</p>' : ''}`;
+        <td style="text-align:right;white-space:nowrap">${so(c.tb, 2)} / 5</td></tr>`).join('')}</table>`;
   }).catch(() => { document.getElementById('tongHop').textContent = 'Không tải được kết quả.'; });
 }
 taiTongHop();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

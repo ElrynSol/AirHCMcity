@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Thống kê không khí</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .goi-y { font-size:14px; color:var(--text-muted); margin:-4px 0 12px; line-height:1.55; }
   .thanh-cong-cu { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
@@ -65,83 +65,71 @@
   canvas { max-width:100%; }
 </style>
 </head>
-<body>
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html"><b>📈 Thống kê</b></a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html"><b>Thống kê</b></a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
 <script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
 
 <div id="content">
-  <div class="hero"><h2>📈 Không khí TP.HCM thời gian qua</h2>
-    <div class="sub">Bao nhiêu ngày không khí tốt, bao nhiêu ngày ô nhiễm, tháng nào và nơi nào bụi mịn nhiều nhất.</div></div>
-
-  <div class="khung-nguon" role="note">ℹ️ <b>Số liệu là ước tính của mô hình, không phải máy đo.</b> Các "điểm ước tính" T01–T17 là vị trí lấy số liệu
-    từ mô hình khí quyển CAMS (mỗi ô lưới ~45 km — cả TP.HCM cũ chỉ nằm trong 1–3 ô). Giá trị từng phường được nội suy từ các điểm này.
-    Vì vậy bản đồ cho biết <b>xu hướng của cả vùng</b>; hai nơi gần nhau chênh vài µg/m³ <b>không có nghĩa</b> nơi này ô nhiễm hơn nơi kia.
-    Đối chiếu với trạm đo thật: CAMS thấp hơn thực tế khoảng 3–4 µg/m³ và chưa bắt được dao động từng ngày (<a href="phuong-phap.html#tram-that">chi tiết</a>).</div>
+  <div class="hero"><h2>Thống kê lịch sử chất lượng không khí TP.HCM</h2>
+    <div class="sub">Tổng hợp diễn biến nồng độ bụi mịn PM2.5 theo ngày, theo tháng và tỷ lệ ngày đạt quy chuẩn QCVN 05:2023/BTNMT.</div></div>
   <div class="thanh-cong-cu">
     <div class="ky" id="chonKy" role="tablist">
       <button data-ky="30">30 ngày</button><button data-ky="90" class="on">3 tháng</button><button data-ky="180">6 tháng</button><button data-ky="365">1 năm</button>
     </div>
     <select id="chonTram" aria-label="Khu vực"><option value="">Toàn thành phố</option></select>
+    <a href="bao-cao.html" style="margin-left:auto;text-decoration:none;font:600 13.5px var(--font);color:var(--primary-dark);background:#e8f0fe;padding:8px 14px;border-radius:8px;border:1px solid #c6dafc">Xuất PDF / Excel →</a>
   </div>
   <div id="thongBaoLoi"></div>
 
   <div class="card">
-    <div class="tom-tat"><div class="bt" id="ttIcon">📊</div><div><div class="cau" id="ttCau">Đang tải…</div><div class="phu" id="ttPhu"></div></div></div>
+    <div class="tom-tat"><div><div class="cau" id="ttCau">Đang tải…</div><div class="phu" id="ttPhu"></div></div></div>
     <div class="o-so" id="oSo"></div>
   </div>
 
   <div class="card">
-    <h3>🗓️ Mỗi ô là một ngày</h3>
-    <p class="goi-y">Màu theo mức không khí của ngày đó. Rê chuột (hoặc chạm) vào một ô để xem chi tiết.</p>
+    <h3>Biểu đồ lịch chất lượng không khí theo ngày</h3>
+    <p class="goi-y">Mỗi ô tương ứng 1 ngày theo thang màu VN_AQI. Rê chuột vào từng ô để xem số liệu chi tiết của ngày đó.</p>
     <div class="lich" id="lich"></div>
     <div class="chu-giai" id="chuGiaiLich"></div>
   </div>
 
   <div class="card">
-    <h3>📉 Bụi mịn PM2.5 mỗi ngày</h3>
-    <p class="goi-y">Đường <b style="color:#16a34a">xanh nét đứt</b> là mức WHO khuyến nghị (15 µg/m³), đường <b style="color:#dc2626">đỏ nét đứt</b> là giới hạn chuẩn Việt Nam QCVN 05:2023 (45 µg/m³). Càng thấp càng tốt.</p>
+    <h3>Chuỗi thời gian nồng độ PM2.5 trung bình ngày</h3>
+    <p class="goi-y">Đường <b style="color:#16a34a">xanh nét đứt</b> là mức khuyến nghị WHO (15 µg/m³), đường <b style="color:#dc2626">đỏ nét đứt</b> là giới hạn quy chuẩn Việt Nam QCVN 05:2023 (45 µg/m³).</p>
     <canvas id="cNgay" height="110" aria-label="Biểu đồ bụi mịn PM2.5 theo ngày"></canvas>
   </div>
 
   <div class="hai-cot">
     <div class="card">
-      <h3>🧮 Bao nhiêu ngày ở mỗi mức?</h3>
+      <h3>Phân bố tỷ lệ ngày theo cấp độ VN_AQI</h3>
       <div class="thanh-muc" id="thanhMuc"></div>
       <div class="chu-giai" id="chuMuc"></div>
     </div>
     <div class="card">
-      <h3>🗓️ Bụi mịn trung bình theo tháng</h3>
+      <h3>Nồng độ PM2.5 trung bình theo tháng</h3>
       <canvas id="cThang" height="190" aria-label="Biểu đồ bụi mịn trung bình theo tháng"></canvas>
     </div>
   </div>
 
-  <div class="card" id="cardTram">
-    <h3>🏁 Nơi nào bụi mịn nhiều nhất?</h3>
-    <p class="goi-y">Xếp theo bụi mịn trung bình trong khoảng thời gian đã chọn, nhiều nhất ở trên.</p>
+  <details class="card mo-rong" id="cardTram">
+    <summary>Xem chi tiết 16 điểm ước tính trên lưới mô hình CAMS (tham khảo xu hướng vùng)</summary>
+    <p class="goi-y" style="margin-top:10px">Các điểm lấy mẫu trên lưới CAMS ~45 km; chênh lệch nhỏ giữa các điểm gần nhau chủ yếu do nội suy không gian.</p>
     <div style="overflow-x:auto"><table class="xh"><thead><tr><th>#</th><th>Điểm ước tính</th><th class="r">Bụi mịn TB</th><th>Mức</th><th class="r an-dt">Ngày vượt chuẩn VN</th><th class="an-dt" style="width:22%"></th></tr></thead><tbody id="bangTram"></tbody></table></div>
-  </div>
-
-  <details class="card mo-rong"><summary>ℹ️ Số liệu lấy từ đâu, chính xác đến đâu?</summary>
-    <p class="luu-y" style="margin-top:8px">PM2.5, PM10, O₃ và thời tiết lấy từ mô hình khí quyển CAMS qua Open-Meteo (lưới ~45 km); NO₂, CO, SO₂ là cột khí đo từ
-      vệ tinh Sentinel-5P (trễ 2–3 tuần). Giá trị theo từng điểm ước tính là <b>ước tính</b>, chưa hiệu chỉnh bằng máy đo mặt đất.
-      Mức không khí theo VN_AQI (QĐ 1459/QĐ-TCMT), tính từ PM2.5, PM10, O₃. Chuẩn Việt Nam: PM2.5 trung bình 24 giờ ≤ 45 µg/Nm³ từ 01/01/2026 (QCVN 05:2023/BTNMT; trước đó 50); ngày năm 2025 được so với ngưỡng 50;
-      khuyến nghị WHO 2021: ≤ 15 µg/m³. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></p>
   </details>
 </div>
 
@@ -153,7 +141,7 @@ const ngay = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) : '--';
 const ngayDu = s => s ? s.slice(8, 10) + '/' + s.slice(5, 7) + '/' + s.slice(0, 4) : '--';
 const theMuc = m => `<span class="muc" style="background:${m.mau};color:${m.chu}">${m.bieuTuong || ''} ${esc(m.ten)}</span>`;
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
-document.getElementById('userBox').innerHTML = hoTen ? `<span>👤 ${esc(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`
+document.getElementById('userBox').innerHTML = hoTen ? `<span>${esc(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} try { localStorage.clear(); } catch (e) {} location.reload(); }
 async function goiApi(path) {
@@ -196,12 +184,11 @@ function veTomTat(d, tr) {
   // Xu hướng: nửa sau so với nửa đầu của kỳ
   const nua = Math.floor(ds.length / 2), tb1 = ds.slice(0, nua).reduce((s, x) => s + x.pm25, 0) / (nua || 1), tb2 = ds.slice(nua).reduce((s, x) => s + x.pm25, 0) / ((ds.length - nua) || 1);
   const xh = tb1 ? (tb2 - tb1) / tb1 * 100 : 0;
-  document.getElementById('ttIcon').textContent = oNhiem === 0 ? '😊' : oNhiem <= 3 ? '🙂' : '😷';
   document.getElementById('ttCau').innerHTML = `Trong ${TEN_KY[ky]}, ${esc(noi)} có <b>${tot + tb} trên ${n} ngày</b> không khí ở mức tốt hoặc trung bình` +
     (oNhiem ? `, <b>${oNhiem} ngày ô nhiễm</b> (kém trở lên).` : ', không có ngày nào ô nhiễm.');
   document.getElementById('ttPhu').innerHTML = `Bụi mịn trung bình <b>${so(d.pm25_tb)} µg/m³</b> ${theMuc(mTb)} — ` +
     (d.pm25_tb > QCVN ? '<b>vượt chuẩn Việt Nam</b>.' : d.pm25_tb > WHO ? `đạt chuẩn Việt Nam nhưng <b>cao hơn mức WHO khuyến nghị</b>; ${trenWho}/${n} ngày vượt mức WHO.` : 'đạt cả chuẩn Việt Nam và khuyến nghị WHO.') +
-    (Math.abs(xh) >= 10 ? ` Gần đây không khí đang <b style="color:${xh > 0 ? '#b42318' : '#137333'}">${xh > 0 ? 'xấu đi' : 'tốt lên'}</b> (bụi mịn ${xh > 0 ? 'tăng' : 'giảm'} khoảng ${so(Math.abs(xh), 0)}% so với đầu kỳ).` : ' Mức bụi mịn khá ổn định trong suốt kỳ.');
+    (Math.abs(xh) >= 10 ? ` Gần đây không khí đang <b style="color:${xh >0 ? '#b42318' : '#137333'}">${xh > 0 ? 'xấu đi' : 'tốt lên'}</b> (bụi mịn ${xh > 0 ? 'tăng' : 'giảm'} khoảng ${so(Math.abs(xh), 0)}% so với đầu kỳ).` : ' Mức bụi mịn khá ổn định trong suốt kỳ.');
   const xn = d.ngay_xau_nhat, mXn = xn ? AQI_VN.muc(xn.aqi) : null;
   document.getElementById('oSo').innerHTML = `
     <div><div class="l">Bụi mịn trung bình</div><div class="v">${so(d.pm25_tb)} <small style="font-size:13px">µg/m³</small></div><div class="s">${ngayDu(d.tu_ngay)} → ${ngayDu(d.den_ngay)}</div></div>
@@ -260,7 +247,7 @@ document.getElementById('chonKy').addEventListener('click', ev => { const b = ev
 document.getElementById('chonTram').addEventListener('change', tai);
 tai();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

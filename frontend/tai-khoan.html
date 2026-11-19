@@ -9,12 +9,12 @@
 <meta name="theme-color" content="#0b2545">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Tài khoản &amp; Bảo mật</title>
 <style>
   .luoi-tk { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -47,44 +47,43 @@
   .ds-phien .tt b { color: var(--text-main); font-size: 14px; display: block; }
   .ds-phien .hien-tai { color: #137333; font-weight: 700; }
   .ghi { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
-  .chuyen { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-  .chuyen input { width: 18px; height: 18px; accent-color: var(--primary); }
+  .o-nhap label.chuyen, .chuyen { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+  .chuyen input { width: 18px; height: 18px; accent-color: var(--primary); margin: 0; }
 </style>
 </head>
-<body>
-<div id="header">
-  <div><a href="index.html">🗺️ Bản đồ</a></div>
+<body><div id="header">
+  <div><a href="index.html">Bản đồ</a></div>
   <div id="userBox"></div>
 </div>
 <div id="content">
   <div class="hero">
-    <h2>🔐 Tài khoản &amp; Bảo mật</h2>
+    <h2>Tài khoản &amp; Bảo mật</h2>
     <div class="sub">Quản lý mật khẩu, xác thực 2 lớp, các thiết bị đang đăng nhập và thông báo cảnh báo chạy nền.</div>
   </div>
   <div id="chuaDangNhap" class="card hidden" style="display:none">Đang kiểm tra phiên đăng nhập…</div>
 
   <div class="luoi-tk" id="noiDungTK" style="display:none">
     <section class="card">
-      <h3>👤 Thông tin tài khoản</h3>
+      <h3>Thông tin tài khoản</h3>
       <dl class="dong-tt" id="thongTin"></dl>
     </section>
 
     <section class="card" id="the2FA">
-      <h3>🛡️ Xác thực 2 lớp <span class="the tat" id="trangThai2FA">Đang tải</span></h3>
+      <h3>Xác thực 2 lớp <span class="the tat" id="trangThai2FA">Đang tải</span></h3>
       <p class="ghi">Khi bật, đăng nhập cần thêm mã 6 số đổi mỗi 30 giây từ ứng dụng <b>Google Authenticator</b>, <b>Microsoft Authenticator</b> hoặc tương tự.
         Kẻ gian biết mật khẩu cũng không vào được. Khuyến nghị bắt buộc cho tài khoản quản trị.</p>
       <div id="khu2FA"></div>
     </section>
 
     <section class="card">
-      <h3>🔗 Đăng nhập bằng mạng xã hội</h3>
+      <h3>Đăng nhập bằng mạng xã hội</h3>
       <p class="ghi">Liên kết để đăng nhập nhanh bằng Google, Facebook hoặc Zalo thay cho mật khẩu.</p>
       <ul class="ds-phien" id="dsMxh"></ul>
       <div id="tbMxh"></div>
     </section>
 
     <section class="card">
-      <h3 id="tieuDeMK">🔑 Đổi mật khẩu</h3>
+      <h3 id="tieuDeMK">Đổi mật khẩu</h3>
       <div class="o-nhap">
         <label id="oMkCu">Mật khẩu hiện tại<input type="password" id="mkCu" autocomplete="current-password"></label>
         <label>Mật khẩu mới (≥ 10 ký tự, có chữ và số)<input type="password" id="mkMoi" autocomplete="new-password"></label>
@@ -96,14 +95,14 @@
     </section>
 
     <section class="card">
-      <h3>🔔 Thông báo cảnh báo chạy nền</h3>
+      <h3>Thông báo cảnh báo chạy nền</h3>
       <p class="ghi">Nhận cảnh báo khi AQI vượt ngưỡng ngay cả khi đã đóng trang web (trình duyệt Chrome/Edge/Firefox trên máy tính và Android; iPhone cần "Thêm vào màn hình chính").
         Ứng dụng Android AirHCM tự kiểm tra nền mỗi 30 phút.</p>
       <div id="khuDay"></div>
     </section>
 
-    <section class="card" style="grid-column: 1 / -1">
-      <h3>💻 Thiết bị đang đăng nhập</h3>
+    <section class="card">
+      <h3>Thiết bị đang đăng nhập</h3>
       <ul class="ds-phien" id="dsPhien"></ul>
       <div class="hang-nut" style="margin-top:12px"><button class="nut nguy" id="nutRaTatCa">Đăng xuất khỏi mọi thiết bị</button></div>
       <div id="tbPhien"></div>
@@ -140,7 +139,7 @@ function thietBi(ua) {
   const app = /AirHCM-App/.test(ua) ? 'App AirHCM' : null;
   const tb = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iPhone/iPad' : /Windows/.test(ua) ? 'Windows' : /Mac OS/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : 'Thiết bị khác';
   const tdt = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : (/python|curl/i.test(ua) ? 'Công cụ/API' : 'Trình duyệt');
-  return { ten: (app || tdt) + ' · ' + tb, icon: /Android|iPhone|iPad/.test(ua) ? '📱' : '💻' };
+  return { ten: (app || tdt) + ' · ' + tb, icon: /Android|iPhone|iPad/.test(ua) ? '' : '' };
 }
 
 let user = null, ttPhien = null;
@@ -155,7 +154,7 @@ async function napTatCa() {
     .forEach(([k, v]) => { tt.append(el('dt', {}, k), el('dd', {}, (/@mxh\.airhcm\.invalid$/.test(v) ? '(không có email – đăng nhập bằng mạng xã hội)' : v) || '—')); });
   if (!user.co_mat_khau) {   // tài khoản tạo bằng Google/Facebook/Zalo: đặt mật khẩu lần đầu, không cần mật khẩu cũ
     $('oMkCu').style.display = 'none';
-    $('tieuDeMK').textContent = '🔑 Đặt mật khẩu';
+    $('tieuDeMK').textContent = ' Đặt mật khẩu';
     $('nutDoiMK').textContent = 'Đặt mật khẩu';
   }
   ve2FA(); vePhien(); veMxh();
@@ -174,7 +173,7 @@ async function veMxh() {
     const l = d.lien_ket.find(x => x.nha_cung_cap === ma);
     const tt = el('div', { class: 'tt' }, el('b', {}, TEN_MXH[ma] || ma),
       l ? `Đã liên kết${l.ho_ten ? ' · ' + l.ho_ten : ''}${l.email ? ' · ' + l.email : ''} · dùng gần nhất ${tg(l.dang_nhap_cuoi || l.tao_luc)}` : 'Chưa liên kết');
-    const li = el('li', {}, el('span', { class: 'tb-icon' }, l ? '✅' : '➕'), tt);
+    const li = el('li', {}, tt);
     if (l) li.append(el('button', { class: 'nut phu', onclick: async () => {
       if (!confirm('Gỡ liên kết ' + (TEN_MXH[ma] || ma) + '?')) return;
       try { await goi('/oauth/' + ma, { method: 'DELETE' }); thongBao('tbMxh', 'Đã gỡ liên kết', 'ok'); veMxh(); }
@@ -201,7 +200,7 @@ function ve2FA(maDuPhong) {
     k.append(el('div', { class: 'tb ok' }, 'Đã bật xác thực 2 lớp. Lưu 8 mã dự phòng dưới đây ở nơi an toàn (in ra hoặc trình quản lý mật khẩu). Mỗi mã dùng được 1 lần khi mất điện thoại. Mã chỉ hiện MỘT lần.'));
     const g = el('div', { class: 'ma-dp' }); maDuPhong.forEach(m => g.append(el('span', {}, m))); k.append(g);
     k.append(el('div', { class: 'hang-nut' },
-      el('button', { class: 'nut phu', onclick: () => navigator.clipboard && navigator.clipboard.writeText(maDuPhong.join('\n')).then(() => thongBao('tb2FA', 'Đã sao chép', 'ok')) }, '📋 Sao chép'),
+      el('button', { class: 'nut phu', onclick: () => navigator.clipboard && navigator.clipboard.writeText(maDuPhong.join('\n')).then(() => thongBao('tb2FA', 'Đã sao chép', 'ok')) }, 'Sao chép'),
       el('button', { class: 'nut', onclick: () => ve2FA() }, 'Tôi đã lưu')), el('div', { id: 'tb2FA' }));
     return;
   }
@@ -261,7 +260,7 @@ $('nutDoiMK').onclick = async () => {
     const d = await post('/doi-mat-khau', { mat_khau_cu: $('mkCu').value, mat_khau_moi: $('mkMoi').value });
     ['mkCu', 'mkMoi', 'mkMoi2'].forEach(i => $(i).value = '');
     thongBao('tbDoiMK', d.message, 'ok'); ttPhien = await goi('/phien'); vePhien();
-    if (!user.co_mat_khau) { user = await goi('/me'); $('oMkCu').style.display = ''; $('tieuDeMK').textContent = '🔑 Đổi mật khẩu'; $('nutDoiMK').textContent = 'Đổi mật khẩu'; }
+    if (!user.co_mat_khau) { user = await goi('/me'); $('oMkCu').style.display = ''; $('tieuDeMK').textContent = ' Đổi mật khẩu'; $('nutDoiMK').textContent = 'Đổi mật khẩu'; }
   } catch (e) { thongBao('tbDoiMK', e.message, 'loi'); }
   finally { $('nutDoiMK').disabled = false; }
 };
@@ -272,8 +271,8 @@ function vePhien() {
   ttPhien.phien.forEach(p => {
     const t = thietBi(p.thiet_bi);
     const tt = el('div', { class: 'tt' }, el('b', {}, t.ten),
-      `IP ${p.ip || '?'} · đăng nhập ${tg(p.tao_luc)} · hoạt động ${tg(p.lan_cuoi)}${p.hai_lop ? ' · 🔐 2 lớp' : ''}`);
-    const li = el('li', {}, el('span', { class: 'tb-icon' }, t.icon), tt);
+      `IP ${p.ip || '?'} · đăng nhập ${tg(p.tao_luc)} · hoạt động ${tg(p.lan_cuoi)}${p.hai_lop ? ' · 2 lớp' : ''}`);
+    const li = el('li', {}, tt);
     if (p.hien_tai) li.append(el('span', { class: 'hien-tai' }, 'Thiết bị này'));
     else li.append(el('button', { class: 'nut phu', onclick: async () => {
       try { await goi('/phien/' + p.id, { method: 'DELETE' }); ttPhien = await goi('/phien'); vePhien(); thongBao('tbPhien', 'Đã đăng xuất thiết bị', 'ok'); }
@@ -290,8 +289,8 @@ $('nutRaTatCa').onclick = async () => {
 
 napTatCa().catch(e => { const c = $('chuaDangNhap'); c.style.display = ''; c.textContent = e.message; });
 </script>
-<script src="thong-bao-day.js"></script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="thong-bao-day.js?v=22"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

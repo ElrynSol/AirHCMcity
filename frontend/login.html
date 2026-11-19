@@ -11,13 +11,13 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <title>Đăng nhập - Hệ thống Giám sát Không khí TP.HCM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; font-family: var(--font); }
@@ -46,19 +46,17 @@
   .brand-logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 17px; letter-spacing: .3px; }
   .brand-logo .emoji { font-size: 28px; }
 
-  .brand-headline { margin-top: 56px; }
-  .brand-headline h1 { font-size: 32px; line-height: 1.35; margin: 0 0 14px; font-weight: 800; }
-  .brand-headline p { font-size: 14.5px; opacity: .85; line-height: 1.7; max-width: 420px; margin: 0; }
-
-  .brand-stats { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
-  .stat-chip {
-    background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 12px; padding: 14px 18px; backdrop-filter: blur(6px); min-width: 120px;
+  .brand-headline { margin-top: 32px; }
+  .brand-headline h1 { font-size: 30px; line-height: 1.35; margin: 0 0 16px; font-weight: 800; letter-spacing: -.01em; }
+  .brand-headline p { font-size: 14.5px; opacity: .88; line-height: 1.7; max-width: 480px; margin: 0 0 24px; }
+  .brand-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; max-width: 480px; }
+  .brand-points li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.55; opacity: .92; }
+  .brand-points li::before {
+    content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%;
+    background: #38ef7d; margin-top: 6px; box-shadow: 0 0 10px rgba(56,239,125,.6);
   }
-  .stat-chip .num { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .stat-chip .lbl { font-size: 11px; opacity: .8; margin-top: 2px; }
 
-  .brand-footer { font-size: 11.5px; opacity: .6; font-variant-numeric: tabular-nums; }
+  .brand-footer { font-size: 12px; opacity: .72; line-height: 1.5; }
 
   /* ===== CỘT PHẢI: form ===== */
   .form-panel {
@@ -93,12 +91,12 @@
 
   /* ===== Nút xem mật khẩu ===== */
   .password-wrap { position: relative; }
-  .password-wrap input { padding-right: 42px !important; }
+  .password-wrap input { padding-right: 54px !important; }
   .toggle-eye {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-    cursor: pointer; font-size: 17px; user-select: none; opacity: .6;
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; font-size: 12px; font-weight: 600; color: #1a73e8; user-select: none; opacity: .85;
   }
-  .toggle-eye:hover { opacity: 1; }
+  .toggle-eye:hover { opacity: 1; text-decoration: underline; }
 
   .submit-btn {
     width: 100%; padding: 13px; background: linear-gradient(135deg, #1a73e8, #0d47a1);
@@ -146,27 +144,24 @@
   .form-panel { background: radial-gradient(700px 380px at 100% 0%, #e4eefb, transparent 60%), radial-gradient(600px 360px at 0% 100%, #e3f5f3, transparent 55%), #f4f6fa; }
 </style>
 </head>
-<body class="khong-nen">
-
-<!-- CỘT TRÁI -->
+<body class="khong-nen"><!-- CỘT TRÁI -->
 <div class="brand-panel">
   <div class="glow glow1"></div>
   <div class="glow glow2"></div>
 
-  <div class="brand-logo"><span class="emoji">🌤️</span> AirHCM · Giám sát Không khí</div>
+  <div class="brand-logo"><img src="icons/favicon-32.png" alt="AirHCM" style="width:30px;height:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)"> AirHCM · Giám sát &amp; Dự báo Không khí TP.HCM</div>
 
   <div class="brand-headline">
-    <h1>Theo dõi chất lượng<br>không khí TP.HCM<br>theo thời gian thực</h1>
-    <p>Dữ liệu vệ tinh Sentinel-5P kết hợp mô hình Machine Learning (Random Forest) giúp giám sát, cảnh báo và dự báo AQI theo VN_AQI (QĐ 1459/QĐ-TCMT).</p>
+    <h1>Hệ thống Giám sát, Quản lý<br>&amp; Dự báo Chất lượng Không khí<br>TP. Hồ Chí Minh</h1>
+    <p>Tích hợp dữ liệu mô hình khí quyển (CAMS/ERA5), viễn thám vệ tinh Sentinel-5P, trạm quan trắc mặt đất OpenAQ và hệ cơ sở dữ liệu không gian PostGIS trên 168 phường/xã theo quy chuẩn VN_AQI (QĐ 1459/QĐ-TCMT &amp; QCVN 05:2023/BTNMT).</p>
+    <ul class="brand-points">
+      <li>Giám sát trực tuyến bản đồ AQI, nội suy không gian 168 phường/xã và truy vấn vùng bán kính / đa giác.</li>
+      <li>Dự báo ngắn hạn 24 giờ, 7 ngày và phân loại nguy cơ vượt ngưỡng bằng mô hình Học máy kiểm chứng độc lập.</li>
+      <li>Cảnh báo sớm đa kênh qua thông báo đẩy (Web Push), email tự động và ứng dụng di động Android.</li>
+    </ul>
   </div>
 
-  <div class="brand-stats">
-    <div class="stat-chip"><div class="num">12</div><div class="lbl">TRẠM QUAN TRẮC</div></div>
-    <div class="stat-chip"><div class="num">9.7K+</div><div class="lbl">BẢN GHI DỮ LIỆU</div></div>
-    <div class="stat-chip"><div class="num">0.72</div><div class="lbl">R² MÔ HÌNH</div></div>
-  </div>
-
-  <div class="brand-footer">© 2026 Đồ án Tin Học &amp; Môi trường</div>
+  <div class="brand-footer">© 2026 AirHCM · Đồ án chuyên ngành Công nghệ thông tin môi trường<br>SVTH: Lê Ngọc Ánh Dương (1250080037) · GVHD: TS. Dương Thị Thúy Nga</div>
 </div>
 
 <!-- CỘT PHẢI: FORM -->
@@ -177,9 +172,9 @@
     <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ -->
     <div id="manHinhChinh">
       <div class="auth-logo">
-        <div class="icon">🌤️</div>
+        <div class="icon"><img src="icons/favicon-32.png" alt="AirHCM" style="width:34px;height:34px;border-radius:8px"></div>
         <h1>Hệ thống Giám sát Không khí</h1>
-        <div class="tag">TP.HCM · AQI Monitoring</div>
+        <div class="tag">TP.HCM · VN_AQI Monitoring</div>
       </div>
 
       <div class="tabs">
@@ -192,7 +187,7 @@
         <div class="form-group"><input type="email" id="loginEmail" placeholder="Email" autocomplete="username"></div>
         <div class="form-group password-wrap">
           <input type="password" id="loginMatKhau" placeholder="Mật khẩu" autocomplete="current-password" onkeydown="if(event.key==='Enter')dangNhap()">
-          <span class="toggle-eye" onclick="hienAnMatKhau('loginMatKhau', this)">👁️</span>
+          <span class="toggle-eye" onclick="hienAnMatKhau('loginMatKhau', this)">Hiện</span>
         </div>
         <label class="ghi-nho"><input type="checkbox" id="ghiNho"> Ghi nhớ đăng nhập 30 ngày <small>(chỉ trên thiết bị cá nhân)</small></label>
         <button class="submit-btn" id="nutDangNhap" onclick="dangNhap()">Đăng nhập</button>
@@ -207,12 +202,12 @@
         <div class="form-group"><input type="email" id="regEmail" placeholder="Email"></div>
         <div class="form-group password-wrap">
           <input type="password" id="regMatKhau" placeholder="Mật khẩu" autocomplete="new-password" oninput="doManh(this.value, 'doManhDK')">
-          <span class="toggle-eye" onclick="hienAnMatKhau('regMatKhau', this)">👁️</span>
+          <span class="toggle-eye" onclick="hienAnMatKhau('regMatKhau', this)">Hiện</span>
         </div>
         <div class="do-manh" id="doManhDK"><i></i><span>Ít nhất 10 ký tự, có cả chữ và số</span></div>
         <div class="form-group password-wrap">
           <input type="password" id="regXacNhanMatKhau" placeholder="Xác nhận mật khẩu">
-          <span class="toggle-eye" onclick="hienAnMatKhau('regXacNhanMatKhau', this)">👁️</span>
+          <span class="toggle-eye" onclick="hienAnMatKhau('regXacNhanMatKhau', this)">Hiện</span>
         </div>
         <button class="submit-btn" onclick="dangKy()">Đăng ký</button>
         <div id="regMsg"></div>
@@ -226,26 +221,26 @@
     <!-- MÀN HÌNH QUÊN MẬT KHẨU -->
     <div id="manHinhQuenMK" class="hidden">
       <div class="auth-logo">
-        <div class="icon">🔑</div>
+        <div class="icon"><img src="icons/favicon-32.png" alt="AirHCM" style="width:34px;height:34px;border-radius:8px"></div>
         <h1>Khôi phục mật khẩu</h1>
       </div>
 
       <div id="buocNhapEmail">
         <div class="form-group"><input type="email" id="quenEmail" placeholder="Nhập email đã đăng ký"></div>
-        <button class="submit-btn" onclick="guiOtp()">Gửi mã OTP</button>
+        <button class="submit-btn" id="nutGuiOtp" onclick="guiOtp()">Gửi mã OTP</button>
         <div id="quenMsg"></div>
       </div>
 
       <div id="buocNhapOtp" class="hidden">
         <div class="otp-box">
-          <div id="otpThongDiep">📧 Mã OTP đã được gửi tới email của bạn</div>
+          <div id="otpThongDiep">Mã OTP đã được gửi tới email của bạn</div>
           <div class="otp-so hidden" id="otpHienThi">------</div>
-          <div style="font-size:11px; color:#999; margin-top:6px;">Có hiệu lực trong 5 phút (kiểm tra cả mục Spam)</div>
+          <div style="font-size:11.5px; color:#64748b; margin-top:6px;">Vui lòng kiểm tra hộp thư đến hoặc mục Thư rác (Spam / Quảng cáo)</div>
         </div>
         <div class="form-group"><input type="text" id="nhapOtp" placeholder="Nhập mã OTP (6 số)" maxlength="6"></div>
         <div class="form-group password-wrap">
           <input type="password" id="matKhauMoi" placeholder="Mật khẩu mới" autocomplete="new-password" oninput="doManh(this.value, 'doManhQMK')">
-          <span class="toggle-eye" onclick="hienAnMatKhau('matKhauMoi', this)">👁️</span>
+          <span class="toggle-eye" onclick="hienAnMatKhau('matKhauMoi', this)">Hiện</span>
         </div>
         <div class="do-manh" id="doManhQMK"><i></i><span>Ít nhất 10 ký tự, có cả chữ và số</span></div>
         <button class="submit-btn" onclick="xacNhanOtp()">Xác nhận &amp; Đặt mật khẩu mới</button>
@@ -258,7 +253,7 @@
     <!-- MÀN HÌNH XÁC THỰC 2 LỚP -->
     <div id="manHinh2FA" class="hidden">
       <div class="auth-logo">
-        <div class="icon">🔐</div>
+        <div class="icon"><img src="icons/favicon-32.png" alt="AirHCM" style="width:34px;height:34px;border-radius:8px"></div>
         <h1>Xác thực 2 lớp</h1>
         <div class="tag">Mở ứng dụng Google Authenticator / Microsoft Authenticator</div>
       </div>
@@ -301,7 +296,7 @@ function hienAnMatKhau(id, iconEl) {
   const input = document.getElementById(id);
   const hien = input.type === 'password';
   input.type = hien ? 'text' : 'password';
-  iconEl.innerText = hien ? '🙈' : '👁️';
+  iconEl.innerText = hien ? 'Ẩn' : 'Hiện';
 }
 
 // Gợi ý độ mạnh mật khẩu (máy chủ mới là nơi kiểm tra chính thức – core/mat_khau.py)
@@ -425,7 +420,7 @@ async function guiOtp() {
     document.getElementById('buocNhapEmail').classList.add('hidden');
     document.getElementById('buocNhapOtp').classList.remove('hidden');
     const hienOtp = document.getElementById('otpHienThi');
-    document.getElementById('otpThongDiep').innerText = '📧 ' + data.message;
+    document.getElementById('otpThongDiep').innerText = ' ' + data.message;
     if (data.otp_demo) { hienOtp.innerText = data.otp_demo; hienOtp.classList.remove('hidden'); }   // chỉ khi máy chủ bật OTP_DEMO=1
     else hienOtp.classList.add('hidden');
   } catch (e) {
@@ -491,6 +486,6 @@ fetch(API + '/me', { credentials: 'include', cache: 'no-store' })
   .then(r => r.ok ? r.json() : null).then(u => { if (u) luuVaVao(u); }).catch(() => {});
 </script>
 
-<script src="pwa.js"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

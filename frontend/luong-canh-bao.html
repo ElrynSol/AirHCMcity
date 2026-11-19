@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Luồng cảnh báo</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
   .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
@@ -62,29 +62,27 @@
   .luu-y { color:#888; font-size:12px; }
 </style>
 </head>
-<body>
-
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy"><b>🧾 Nhật ký</b></a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy"><b>Nhật ký</b></a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
 <script>try{if(localStorage.getItem('vai_tro')==='admin')document.getElementById('navNhatKy').style.display='';}catch(e){}</script>
 
 <div id="content">
-  <div class="hero"><h2>🔔 Luồng cảnh báo AQI từng giai đoạn</h2><div class="sub">Chạy lại luồng: dữ liệu mới → tính AQI → so ngưỡng → sự kiện → soạn và gửi thư. Dùng dữ liệu thật mới nhất của điểm; không cần mở hộp thư vẫn xem được nội dung thư ngay trên web.</div></div>
+  <div class="hero"><h2>Luồng cảnh báo AQI từng giai đoạn</h2><div class="sub">Chạy lại luồng: dữ liệu mới → tính AQI → so ngưỡng → sự kiện → soạn và gửi thư. Dùng dữ liệu thật mới nhất của điểm; không cần mở hộp thư vẫn xem được nội dung thư ngay trên web.</div></div>
   <div id="khung"></div>
 </div>
 
@@ -94,7 +92,7 @@ const hoTen = localStorage.getItem('ho_ten');
 const laAdmin = localStorage.getItem('vai_tro') === 'admin';
 const userBox = document.getElementById('userBox');
 userBox.innerHTML = hoTen
-  ? `<span>👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  ? `<span>${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} localStorage.clear(); location.reload(); }
 async function goiApi(path, opt = {}) {
@@ -128,7 +126,7 @@ if (!laAdmin) {
       <p class="luu-y" style="margin:10px 0 0">Chế độ trình diễn không bị giới hạn 1 thư/ngày và không đổi trạng thái đăng ký của người dùng thật. Thư thử nghiệm có tiền tố [THỬ NGHIỆM].</p>
     </div>
     <div id="cacBuoc"></div>
-    <div class="card"><h3>📬 Hộp thư đã gửi</h3>
+    <div class="card"><h3>Hộp thư đã gửi</h3>
       <div class="tbl-wrap"><table class="nk"><thead><tr><th>Thời gian</th><th>Người nhận</th><th>Điểm</th><th>AQI</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="thuRows"><tr><td colspan="6">Đang tải...</td></tr></tbody></table></div>
       <div id="thuCT"></div>
       <p class="luu-y">Bấm một dòng để xem nội dung thư. Thư do hệ thống tự gửi (loại "canh_bao") và thư trình diễn (loại "demo") đều được lưu tại đây.</p>
@@ -172,7 +170,7 @@ function xemThu(i) {
   document.getElementById('thuCT').innerHTML = `<div class="thu"><b>Đến:</b> ${esc(t.email)}\n<b>Tiêu đề:</b> ${esc(t.tieu_de)}\n\n${esc(t.noi_dung)}</div>`;
 }
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

@@ -1,0 +1,31 @@
+{
+  "nguong_ugm3": 25.0,
+  "so_ngay_test": 382,
+  "so_ngay_vuot_test": 210,
+  "mo_hinh": [
+    {
+      "model": "KNN (k=7)",
+      "Accuracy": 0.801,
+      "Precision": 0.7939,
+      "Recall": 0.8619,
+      "F1": 0.8265,
+      "ROC_AUC": 0.8869
+    },
+    {
+      "model": "Decision Tree (depth=4)",
+      "Accuracy": 0.8194,
+      "Precision": 0.7925,
+      "Recall": 0.9095,
+      "F1": 0.847,
+      "ROC_AUC": 0.8818
+    },
+    {
+      "model": "Random Forest (depth=8)",
+      "Accuracy": 0.822,
+      "Precision": 0.8034,
+      "Recall": 0.8952,
+      "F1": 0.8468,
+      "ROC_AUC": 0.9189
+    }
+  ]
+}

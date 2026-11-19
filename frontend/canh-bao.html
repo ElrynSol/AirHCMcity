@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <title>Cảnh báo Chất lượng Không khí</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   :root { --accent: #1a73e8; }
   * { box-sizing: border-box; }
@@ -52,22 +52,20 @@
   .gio-hien-tai-badge { background: #eef4ff; color: #1557b0; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
 </style>
 </head>
-<body>
-
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html"><b>⚠️ Cảnh báo</b></a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html"><b>Cảnh báo</b></a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -75,7 +73,7 @@
 
 <div id="content">
   <div class="hero-card">
-    <h2>⚠️ Cảnh báo chất lượng không khí</h2>
+    <h2>Cảnh báo chất lượng không khí</h2>
     <div class="sub" id="ngayHomNay">Đang tải...</div>
   </div>
 
@@ -83,7 +81,7 @@
 
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="margin:0;">📈 Diễn biến hôm nay (PM2.5 theo giờ)</h3>
+      <h3 style="margin:0;">Diễn biến hôm nay (PM2.5 theo giờ)</h3>
       <span class="gio-hien-tai-badge" id="gioHienTaiBadge"></span>
     </div>
     <canvas id="bieuDoHomNay" height="110"></canvas>
@@ -91,19 +89,19 @@
   </div>
 
   <div class="card">
-    <h3>📅 Diễn biến AQI 7 ngày gần đây (trung bình khu vực)</h3>
+    <h3>Diễn biến AQI 7 ngày gần đây (trung bình khu vực)</h3>
     <div id="aqiTheoNgay" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">Đang tải...</div>
   </div>
 
   <div class="card">
-    <h3>📍 Tìm điểm gần vị trí của bạn</h3>
-    <button class="btn" onclick="timViTri()">🎯 Dùng vị trí hiện tại</button>
+    <h3>Tìm điểm gần vị trí của bạn</h3>
+    <button class="btn" onclick="timViTri()">Dùng vị trí hiện tại</button>
     <p style="font-size:11.5px; color:#999; margin:6px 0 0;">Hiển thị 3 điểm có khoảng cách gần vị trí bạn nhất (tính theo đường chim bay).</p>
     <div id="ketQuaViTri" style="margin-top:12px;"></div>
   </div>
 
   <div class="card" id="cardEmail">
-    <h3>📧 Nhận cảnh báo qua email</h3>
+    <h3>Nhận cảnh báo qua email</h3>
     <div id="emailChuaDangNhap" style="display:none;font-size:13.5px;">Đăng nhập để đăng ký nhận email khi AQI của điểm bạn chọn đạt ngưỡng. <button class="btn" onclick="window.location.href='login.html'" style="margin-left:8px;">Đăng nhập</button></div>
     <div id="emailForm" style="display:none;">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
@@ -119,7 +117,7 @@
   </div>
 
   <div class="card">
-    <h3>👥 Khuyến cáo theo nhóm đối tượng</h3>
+    <h3>Khuyến cáo theo nhóm đối tượng</h3>
     <select id="chonNhomDoiTuong" onchange="capNhatKhuyenCaoNhom()" style="margin-bottom:12px;">
       <option value="binh_thuong">Người bình thường</option>
       <option value="tre_em">Trẻ em</option>
@@ -130,7 +128,7 @@
   </div>
 
   <div class="card">
-    <h3>📖 Ý nghĩa các mức AQI</h3>
+    <h3>Ý nghĩa các mức AQI</h3>
     <div id="chuThichAQI"></div>
     <p style="font-size:12.5px; color:#666; margin:0;">AQI càng cao, không khí càng ô nhiễm, càng cần hạn chế ra ngoài và bảo vệ sức khỏe.</p>
   </div>
@@ -139,8 +137,6 @@
     <thead><tr><th>Điểm</th><th>AQI</th><th>Chất gây ô nhiễm chính</th><th>Mức độ</th><th>Dữ liệu ngày</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
-
-  <details class="nguon-dl"><summary>ℹ️ <b>Nguồn số liệu:</b> tái phân tích CAMS (Open-Meteo) và vệ tinh Sentinel-5P; giá trị theo điểm/phường được nội suy không gian. <span class="xem">Chi tiết</span></summary><div style="margin-top:6px"><b>Nguồn dữ liệu &amp; phạm vi.</b> PM2.5, PM10, O₃ và thời tiết lấy từ mô hình Open-Meteo (CAMS toàn cầu, lưới thô ~0,4° ≈ 45 km); NO₂, CO, SO₂ là cột khí từ vệ tinh Sentinel-5P (trễ khoảng 2–3 tuần, ngày mới nhất hiển thị ở từng điểm, đơn vị mol/m², không phải nồng độ mặt đất). Giá trị theo từng điểm/phường/xã là <b>ước tính</b> đã hiệu chỉnh không gian, <b>chưa hiệu chỉnh bằng số đo trạm mặt đất</b>. Phục vụ nghiên cứu, học thuật; không thay thế số liệu công bố chính thức. <a href="phuong-phap.html">Phương pháp &amp; kiểm chứng →</a></div></details>
   <p class="luu-y">* Chỉ số AQI được tính theo VN_AQI (QĐ 1459/QĐ-TCMT) dựa trên PM2.5, PM10, O3. Dữ liệu NO2, CO, SO2 từ vệ tinh Sentinel-5P được hiển thị riêng để tham khảo, không đưa vào công thức AQI do khác đơn vị đo. Dữ liệu mang tính chất minh họa/tham khảo học thuật, không thay thế nguồn công bố chính thức.</p>
   <p class="luu-y">* Dữ liệu quan trắc có độ trễ tự nhiên 1-2 ngày do thời gian xử lý từ nguồn dữ liệu vệ tinh và trạm mặt đất.</p>
 </div>
@@ -168,14 +164,14 @@ const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token t
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 if (token) {
-  userBox.innerHTML = `<span style="margin-right:12px;">👤 ${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+  userBox.innerHTML = `<span style="margin-right:12px;">${hoTen}</span><button onclick="dangXuat()">Đăng xuất</button>`;
 } else {
   userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 }
 async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 
 const badgeClass = { 'Tốt': 'b-tot', 'Trung bình': 'b-trung-binh', 'Kém': 'b-kem', 'Xấu': 'b-xau', 'Rất xấu': 'b-rat-xau', 'Nguy hại': 'b-nguy-hai' };
-const iconMuc = { 'Tốt': '😊', 'Trung bình': '🙂', 'Kém': '😷', 'Xấu': '😨', 'Rất xấu': '🤢', 'Nguy hại': '⚠️' };
+const iconMuc = { 'Tốt': '', 'Trung bình': '', 'Kém': '', 'Xấu': '', 'Rất xấu': '', 'Nguy hại': '' };
 const mauNen = { 'Tốt': '#e6fbe6', 'Trung bình': '#fffbd6', 'Kém': '#fff0e0', 'Xấu': '#ffe5e5', 'Rất xấu': '#f4e9f5', 'Nguy hại': '#f5e3e8' };
 // màu viền + nội dung khuyến cáo lấy từ thang chuẩn QĐ 1459 (aqi-vn.js)
 const mauVien = Object.fromEntries(AQI_VN.THANG.map(m => [m.ten, m.mau]));
@@ -196,7 +192,7 @@ function capNhatKhuyenCaoNhom() {
 }
 
 const homNay = new Date();
-document.getElementById('ngayHomNay').innerText = `📅 Hôm nay: ${homNay.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+document.getElementById('ngayHomNay').innerText = ` Hôm nay: ${homNay.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
 
 let danhSachAQI = [];
 
@@ -233,9 +229,7 @@ goiApi('/aqi-tat-ca-tram')
         <div class="dong-ho" id="dongHoCanhBao"></div>
         <div>
           <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#667085">Khu vực ô nhiễm nhất hiện tại</div>
-          <b style="font-size:17px;">${tramMax}</b><br>
-          <b style="font-size:20px;color:${AQI_VN.mauDam(aqiMax)}">${iconMuc[mucDoMax] || ''} ${mucDoMax}</b><br>
-          <span style="font-size:13.5px;line-height:1.6">${khuyenCaoTheoMuc[mucDoMax] || ''}</span>
+          <b style="font-size:17px;">${tramMax}</b><br><b style="font-size:20px;color:${AQI_VN.mauDam(aqiMax)}">${iconMuc[mucDoMax] || ''} ${mucDoMax}</b><br><span style="font-size:13.5px;line-height:1.6">${khuyenCaoTheoMuc[mucDoMax] || ''}</span>
         </div>`;
       AQI_VN.dongHo('dongHoCanhBao', aqiMax);
     } else {
@@ -269,15 +263,14 @@ function timViTri() {
       const cacTramCoKhoangCach = tatCa.filter(d => d.khoangCach <= NGUONG_KM).slice(0, 3);
       if (cacTramCoKhoangCach.length === 0) {
         const gan = tatCa[0];
-        box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">
-          Bạn đang ở xa khu vực quan trắc: điểm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
+        box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">Bạn đang ở xa khu vực quan trắc: điểm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
         return;
       }
       taiDienBienHomNay(latitude, longitude);
       box.innerHTML = `<b>Điểm trong bán kính ${NGUONG_KM} km quanh bạn (tối đa 3 điểm):</b>` + cacTramCoKhoangCach.map(d => `
         <div style="padding:14px; background:${mauNen[d.muc_do] || '#f9f9f9'}; border-left:4px solid ${mauVien[d.muc_do] || '#999'}; border-radius:8px; margin-top:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b style="font-size:14px;">📍 ${d.ma_tram} - ${d.ten_tram}</b>
+            <b style="font-size:14px;">${d.ma_tram} - ${d.ten_tram}</b>
             <span style="font-size:12px; color:#666;">cách ${d.khoangCach.toFixed(1)} km</span>
           </div>
           <div style="display:flex; gap:16px; margin-top:8px; flex-wrap:wrap;">
@@ -410,7 +403,7 @@ taiDienBienHomNay();
   taiDs();
 })();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

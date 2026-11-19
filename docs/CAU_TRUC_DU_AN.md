@@ -199,14 +199,9 @@ air_quality_project/
 | `db_url.py` | Chuỗi kết nối CSDL dùng chung (ưu tiên DATABASE_URL) |
 | `dong_bo_hang_ngay.py` | Đồng bộ tự động hằng ngày, tự lấy bù ngày thiếu, có khóa chống chạy chồng |
 | `kiem_tra_du_lieu.py` | Kiểm tra chất lượng dữ liệu (chỉ đọc) |
-| `doi_chieu_tram_that.py` | Đối chiếu số liệu mô hình CAMS với số đo thực tế tại trạm (bias, MAE, RMSE, Pearson) |
+| `tai_tram_that.py`, `doi_chieu_tram_that.py` | Tải số đo thực tế từ OpenAQ (kèm QA/QC loại mã lỗi ≥ 900) và đối chiếu sai số với mô hình CAMS |
+| `du_lieu_mo.py` | Xuất/nhập bộ dữ liệu mở (`du_lieu/mo/*.csv`) |
 | `them_khoa_ngoai.py` | Thêm khóa ngoại để sơ đồ ERD hiển thị quan hệ giữa các bảng |
-
-
-| Tệp | Chức năng |
-|---|---|
-| `gia_lap/tram_ao.py`, `gia_lap/bang_ao.py` | Trạm và bảng ảo bằng Python (dự phòng khi trình diễn) |
-
 
 ### 3.6. `mobile/` — Ứng dụng Android
 

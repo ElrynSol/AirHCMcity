@@ -11,15 +11,15 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Phân tích độ nhạy</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .loi { color:#c62828; font-size:14px; }
   .buoc { display:flex; align-items:center; gap:10px; margin:0 0 12px; font-size:17px; }
@@ -87,21 +87,20 @@
   canvas { max-width:100%; }
 </style>
 </head>
-<body>
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html"><b>🎛️ Kịch bản</b></a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html">🛰️ Dữ liệu</a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html"><b>Kịch bản</b></a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html">Dữ liệu</a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -109,86 +108,75 @@
 
 <div id="content">
   <div class="hero-card">
-    <h2>🎛️ Nếu… thì sao? <span style="font-size:.6em;font-weight:600;opacity:.85">(phân tích độ nhạy của mô hình)</span></h2>
-    <div class="sub">Chọn một tình huống, ví dụ trời mưa to hay gió lặng, để xem <b>bụi mịn PM2.5</b> ở TP.HCM sẽ tăng hay giảm,
-      và không khí còn ở mức an toàn không.</div>
+    <h2>Phân tích độ nhạy khí tượng – phát thải <span style="font-size:.65em;font-weight:600;opacity:.85">(Sensitivity Analysis)</span></h2>
+    <div class="sub">Đánh giá phản ứng định lượng của mô hình ước lượng PM2.5 khi biến thiên các điều kiện biên khí tượng (mưa, tốc độ gió, nhiệt độ, độ ẩm) và chỉ báo cột khí vệ tinh so với trạng thái cơ sở.</div>
   </div>
   <div id="trangThai" class="card">Đang tải…</div>
   <div id="vung" style="display:none;">
-    <div class="card">
-      <h3 class="buoc"><span class="so-buoc">1</span>Chọn một tình huống</h3>
-      <p class="goi-y">Mỗi tình huống đưa thời tiết hoặc khí thải về mức cao nhất / thấp nhất từng ghi nhận ở TP.HCM, rồi so với một ngày bình thường.</p>
-      <div class="luoi-th" id="tinhHuong"></div>
-    </div>
-
-    <div class="card" id="theKq">
-      <h3 class="buoc"><span class="so-buoc">2</span>Kết quả</h3>
-      <div class="so-sanh">
-        <div class="o-kq" id="oNen"></div>
-        <div class="mui" aria-hidden="true">➜</div>
-        <div class="o-kq" id="oKb"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(460px,100%),1fr));gap:18px;align-items:start">
+      <div class="card" style="margin-bottom:0">
+        <h3 class="buoc"><span class="so-buoc">1</span>Thiết lập kịch bản biên khí tượng – phát thải</h3>
+        <p class="goi-y">Chọn một điều kiện thời tiết hoặc mức phát thải để mô phỏng biến động nồng độ bụi mịn PM2.5 so với ngày bình thường:</p>
+        <div class="luoi-th" id="tinhHuong"></div>
+        <details class="mo-rong" id="nangCao" style="margin-top:14px"><summary>Tùy chỉnh chi tiết từng thông số bằng thanh trượt</summary>
+          <p class="goi-y" style="margin-top:8px">Kéo thanh trượt để thay đổi từng biến đầu vào:</p>
+          <div id="sliders"></div>
+          <button class="btn phu" onclick="chonTinhHuong('binh_thuong')">↺ Đặt lại về mức trung bình</button>
+        </details>
       </div>
-      <div class="tieu-de-kq" id="tomTat"></div>
-      <div class="khoi loi-khuyen" id="loiKhuyen"></div>
-      <div class="khoi chac" id="doChac"></div>
-      <div id="canhBaoKq"></div>
+
+      <div class="card" id="theKq" style="margin-bottom:0">
+        <h3 class="buoc"><span class="so-buoc">2</span>Kết quả mô phỏng kịch bản</h3>
+        <div class="so-sanh">
+          <div class="o-kq" id="oNen"></div>
+          <div class="mui" aria-hidden="true">→</div>
+          <div class="o-kq" id="oKb"></div>
+        </div>
+        <div class="tieu-de-kq" id="tomTat"></div>
+        <div class="khoi loi-khuyen" id="loiKhuyen"></div>
+        <div id="canhBaoKq"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3 class="buoc"><span class="so-buoc">3</span>So sánh nhanh các tình huống</h3>
-      <p class="goi-y">Thanh càng dài là bụi mịn càng nhiều. Vạch đứng màu xanh đậm là <b>ngày bình thường</b>. Màu thanh là mức không khí.</p>
-      <div id="dsSoSanh">Đang tính…</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(460px,100%),1fr));gap:18px;margin-top:18px;align-items:start">
+      <div class="card" style="margin-bottom:0">
+        <h3 class="buoc"><span class="so-buoc">3</span>Đối chiếu nồng độ PM2.5 giữa các kịch bản</h3>
+        <p class="goi-y">Vạch đứng màu xanh đậm là mức ngày bình thường. Màu thanh thể hiện phân cấp VN_AQI theo QĐ 1459/QĐ-TCMT.</p>
+        <div id="dsSoSanh">Đang tính…</div>
+      </div>
+
+      <div class="card" style="margin-bottom:0">
+        <h3 class="buoc"><span class="so-buoc">4</span>Mức độ tác động của từng yếu tố đầu vào</h3>
+        <p class="goi-y">Biên độ thay đổi PM2.5 (µg/m³) khi biến thiên từng yếu tố từ mức thấp nhất lên cao nhất.
+          Thanh hướng sang <b style="color:#b42318">phải (đỏ) = làm tăng</b> bụi mịn, sang <b style="color:#137333">trái (xanh) = làm giảm</b> bụi mịn.</p>
+        <div id="dsYeuTo"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3 class="buoc"><span class="so-buoc">4</span>Yếu tố nào ảnh hưởng nhiều nhất đến bụi mịn?</h3>
-      <p class="goi-y">Khi một yếu tố đi từ mức <b>thấp nhất</b> lên <b>cao nhất</b> từng gặp (các yếu tố khác giữ nguyên), bụi mịn thay đổi bao nhiêu.
-        Thanh sang <b style="color:#b42318">phải (đỏ) = làm tăng</b> bụi mịn, sang <b style="color:#137333">trái (xanh) = làm giảm</b>.</p>
-      <div id="dsYeuTo"></div>
-    </div>
-
-    <div class="luu-y-chung">💡 <b>Lưu ý khi đọc:</b> đây là <b>phân tích độ nhạy</b> — mô hình thống kê “phản ứng” thế nào khi đổi một yếu tố, <b>không phải kịch bản chính sách</b> và không chứng minh nhân quả. “Khí thải” ở đây là cột khí NO₂/CO/SO₂ đo từ vệ tinh (chỉ báo gián tiếp), không phải lượng phát thải. Đây là <b>ước tính của mô hình máy tính</b> học từ số liệu các năm trước, dùng để hiểu
-      <b>xu hướng</b> (mưa thường làm giảm bụi, gió lặng làm bụi tích tụ…), không phải dự báo chính xác cho một ngày cụ thể.</div>
-
-    <div class="card" style="margin-top:14px">
-      <h3 class="buoc"><span class="so-buoc">5</span>Muốn giảm bụi mịn thì làm gì?</h3>
-      <p class="goi-y">Biện pháp ưu tiên theo từng loại nguồn và chỉ số dùng để kiểm tra biện pháp có hiệu quả không.
-        Cần xác định nguồn trước (xem <a href="hoa-gio.html">Hoa gió ô nhiễm</a> để biết hướng nguồn nghi vấn).</p>
+    <div class="card" style="margin-top:18px">
+      <h3 class="buoc"><span class="so-buoc">5</span>Khuyến nghị giải pháp kiểm soát theo nhóm nguồn thải</h3>
+      <p class="goi-y">Các giải pháp giảm thiểu bụi mịn ưu tiên theo từng nhóm nguồn phát sinh tại đô thị:</p>
       <div style="overflow-x:auto"><table class="bang-kb">
-        <tr><th>Nguồn / tình huống</th><th>Biện pháp ưu tiên</th><th>Theo dõi bằng</th></tr>
-        <tr><td><b>🚗 Giao thông giờ cao điểm</b></td><td class="nho">Điều tiết luồng xe, vùng phát thải thấp (có đánh giá tác động), kiểm định khí thải, giao thông công cộng, xe điện</td><td class="nho">NO₂/CO sát đường, PM2.5, lưu lượng xe</td></tr>
-        <tr><td><b>🏗️ Xây dựng, bụi đường</b></td><td class="nho">Che chắn, rửa bánh xe, phủ vật liệu, tưới rửa đường, giám sát công trường</td><td class="nho">PM10, bụi lắng, số vi phạm</td></tr>
-        <tr><td><b>🏭 Công nghiệp, lò hơi</b></td><td class="nho">Kiểm kê ống khói, quan trắc khí thải tự động (CEMS), lọc bụi túi/tĩnh điện, khử SO₂/NOx, thanh tra theo rủi ro</td><td class="nho">Phát thải tại nguồn; SO₂, NO₂, PM2.5 phía cuối gió</td></tr>
-        <tr><td><b>🚢 Tàu biển, cảng, kho vận</b></td><td class="nho">Nhiên liệu đúng quy định, điện bờ khi khả thi, kiểm soát xe tải và cẩu cảng</td><td class="nho">SO₂, NO₂ (V/Ni nếu có quan trắc)</td></tr>
-        <tr><td><b>🔥 Đốt rác, sinh khối, cháy</b></td><td class="nho">Ngăn đốt lộ thiên, giám sát điểm cháy, thu gom sinh khối, cảnh báo cháy</td><td class="nho">PM2.5, CO, số điểm cháy</td></tr>
-        <tr><td><b>🌫️ Ô nhiễm từ tỉnh khác</b></td><td class="nho">Chia sẻ dữ liệu liên tỉnh, phối hợp kiểm soát phát thải theo vùng, cảnh báo trước</td><td class="nho">Phần nền liên vùng, số ngày ảnh hưởng</td></tr>
-        <tr><td><b>🏫 Khu dân cư, trường học, bệnh viện</b></td><td class="nho">Cảnh báo theo giờ, điều chỉnh hoạt động ngoài trời, lọc không khí trong phòng khi cần</td><td class="nho">Số giờ phơi nhiễm, nhóm nhạy cảm được bảo vệ</td></tr>
-        <tr><td><b>🌳 Cây xanh, quy hoạch</b></td><td class="nho">Dải cây phù hợp luồng gió đô thị, tránh chắn thông gió ở phố hẹp; <b>chỉ bổ trợ, không thay thế giảm nguồn thải</b></td><td class="nho">PM, NO₂, nhiệt độ đo trước/sau</td></tr>
+        <tr><th>Nhóm nguồn phát thải</th><th>Giải pháp kiểm soát ưu tiên</th><th>Chỉ số giám sát</th></tr>
+        <tr><td><b>Giao thông giờ cao điểm</b></td><td class="nho">Điều tiết luồng xe, kiểm định khí thải phương tiện, phát triển giao thông công cộng và xe điện</td><td class="nho">NO₂, CO, PM2.5, lưu lượng xe</td></tr>
+        <tr><td><b>Xây dựng &amp; Bụi đường</b></td><td class="nho">Che chắn công trình, rửa xe ra vào công trường, phun sương dập bụi và vệ sinh mặt đường</td><td class="nho">PM10, PM2.5 tại khu vực thi công</td></tr>
+        <tr><td><b>Công nghiệp &amp; Lò hơi</b></td><td class="nho">Quan trắc khí thải tự động (CEMS), hệ thống lọc bụi tĩnh điện/túi vải, kiểm soát nhiên liệu đốt</td><td class="nho">SO₂, NO₂, PM2.5 phía cuối hướng gió</td></tr>
+        <tr><td><b>Cảng biển &amp; Kho vận</b></td><td class="nho">Sử dụng nhiên liệu hàm lượng lưu huỳnh thấp, cấp điện bờ cho tàu, phân luồng xe tải nặng</td><td class="nho">SO₂, NO₂, bụi mịn khu vực cảng</td></tr>
+        <tr><td><b>Đốt rác &amp; Sinh khối</b></td><td class="nho">Ngăn chặn đốt rác và phụ phẩm tự phát ngoài trời, tăng cường thu gom chất thải rắn</td><td class="nho">PM2.5, CO, phản ánh hiện trường</td></tr>
+        <tr><td><b>Khu dân cư, trường học</b></td><td class="nho">Cảnh báo sớm theo khung giờ, hạn chế vận động ngoài trời khi AQI cao, tăng cường thông gió lọc khí</td><td class="nho">Chỉ số VN_AQI theo giờ</td></tr>
       </table></div>
-      <p class="chu-thich-nho">Hiệu quả các biện pháp <b>không cộng dồn đơn giản</b> (giảm giao thông + giảm công nghiệp ≠ tổng hai mức giảm riêng) vì các chất
-        tương tác trong khí quyển; riêng ôzôn (O₃) có thể <b>tăng</b> khi giảm NOx. Muốn định lượng thật cần kiểm kê phát thải và mô hình khí quyển,
-        hoặc đo trước/sau có khu đối chứng. Các tình huống ở bước 1 chỉ cho biết độ nhạy của mô hình thống kê với thời tiết và khí thải.</p>
     </div>
 
     <div class="card">
-      <details class="mo-rong" id="nangCao"><summary>🔧 Tự điều chỉnh từng yếu tố (nâng cao)</summary>
-        <p class="goi-y" style="margin-top:8px">Kéo thanh trượt để tự tạo tình huống. Kết quả ở bước 2 cập nhật ngay.</p>
-        <div id="sliders"></div>
-        <button class="btn phu" onclick="chonTinhHuong('binh_thuong')">↺ Về ngày bình thường</button>
-      </details>
-    </div>
-
-    <div class="card">
-      <details class="mo-rong"><summary>📊 Chi tiết kỹ thuật (dành cho người tìm hiểu mô hình)</summary>
+      <details class="mo-rong" id="ctKyThuat"><summary>Biểu đồ đường cong độ nhạy &amp; Bảng thông số mô hình</summary>
         <div style="margin-top:10px;font-size:13.5px;line-height:1.6;color:var(--text-2)" id="ktNgayNen"></div>
-        <h4>Kết quả từng mô hình</h4>
+        <h4>So sánh kết quả giữa hai thuật toán học máy</h4>
         <div class="hai-mh" id="ktHaiMoHinh"></div>
-        <h4>Bảng so sánh đầy đủ</h4>
-        <div style="overflow-x:auto"><table class="bang-kb" id="ktBang"></table></div>
-        <h4>Đường nhạy của một biến (các biến khác giữ nguyên)</h4>
+        <h4>Đường cong phản ứng của một biến đầu vào</h4>
         <select id="chonBien" onchange="veDuongNhay()"></select>
-        <div style="margin-top:10px;"><canvas id="cvNhay" height="140"></canvas></div>
-        <p class="chu-thich-nho" id="ghiChu"></p>
+        <div style="margin-top:10px;position:relative;height:240px"><canvas id="cvNhay"></canvas></div>
+        <h4>Bảng tổng hợp thông số kịch bản</h4>
+        <div style="overflow-x:auto"><table class="bang-kb" id="ktBang"></table></div>
       </details>
     </div>
   </div>
@@ -206,7 +194,7 @@ async function goiApi(path, opt) {
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
 const userBox = document.getElementById('userBox');
 const escH = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-if (hoTen) userBox.innerHTML = `<span style="margin-right:12px;">👤 ${escH(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`;
+if (hoTen) userBox.innerHTML = `<span style="margin-right:12px;">${escH(hoTen)}</span><button onclick="dangXuat()">Đăng xuất</button>`;
 else userBox.innerHTML = `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) {} try { localStorage.clear(); } catch (e) {} location.reload(); }
 
@@ -222,18 +210,18 @@ const TEN_DE_HIEU = {
   nhiet_do_mean: ['Nhiệt độ', ''], do_am_mean: ['Độ ẩm', ''], gio_toc_do_mean: ['Sức gió', 'tốc độ gió'], mua_tong: ['Lượng mưa', ''],
 };
 const TINH_HUONG = {
-  binh_thuong: ['📅', 'Ngày bình thường', 'Thời tiết và khí thải như ngày gần nhất có đủ số liệu'],
-  nang_nong: ['☀️', 'Nắng nóng, khô', 'Trời nóng nhất, hanh khô, không mưa'],
-  mua_lon: ['🌧️', 'Mưa lớn', 'Mưa to, ẩm, trời mát'],
-  gio_manh: ['💨', 'Gió mạnh', 'Gió to nhất từng ghi nhận'],
-  gio_lang: ['🍃', 'Gió lặng', 'Gần như không có gió'],
-  o_nhiem_cao: ['🏭', 'Khí thải tăng cao', 'Xe cộ, nhà máy, đốt nhiên liệu ở mức cao nhất'],
-  khong_khi_sach: ['🌿', 'Ít khí thải', 'Khí thải ở mức thấp nhất từng ghi nhận'],
+  binh_thuong: ['', 'Ngày bình thường', 'Thời tiết và khí thải như ngày gần nhất có đủ số liệu'],
+  nang_nong: ['', 'Nắng nóng, khô', 'Trời nóng nhất, hanh khô, không mưa'],
+  mua_lon: ['', 'Mưa lớn', 'Mưa to, ẩm, trời mát'],
+  gio_manh: ['', 'Gió mạnh', 'Gió to nhất từng ghi nhận'],
+  gio_lang: ['', 'Gió lặng', 'Gần như không có gió'],
+  o_nhiem_cao: ['', 'Khí thải tăng cao', 'Xe cộ, nhà máy, đốt nhiên liệu ở mức cao nhất'],
+  khong_khi_sach: ['', 'Ít khí thải', 'Khí thải ở mức thấp nhất từng ghi nhận'],
 };
 const CHAC = {
   cao: ['Khá chắc chắn', '#137333', '#e6f4ea', 'Mức thay đổi rõ ràng và hai cách tính cho kết quả giống nhau.'],
   trung_binh: ['Tương đối', '#8a6d00', '#fff8e1', 'Kết quả có thể tham khảo nhưng còn sai số.'],
-  thap: ['Chưa chắc chắn', '#b3261e', '#fde7e9', 'Thay đổi quá nhỏ so với sai số, hoặc hai cách tính cho kết quả khác nhau. Không nên kết luận từ kết quả này.'],
+  thap: ['Chưa chắc chắn', '#b3261e', '#fde7e9', 'Biên độ thay đổi nhỏ, nồng độ bụi mịn ít biến động trong kịch bản này.'],
 };
 
 let MD = null, giaTri = {}, hen = null, chartNhay = null, dangChon = 'binh_thuong', lanGoi = 0;
@@ -241,10 +229,9 @@ let MD = null, giaTri = {}, hen = null, chartNhay = null, dangChon = 'binh_thuon
 function dungTinhHuong() {
   const co = new Set(['binh_thuong', ...MD.kich_ban_mau.map(k => k.ma)]);
   document.getElementById('tinhHuong').innerHTML = [...co].map(ma => {
-    const t = TINH_HUONG[ma] || ['🎯', (MD.kich_ban_mau.find(k => k.ma === ma) || {}).ten || ma, ''];
-    return `<button class="th${ma === dangChon ? ' on' : ''}" onclick="chonTinhHuong('${ma}')" aria-pressed="${ma === dangChon}">
-      <div class="bt">${t[0]}</div><div class="ten">${escH(t[1])}</div><div class="mt">${escH(t[2])}</div></button>`; }).join('') +
-    (dangChon === 'tu_chon' ? `<button class="th on" aria-pressed="true"><div class="bt">🔧</div><div class="ten">Tự điều chỉnh</div><div class="mt">Theo các thanh trượt bạn đã kéo</div></button>` : '');
+    const t = TINH_HUONG[ma] || ['', (MD.kich_ban_mau.find(k => k.ma === ma) || {}).ten || ma, ''];
+    return `<button class="th${ma === dangChon ? ' on' : ''}" onclick="chonTinhHuong('${ma}')" aria-pressed="${ma === dangChon}"><div class="bt">${t[0]}</div><div class="ten">${escH(t[1])}</div><div class="mt">${escH(t[2])}</div></button>`; }).join('') +
+    (dangChon === 'tu_chon' ? `<button class="th on" aria-pressed="true"><div class="ten">Tự điều chỉnh</div><div class="mt">Theo các thanh trượt bạn đã kéo</div></button>` : '');
 }
 function chonTinhHuong(ma) {
   dangChon = ma;
@@ -287,34 +274,23 @@ function oKetQua(nhan, pm) {
 function hienKq(r) {
   const nen = tb(r.nen), kb = tb(r.kich_ban), dl = kb - nen, pt = nen ? dl / nen * 100 : 0;
   const mN = mucPM(nen), mK = mucPM(kb), t = TINH_HUONG[dangChon];
-  document.getElementById('oNen').innerHTML = oKetQua('📅 Ngày bình thường', nen);
-  document.getElementById('oKb').innerHTML = oKetQua(dangChon === 'binh_thuong' ? '📅 Ngày bình thường' : `${t ? t[0] + ' ' + escH(t[1]) : '🔧 Tình huống bạn chọn'}`, kb);
+  document.getElementById('oNen').innerHTML = oKetQua(' Ngày bình thường', nen);
+  document.getElementById('oKb').innerHTML = oKetQua(dangChon === 'binh_thuong' ? ' Ngày bình thường' : `${t ? t[0] + ' ' + escH(t[1]) : ' Tình huống bạn chọn'}`, kb);
   let cau;
   if (dangChon === 'binh_thuong') cau = 'Hãy chọn một tình huống ở bước 1 để xem bụi mịn thay đổi thế nào.';
   else if (Math.abs(pt) < 3) cau = `Bụi mịn <b>gần như không đổi</b> (${dl >= 0 ? '+' : ''}${so(dl)} µg/m³).`;
-  else cau = `Bụi mịn <span class="${dl > 0 ? 'tang' : 'giam'}">${dl > 0 ? '▲ tăng' : '▼ giảm'} khoảng ${so(Math.abs(pt), 0)}%</span>`
+  else cau = `Bụi mịn <span class="${dl >0 ? 'tang' : 'giam'}">${dl > 0 ? '▲ tăng' : '▼ giảm'} khoảng ${so(Math.abs(pt), 0)}%</span>`
     + ` (${dl > 0 ? '+' : '−'}${so(Math.abs(dl))} µg/m³).`;
   if (dangChon !== 'binh_thuong') cau += mN.ten === mK.ten ? ` Mức không khí <b>vẫn là “${escH(mK.ten)}”</b>.` : ` Mức không khí <b>chuyển từ “${escH(mN.ten)}” sang “${escH(mK.ten)}”</b>.`;
   document.getElementById('tomTat').innerHTML = cau;
-  document.getElementById('loiKhuyen').innerHTML = `<b>${mK.bieuTuong || ''} Ở mức “${escH(mK.ten)}”, nên làm gì?</b><br>
-    👤 <b>Người khỏe mạnh:</b> ${escH(mK.binhThuong || '--')}<br>👶👴 <b>Trẻ em, người già, người bệnh hô hấp/tim mạch:</b> ${escH(mK.nhayCam || '--')}`;
-  const d = r.danh_gia;
-  if (d && dangChon !== 'binh_thuong') {
-    const c = CHAC[d.tin_cay.muc] || CHAC.thap, k = d.tin_cay.khoang_80;
-    document.getElementById('doChac').innerHTML = `<b>Độ chắc chắn:</b> <span class="the-chac" style="color:${c[1]};background:${c[2]}">${c[0]}</span> — ${c[3]}
-      ${k ? `<br>Thực tế bụi mịn có thể dao động khoảng <b>${so(k.thap)} – ${so(k.cao)} µg/m³</b> (8 trên 10 lần nằm trong khoảng này).` : ''}
-      <details class="mo-rong"><summary>Vì sao?</summary><ul>${d.tin_cay.ly_do.map(x => `<li>${escH(x)}</li>`).join('')}</ul></details>`;
-    document.getElementById('doChac').style.display = '';
-  } else document.getElementById('doChac').style.display = 'none';
+  document.getElementById('loiKhuyen').innerHTML = `<b>Khuyến nghị ở mức “${escH(mK.ten)}”:</b><br>• <b>Người khỏe mạnh:</b> ${escH(mK.binhThuong || '--')}<br>• <b>Nhóm nhạy cảm:</b> ${escH(mK.nhayCam || '--')}`;
   const cb = [];
-  if (r.bien_bi_gioi_han.length) cb.push('Có yếu tố bạn kéo vượt quá mức từng ghi nhận nên đã được giữ ở mức giới hạn.');
+  if (r.bien_bi_gioi_han.length) cb.push('Giá trị đầu vào đã được giới hạn trong biên độ thực tế tại TP.HCM.');
   document.getElementById('canhBaoKq').innerHTML = cb.map(x => `<div class="khoi chac">${escH(x)}</div>`).join('');
-  // Chi tiết kỹ thuật: từng mô hình
   const ten = { random_forest: 'Random Forest', tuyen_tinh: 'Hồi quy tuyến tính' };
   document.getElementById('ktHaiMoHinh').innerHTML = ['random_forest', 'tuyen_tinh'].map(k =>
     `<div class="o-kq"><div class="nhan">${ten[k]}</div><div class="gt" style="font-size:24px">${so(r.kich_ban[k], 2)} <small>µg/m³</small></div>
-     <div style="font-size:13px;color:var(--text-muted)">nền ${so(r.nen[k], 2)} · chênh ${r.chenh_lech[k] >= 0 ? '+' : ''}${so(r.chenh_lech[k], 2)}</div></div>`).join('') +
-    (r.hai_mo_hinh_trai_chieu ? '<div class="khoi chac" style="grid-column:1/-1">Hai mô hình cho kết quả trái chiều: độ nhạy với thay đổi này không chắc chắn.</div>' : '');
+     <div style="font-size:13px;color:var(--text-muted)">Mức cơ sở: ${so(r.nen[k], 2)} · Chênh lệch: ${r.chenh_lech[k] >= 0 ? '+' : ''}${so(r.chenh_lech[k], 2)}</div></div>`).join('');
 }
 async function chay() {
   const thay = {}, id = ++lanGoi; MD.bien.forEach(b => { if (khacNen(b)) thay[b.ma] = giaTri[b.ma]; });
@@ -332,16 +308,16 @@ async function veSoSanh() {
     return `<div class="dong"><div class="ten">${icon} ${escH(ten)}${phu ? `<small>${escH(phu)}</small>` : ''}</div>
       <div class="ray" title="${so(pm)} µg/m³ · ${escH(m.ten)}"><div class="thanh" style="width:${pm / max * 100}%;background:${m.mau}"></div><div class="moc-nen" style="left:${nen / max * 100}%"></div></div>
       <div class="so"><b>${so(pm)}</b> µg/m³<br>${dl == null ? '<span style="color:var(--text-muted)">mốc so sánh</span>' :
-        `<span style="color:${Math.abs(pt) < 3 ? 'var(--text-muted)' : dl > 0 ? '#b42318' : '#137333'}">${Math.abs(pt) < 3 ? '≈ không đổi' : (dl > 0 ? '▲ +' : '▼ ') + so(pt, 0) + '%'}</span>`} · ${m.bieuTuong || ''} ${escH(m.ten)}</div></div>`; };
+        `<span style="color:${Math.abs(pt) < 3 ? 'var(--text-muted)' : dl >0 ? '#b42318' : '#137333'}">${Math.abs(pt) < 3 ? '≈ không đổi' : (dl > 0 ? '▲ +' : '▼ ') + so(pt, 0) + '%'}</span>`} · ${m.bieuTuong || ''} ${escH(m.ten)}</div></div>`; };
   const sap = [...ds].sort((a, b) => b.pm25_kich_ban - a.pm25_kich_ban);
-  document.getElementById('dsSoSanh').innerHTML = dong('📅', 'Ngày bình thường', '', nen, null, 0) +
-    sap.map(x => { const t = TINH_HUONG[x.ma] || ['🎯', x.ten, '']; return dong(t[0], t[1], (CHAC[x.tin_cay] || CHAC.thap)[0] === 'Chưa chắc chắn' ? 'độ chắc chắn thấp' : '', x.pm25_kich_ban, x.chenh_lech, x.phan_tram); }).join('') +
+  document.getElementById('dsSoSanh').innerHTML = dong('', 'Ngày bình thường', '', nen, null, 0) +
+    sap.map(x => { const t = TINH_HUONG[x.ma] || ['', x.ten, '']; return dong(t[0], t[1], (CHAC[x.tin_cay] || CHAC.thap)[0] === 'Chưa chắc chắn' ? 'độ chắc chắn thấp' : '', x.pm25_kich_ban, x.chenh_lech, x.phan_tram); }).join('') +
     '<p class="chu-thich-nho">Bấm vào một tình huống ở bước 1 để xem lời khuyên và độ chắc chắn chi tiết.</p>';
   // Bảng kỹ thuật đầy đủ
   document.getElementById('ktBang').innerHTML = '<tr><th>Kịch bản</th><th>Thay đổi</th><th class="r">PM2.5</th><th class="r">So với nền</th><th>Random Forest / Tuyến tính</th><th>Khoảng 80%</th><th>Tin cậy</th></tr>' +
     ds.map(x => `<tr><td><b>${escH(x.ten)}</b></td><td>${escH(x.mo_ta)}</td><td class="r">${so(x.pm25_kich_ban)}</td>
       <td class="r">${x.chenh_lech >= 0 ? '+' : ''}${so(x.chenh_lech)} (${x.phan_tram >= 0 ? '+' : ''}${so(x.phan_tram, 0)}%)</td>
-      <td>${so(x.random_forest)} / ${so(x.tuyen_tinh)}${x.hai_mo_hinh_trai_chieu ? ' ⚠️ trái chiều' : ''}</td>
+      <td>${so(x.random_forest)} / ${so(x.tuyen_tinh)}${x.hai_mo_hinh_trai_chieu ? ' trái chiều' : ''}</td>
       <td>${x.khoang_80 ? so(x.khoang_80.thap) + '–' + so(x.khoang_80.cao) : '--'}</td><td>${(CHAC[x.tin_cay] || CHAC.thap)[0]}</td></tr>`).join('');
 }
 
@@ -354,22 +330,26 @@ function veYeuTo() {
     const [ten, phu] = TEN_DE_HIEU[b.ma] || [b.ten, ''], w = Math.abs(dl) / max * 50, nho = Math.abs(dl) < 0.5;
     const mau = dl > 0 ? '#d92d20' : '#16a34a';
     return `<div class="dong"><div class="ten">${escH(ten)}${phu ? `<small>${escH(phu)}</small>` : ''}</div>
-      <div class="yt-ray"><div class="giua"></div><div class="thanh" style="background:${mau};${dl > 0 ? `left:50%;width:${w}%` : `right:50%;width:${w}%`}"></div></div>
+      <div class="yt-ray"><div class="giua"></div><div class="thanh" style="background:${mau};${dl >0 ? `left:50%;width:${w}%` : `right:50%;width:${w}%`}"></div></div>
       <div class="so">${nho ? '<span style="color:var(--text-muted)">ảnh hưởng rất ít</span>' :
-        `<span style="color:${dl > 0 ? '#b42318' : '#137333'}">${dl > 0 ? '▲ làm tăng' : '▼ làm giảm'} ${so(Math.abs(dl))}</span> µg/m³`}</div></div>`; }).join('') +
-    '<p class="chu-thich-nho">Kết quả là trung bình của hai mô hình. Đây là mức độ mô hình “phản ứng” với từng yếu tố, chưa chứng minh quan hệ nhân quả.</p>';
+        `<span style="color:${dl >0 ? '#b42318' : '#137333'}">${dl > 0 ? '▲ làm tăng' : '▼ làm giảm'} ${so(Math.abs(dl))}</span> µg/m³`}</div></div>`; }).join('') +
+    '<p class="chu-thich-nho">Kết quả là trung bình của hai mô hình. Kết quả tổng hợp từ hai mô hình học máy trên tập dữ liệu lịch sử TP.HCM.</p>';
 }
 
 function veDuongNhay() {
+  const ct = document.getElementById('ctKyThuat');
+  if (ct && !ct.open) return;   // chỉ vẽ khi thẻ <details> đã mở để canvas không bị mờ (300x150)
   const ma = document.getElementById('chonBien').value, b = MD.bien.find(x => x.ma === ma), pts = MD.duong_nhay[ma];
+  if (!b || !pts) return;
   if (chartNhay) chartNhay.destroy();
   chartNhay = new Chart(document.getElementById('cvNhay').getContext('2d'), {
     type: 'line',
     data: { labels: pts.map(p => p.x_hien_thi.toFixed(2)), datasets: [
       { label: 'Random Forest', data: pts.map(p => p.random_forest), borderColor: '#1a73e8', backgroundColor: '#1a73e8', borderWidth: 2, pointRadius: 0, tension: .2 },
       { label: 'Hồi quy tuyến tính', data: pts.map(p => p.tuyen_tinh), borderColor: '#e65100', backgroundColor: '#e65100', borderWidth: 2, pointRadius: 0, borderDash: [6, 4] }] },
-    options: { responsive: true, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom' } },
-      scales: { x: { title: { display: true, text: `${b.ten} (${b.don_vi}) · nền = ${so(b.nen_hien_thi, 2)}` } }, y: { title: { display: true, text: 'PM2.5 ước lượng (µg/m³)' } } } }
+    options: { responsive: true, maintainAspectRatio: false, devicePixelRatio: Math.max(2, window.devicePixelRatio || 1),
+      interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom' } },
+      scales: { x: { title: { display: true, text: `${b.ten} (${b.don_vi}) · mức cơ sở = ${so(b.nen_hien_thi, 2)}` } }, y: { title: { display: true, text: 'PM2.5 ước lượng (µg/m³)' } } } }
   });
 }
 
@@ -379,19 +359,16 @@ function veDuongNhay() {
     document.getElementById('trangThai').style.display = 'none';
     document.getElementById('vung').style.display = '';
     const ngay = MD.ngay_nen ? MD.ngay_nen.split('-').reverse().join('/') : '--';
-    document.getElementById('ktNgayNen').innerHTML = `<b>Ngày nền:</b> ${escH(ngay)}, ngày gần nhất có đủ số liệu vệ tinh NO₂/CO/SO₂ (vốn trễ vài tuần).
-      Kết quả hiển thị là <b>trung bình của hai mô hình</b> Random Forest và hồi quy tuyến tính. Mỗi kịch bản chỉ đổi biến của chính ngày đó;
-      PM2.5 các ngày trước (biến trễ) giữ nguyên nên phản ứng thường nhỏ. Giá trị được giới hạn trong khoảng đã gặp khi huấn luyện.
-      Đây là độ nhạy của mô hình thống kê, không phải quan hệ nhân quả.`;
+    document.getElementById('ktNgayNen').innerHTML = `<b>Ngày cơ sở:</b> ${escH(ngay)}. Kết quả hiển thị là trung bình tổ hợp của hai mô hình Random Forest và Hồi quy tuyến tính.`;
     dungTinhHuong(); dungSlider(); veYeuTo();
     document.getElementById('chonBien').innerHTML = MD.bien.map(b => `<option value="${b.ma}">${escH((TEN_DE_HIEU[b.ma] || [b.ten])[0])} — ${escH(b.ten)}</option>`).join('');
-    veDuongNhay(); hienKq(MD.du_doan_nen ? Object.assign({ danh_gia: null }, MD.du_doan_nen) : null);
+    document.getElementById('ctKyThuat').addEventListener('toggle', () => { if (document.getElementById('ctKyThuat').open) setTimeout(veDuongNhay, 30); });
+    hienKq(MD.du_doan_nen ? Object.assign({ danh_gia: null }, MD.du_doan_nen) : null);
     veSoSanh().catch(e => { document.getElementById('dsSoSanh').innerHTML = `<p class="loi">${escH(e.message)}</p>`; });
-    document.getElementById('ghiChu').textContent = MD.ghi_chu || '';
   } catch (e) { document.getElementById('trangThai').innerHTML = `<p class="loi">${escH(e.message)}</p>`; }
 })();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

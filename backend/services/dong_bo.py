@@ -36,6 +36,15 @@ SQL_TRAM_CU_NHAT = """
         SELECT t.id, MAX(d.ngay_do) AS cuoi FROM tram_quan_trac t
         LEFT JOIN du_lieu_tram_mat_dat d ON d.tram_id = t.id
         WHERE t.trang_thai = 'Hoat Dong' GROUP BY t.id) x"""
+SQL_TRAM_THIEU_90_NGAY = """
+    SELECT COUNT(*) FROM (
+        SELECT t.id, COUNT(d.ngay_do) AS so_ngay
+        FROM tram_quan_trac t
+        LEFT JOIN du_lieu_tram_mat_dat d ON d.tram_id = t.id AND d.ngay_do >= CURRENT_DATE - 92
+        WHERE t.trang_thai = 'Hoat Dong'
+        GROUP BY t.id
+        HAVING COUNT(d.ngay_do) < 88
+    ) x"""
 CACH_LAN_THU = timedelta(hours=3)
 
 _tien_trinh = None
@@ -104,8 +113,11 @@ def can_dong_bo(bay_gio: datetime = None):
     bay_gio = bay_gio or datetime.now()
     with engine.connect() as c:
         cuoi = c.execute(text(SQL_TRAM_CU_NHAT)).scalar()      # trạm thiếu dữ liệu lâu nhất quyết định
+        thieu_90 = c.execute(text(SQL_TRAM_THIEU_90_NGAY)).scalar() or 0
         lan_thu = _lan_gan_nhat(c)
         lan_ok = _lan_gan_nhat(c, chi_thanh_cong=True)
+    if thieu_90 > 0 and (lan_thu is None or bay_gio - lan_thu > CACH_LAN_THU):
+        return f"có {thieu_90} điểm dữ liệu chưa đủ lịch sử 90 ngày"
     return quyet_dinh(bay_gio, cuoi, lan_thu, lan_ok, _gio_phut())
 
 
@@ -133,7 +145,7 @@ def _don_lan_bi_ngat():
 
 
 def _vong_lap():
-    time.sleep(90)   # chờ máy chủ khởi động xong
+    time.sleep(8)   # chờ máy chủ khởi động xong rồi kiểm tra đồng bộ ngay
     while True:
         try:
             _don_lan_bi_ngat()

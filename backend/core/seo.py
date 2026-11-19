@@ -23,7 +23,7 @@ TEN = "AirHCM"
 MO_TA_CHUNG = ("Giám sát và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT): bản đồ AQI, "
                "dự báo PM2.5 24 giờ, cảnh báo ô nhiễm, dữ liệu vệ tinh Sentinel-5P.")
 # Trang riêng tư / quản trị: không cho máy tìm kiếm lập chỉ mục
-KHONG_INDEX = {"login.html", "tai-khoan.html", "nhat-ky.html", "luong-canh-bao.html", "tram.html", "trang-thai-du-lieu.html"}
+KHONG_INDEX = {"login.html", "tai-khoan.html", "nhat-ky.html", "luong-canh-bao.html", "tram.html", "trang-thai-du-lieu.html", "khao-sat.html"}
 # Trang đưa vào sitemap: (tệp, độ ưu tiên, tần suất thay đổi)
 SITEMAP = [("tong-quan.html", "1.0", "hourly"), ("index.html", "0.9", "hourly"), ("du-bao.html", "0.9", "hourly"),
            ("ban-do-nhiet.html", "0.7", "daily"), ("canh-bao.html", "0.7", "hourly"), ("thong-ke.html", "0.6", "daily"),
@@ -74,6 +74,7 @@ def _the_seo(trang: str, noi_dung: str, goc: str) -> str:
                "description": "Số liệu PM2.5, PM10, O3 theo giờ (mô hình CAMS qua Open-Meteo), cột khí NO2/CO/SO2 vệ tinh Sentinel-5P "
                               "và chỉ số VN_AQI tính theo QĐ 1459/QĐ-TCMT cho các trạm tại TP.HCM; kèm dự báo PM2.5 24 giờ.",
                "url": goc + "/tong-quan.html", "inLanguage": "vi", "isAccessibleForFree": True,
+               "license": "https://opensource.org/licenses/MIT",
                "spatialCoverage": {"@type": "Place", "name": "Thành phố Hồ Chí Minh, Việt Nam",
                                    "geo": {"@type": "GeoCoordinates", "latitude": 10.7769, "longitude": 106.7009}},
                "temporalCoverage": "2022-08-01/..", "creator": {"@type": "Person", "name": "Lê Ngọc Ánh Dương"},

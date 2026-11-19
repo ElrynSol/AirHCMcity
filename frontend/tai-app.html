@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Tải ứng dụng AirHCM cho Android (tệp APK) và cài lên iPhone/iPad qua Safari để theo dõi chất lượng không khí TP.HCM.">
+<meta name="description" content="Cài đặt ứng dụng AirHCM trên thiết bị di động Android và iOS để theo dõi chất lượng không khí TP.HCM.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b2545">
@@ -10,125 +10,96 @@
 <meta name="apple-mobile-web-app-title" content="AirHCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
-<title>Tải ứng dụng</title>
+<link rel="stylesheet" href="style.css?v=22">
+<title>Ứng dụng di động AirHCM</title>
 <style>
-  .luoi-app { display: grid; grid-template-columns: 1fr 1fr 300px; gap: 16px; }
+  .luoi-app { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
   .luoi-app > * { min-width: 0; }
-  @media (max-width: 980px) { .luoi-app { grid-template-columns: 1fr; } }
-  .card h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
-  .card h3 .bt { font-size: 26px; }
-  .card.goi-y { outline: 3px solid var(--primary); outline-offset: -1px; }
-  .the-goi-y { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--primary); color: #fff; }
-  .nut-tai { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 18px; border-radius: 12px;
-    background: linear-gradient(135deg, #1b8a3c, #137333); color: #fff; font: 700 16px var(--font); text-decoration: none; margin: 4px 0 6px; }
-  .nut-tai:hover { filter: brightness(1.06); }
+  @media (max-width: 860px) { .luoi-app { grid-template-columns: 1fr; } }
+  .card h3 { margin-top: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .the-nhan { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: var(--primary-soft); color: var(--primary-dark); }
+  .nut-tai { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 13px 18px; border-radius: 10px;
+    background: var(--primary); color: #fff; font: 700 15px var(--font); text-decoration: none; margin: 6px 0 8px; transition: background .15s; }
+  .nut-tai:hover { background: var(--primary-dark); }
   .nut-tai.tat { background: #98a2b3; pointer-events: none; }
-  .phu { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
-  ol.buoc { margin: 10px 0 0; padding-left: 20px; } ol.buoc li { margin: 7px 0; font-size: 14px; line-height: 1.6; }
-  .ky-hieu { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 6px;
-    background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; vertical-align: -5px; }
-  .qr { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; width: 100%; max-width: 250px; margin: 6px auto; }
+  .phu { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+  ol.buoc { margin: 10px 0 0; padding-left: 20px; }
+  ol.buoc li { margin: 8px 0; font-size: 13.5px; line-height: 1.6; color: var(--text-2); }
+  .qr-hop { text-align: center; }
+  .qr { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; width: 100%; max-width: 220px; margin: 10px auto; }
   .qr svg { width: 100%; height: auto; display: block; }
-  .dia-chi { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--surface-2); border-radius: 8px; padding: 7px 10px;
-    word-break: break-all; text-align: center; }
-  .tb { font-size: 13px; padding: 10px 12px; border-radius: 10px; background: #fff8e1; color: #7a5b00; line-height: 1.55; margin-top: 10px; }
-  .nut-chep { width: 100%; margin-top: 8px; padding: 9px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); font: 600 13px var(--font); cursor: pointer; }
-  .so-sanh td, .so-sanh th { font-size: 13px; }
+  .dia-chi { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    word-break: break-all; text-align: center; color: var(--text-2); }
+  .nut-chep { width: 100%; margin-top: 10px; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font: 600 13px var(--font); cursor: pointer; color: var(--text-main); }
+  .nut-chep:hover { background: var(--surface-2); }
+  .phan-cach { border-top: 1px solid var(--border); margin: 18px 0; padding-top: 16px; }
 </style>
 </head>
 <body>
 <div id="header">
-  <div><a href="index.html">🗺️ Bản đồ</a></div>
+  <div><a href="index.html">Bản đồ</a></div>
   <div id="userBox"></div>
 </div>
 <div id="content">
   <div class="hero">
-    <h2>📲 Tải ứng dụng AirHCM</h2>
-    <div class="sub">Theo dõi AQI TP.HCM, dự báo 24 giờ và nhận cảnh báo ô nhiễm ngay trên điện thoại.</div>
+    <h2>Ứng dụng di động AirHCM</h2>
+    <div class="sub">Tra cứu chỉ số AQI theo vị trí GPS, xem dự báo 24 giờ và nhận thông báo cảnh báo tự động trên điện thoại.</div>
   </div>
 
   <div class="luoi-app">
-    <section class="card" id="theAndroid">
-      <h3><span class="bt" aria-hidden="true">🤖</span> Android</h3>
-      <a class="nut-tai tat" id="nutApk" href="#">⬇️ Tải tệp cài đặt (APK)</a>
-      <div class="phu" id="ttApk">Đang kiểm tra tệp cài đặt…</div>
+    <section class="card">
+      <h3><span>1. Cài đặt trên thiết bị Android</span><span class="the-nhan">Tệp APK</span></h3>
+      <a class="nut-tai tat" id="nutApk" href="#">Tải gói cài đặt Android (AirHCM.apk)</a>
+      <div class="phu" id="ttApk">Đang kiểm tra gói cài đặt…</div>
       <ol class="buoc">
-        <li>Bấm <b>Tải tệp cài đặt</b>, chờ tải xong rồi mở tệp <b>AirHCM.apk</b>.</li>
-        <li>Nếu máy hỏi, chọn <b>Cài đặt</b> → bật <b>Cho phép từ nguồn này</b> (ứng dụng phát hành ngoài Google Play).</li>
-        <li>Mở AirHCM, chọn <b>Cho phép</b> thông báo để nhận cảnh báo khi AQI vượt ngưỡng — app tự kiểm tra mỗi 30 phút kể cả khi đã đóng.</li>
+        <li>Tải tệp <b>AirHCM.apk</b> về điện thoại và mở tệp để bắt đầu cài đặt.</li>
+        <li>Xác nhận quyền cài đặt ứng dụng khi trình duyệt yêu cầu.</li>
+        <li>Mở ứng dụng và cấp quyền vị trí / thông báo để nhận cảnh báo chất lượng không khí tại khu vực của bạn.</li>
       </ol>
-      <p class="phu">Google Play Protect có thể cảnh báo vì ứng dụng chưa đăng trên Google Play — đây là ứng dụng đồ án, chọn <b>Vẫn cài đặt</b>.</p>
+
+      <div class="phan-cach">
+        <h3><span>2. Cài đặt dạng Web App (iOS / Mọi trình duyệt)</span><span class="the-nhan">PWA</span></h3>
+        <p class="phu" style="margin:0 0 8px">Hỗ trợ sử dụng toàn màn hình như ứng dụng gốc mà không cần tải tệp cài đặt:</p>
+        <ol class="buoc">
+          <li>Trên iPhone/iPad (trình duyệt <b>Safari</b>): Bấm biểu tượng <b>Chia sẻ</b> ở thanh công cụ dưới cùng, chọn <b>Thêm vào Màn hình chính</b>.</li>
+          <li>Trên máy tính hoặc Android (Chrome / Edge): Bấm biểu tượng <b>Cài đặt ứng dụng</b> ở thanh địa chỉ trình duyệt.</li>
+        </ol>
+      </div>
     </section>
 
-    <section class="card" id="theIos">
-      <h3><span class="bt" aria-hidden="true">🍎</span> iPhone / iPad</h3>
-      <p class="phu" style="margin-top:0">Apple không cho cài tệp ứng dụng ngoài App Store, nên AirHCM cài dạng <b>ứng dụng web</b>:
-        có biểu tượng trên màn hình chính, mở toàn màn hình, nhận thông báo đẩy (iOS 16.4 trở lên).</p>
-      <ol class="buoc">
-        <li>Mở trang này bằng <b>Safari</b> (Chrome trên iPhone không cài được).</li>
-        <li>Bấm nút <b>Chia sẻ</b> <span class="ky-hieu" aria-label="biểu tượng chia sẻ">⬆️</span> ở thanh dưới cùng.</li>
-        <li>Kéo xuống, chọn <b>Thêm vào MH chính</b> <span class="ky-hieu" aria-hidden="true">➕</span> → <b>Thêm</b>.</li>
-        <li>Mở AirHCM từ biểu tượng trên màn hình chính, vào <b>Tài khoản & bảo mật</b> để bật thông báo nền.</li>
-      </ol>
-      <p class="phu">Muốn có trên App Store cần tài khoản Apple Developer (99 USD/năm) và máy Mac để đóng gói.</p>
-    </section>
-
-    <section class="card" id="theQr">
-      <h3><span class="bt" aria-hidden="true">📷</span> Quét mã bằng điện thoại</h3>
+    <section class="card qr-hop">
+      <h3><span>Quét mã QR để mở trên điện thoại</span></h3>
+      <p class="phu" style="margin:0">Sử dụng camera điện thoại hoặc Zalo để quét mã truy cập nhanh:</p>
       <div class="qr" id="qr" role="img" aria-label="Mã QR mở trang tải ứng dụng"></div>
       <div class="dia-chi" id="diaChi">…</div>
-      <button class="nut-chep" type="button" id="nutChep">📋 Sao chép đường dẫn</button>
-      <div id="ghiChu"></div>
+      <button class="nut-chep" type="button" id="nutChep">Sao chép đường dẫn</button>
     </section>
   </div>
-
-  <section class="card">
-    <h3>Ứng dụng hay trình duyệt?</h3>
-    <div style="overflow-x:auto">
-      <table class="so-sanh">
-        <thead><tr><th></th><th>App Android</th><th>iPhone (thêm vào màn hình chính)</th><th>Trình duyệt</th></tr></thead>
-        <tbody>
-          <tr><td>Bản đồ, dự báo, cảnh báo, phản ánh</td><td>Có</td><td>Có</td><td>Có</td></tr>
-          <tr><td>Biểu tượng riêng, mở toàn màn hình</td><td>Có</td><td>Có</td><td>Không</td></tr>
-          <tr><td>Cảnh báo khi đã đóng ứng dụng</td><td>Có (tự kiểm tra 30 phút/lần)</td><td>Có (thông báo đẩy, iOS 16.4+, cần HTTPS)</td><td>Có với Chrome/Edge/Firefox (cần HTTPS)</td></tr>
-          <tr><td>Cập nhật phiên bản mới</td><td>Nội dung tự cập nhật; tải lại APK khi đổi tính năng nền</td><td>Tự động</td><td>Tự động</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
 </div>
 <script>
 (function () {
   const $ = id => document.getElementById(id);
-  const ua = navigator.userAgent;
-  const laAndroid = /Android/i.test(ua), laIos = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const goiY = laAndroid ? $('theAndroid') : laIos ? $('theIos') : $('theQr');
-  goiY.classList.add('goi-y');
-  const t = document.createElement('span'); t.className = 'the-goi-y'; t.textContent = laAndroid || laIos ? 'Thiết bị của bạn' : 'Đang dùng máy tính';
-  goiY.querySelector('h3').appendChild(t);
-  if (laAndroid || laIos) goiY.parentNode.insertBefore(goiY, goiY.parentNode.firstChild);
-  if (/AirHCM-App/.test(ua)) { $('ttApk').textContent = 'Bạn đang dùng ứng dụng AirHCM.'; }
-
   fetch((window.API_ORIGIN || '') + '/api/v1/ung-dung', { cache: 'no-store' }).then(r => r.json()).then(d => {
-    $('qr').innerHTML = d.qr_svg;   // SVG do máy chủ tạo bằng thư viện qrcode, không chứa dữ liệu người dùng nhập
+    $('qr').innerHTML = d.qr_svg;
     $('diaChi').textContent = d.trang_tai;
-    $('nutChep').onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.trang_tai).then(() => { $('nutChep').textContent = '✅ Đã sao chép'; });
-    if (d.ghi_chu) { const g = document.createElement('div'); g.className = 'tb'; g.textContent = d.ghi_chu; $('ghiChu').appendChild(g); }
+    $('nutChep').onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.trang_tai).then(() => { $('nutChep').textContent = 'Đã sao chép đường dẫn'; });
     if (d.apk) {
-      $('nutApk').href = (window.API_ORIGIN || '') + d.apk.duong_dan; $('nutApk').classList.remove('tat');
-      $('nutApk').textContent = `⬇️ Tải tệp cài đặt (APK · ${String(d.apk.kich_thuoc_mb).replace('.', ',')} MB)`;
-      $('ttApk').textContent = `Cập nhật ${new Date(d.apk.cap_nhat).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })} · Android 7.0 trở lên · SHA-256 ${d.apk.sha256.slice(0, 16)}…`;
-    } else $('ttApk').textContent = 'Máy chủ chưa có tệp cài đặt Android.';
+      $('nutApk').href = (window.API_ORIGIN || '') + d.apk.duong_dan;
+      $('nutApk').classList.remove('tat');
+      $('nutApk').textContent = `Tải gói cài đặt Android (APK · ${String(d.apk.kich_thuoc_mb).replace('.', ',')} MB)`;
+      $('ttApk').textContent = `Phiên bản cập nhật ngày ${new Date(d.apk.cap_nhat).toLocaleDateString('vi-VN')} · Yêu cầu Android 7.0 trở lên`;
+    } else {
+      $('ttApk').textContent = 'Hiện chưa có tệp APK trên máy chủ.';
+    }
   }).catch(() => { $('ttApk').textContent = 'Không kết nối được máy chủ.'; });
 })();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

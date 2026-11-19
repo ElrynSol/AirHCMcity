@@ -11,16 +11,16 @@
 <meta name="apple-mobile-web-app-title" content="AQI TP.HCM">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<script src="app-config.js"></script>
-<script src="aqi-vn.js"></script>
-<script src="song-truc-tiep.js"></script>
+<script src="app-config.js?v=22"></script>
+<script src="aqi-vn.js?v=22"></script>
+<script src="song-truc-tiep.js?v=22"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=22">
 <title>Trạng thái dữ liệu</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="chart-theme.js"></script>
+<script src="chart-theme.js?v=22"></script>
 <style>
   .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
   .kpi { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
@@ -36,22 +36,20 @@
   
 </style>
 </head>
-<body>
-
-<div id="header">
+<body><div id="header">
   <div>
-    <a href="index.html">🗺️ Bản đồ</a>
-    <a href="tram.html">📋 Danh sách điểm ước tính</a>
-    <a href="so-sanh.html">📊 So sánh</a>
-    <a href="canh-bao.html">⚠️ Cảnh báo</a>
-    <a href="du-bao.html">🔮 Dự báo</a>
-    <a href="kich-ban.html">🎛️ Kịch bản</a>
-    <a href="ban-do-nhiet.html">🌡️ Bản đồ nhiệt</a>
-    <a href="thong-ke.html">📈 Thống kê</a>
-    <a href="bao-cao.html">📄 Báo cáo</a>
-    <a href="trang-thai-du-lieu.html"><b>🛰️ Dữ liệu</b></a>
-    <a href="nhat-ky.html" id="navNhatKy" style="display:none">🧾 Nhật ký</a>
-    <a href="gioi-thieu.html">ℹ️ Giới thiệu</a>
+    <a href="index.html">Bản đồ</a>
+    <a href="tram.html">Danh sách điểm ước tính</a>
+    <a href="so-sanh.html">So sánh</a>
+    <a href="canh-bao.html">Cảnh báo</a>
+    <a href="du-bao.html">Dự báo</a>
+    <a href="kich-ban.html">Kịch bản</a>
+    <a href="ban-do-nhiet.html">Bản đồ nhiệt</a>
+    <a href="thong-ke.html">Thống kê</a>
+    <a href="bao-cao.html">Báo cáo</a>
+    <a href="trang-thai-du-lieu.html"><b>Dữ liệu</b></a>
+    <a href="nhat-ky.html" id="navNhatKy" style="display:none">Nhật ký</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
   </div>
   <div id="userBox"></div>
 </div>
@@ -59,21 +57,40 @@
 
 <div id="content">
 
-  <div class="hero"><h2>🛰️ Trạng thái &amp; nguồn dữ liệu</h2><div class="sub">Minh bạch dữ liệu nào là mô hình, vệ tinh, hay ước tính, và cập nhật tới ngày nào</div></div>
+  <div class="hero"><h2>Đặc tả Nguồn &amp; Trạng thái Dữ liệu</h2><div class="sub">Phân loại bản chất vật lý, độ phân giải không gian – thời gian và trạng thái cập nhật của các nguồn dữ liệu trong hệ thống</div></div>
   <div id="thongBaoLoi"></div>
 
-  <div class="card" id="theDongBo">
-    <h3>🔄 Đồng bộ dữ liệu tự động</h3>
-    <div class="db-o" id="dbTomTat"><div class="trong">Đang tải…</div></div>
-    <p class="db-ghi">Không cần chạy lệnh bằng tay: <b>Windows Task Scheduler</b> chạy lúc 7:30 mỗi ngày (máy tắt thì chạy ngay khi bật lại), và <b>máy chủ</b> kiểm tra mỗi 10 phút. Nếu thiếu ngày hôm qua, máy chủ tự lấy bù mọi ngày còn thiếu. Các bước ghi dữ liệu không tạo bản trùng; ngày nguồn chưa có số liệu (thời tiết lưu trữ trễ vài ngày, vệ tinh trễ khoảng 1 tuần) sẽ được tự lấy lại ở lần sau.</p>
-    <div id="dbQuanTri" style="display:none;margin:10px 0">
-      <button class="btn" id="nutDongBo">🔄 Đồng bộ ngay</button>
-      <button class="btn" id="nutLog" style="background:#fff;color:var(--primary-dark);border:1px solid #c9d6ea;box-shadow:none;margin-left:6px">Xem log</button>
-      <span id="dbThongBao" style="margin-left:10px;font-size:13px;color:var(--text-2)"></span>
-      <pre id="dbLog" style="display:none;max-height:320px;overflow:auto;background:#0b2545;color:#d6e4ff;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:10px;white-space:pre-wrap"></pre>
-    </div>
-    <div id="dbLichSu" style="overflow-x:auto"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card"><h3>Phân loại &amp; Đặc tả nguồn dữ liệu</h3>
+    <table><thead><tr><th>Chỉ số</th><th>Nguồn cung cấp</th><th>Bản chất dữ liệu</th><th>Độ phân giải</th><th>Độ trễ</th><th>Trạng thái kiểm chứng</th></tr></thead><tbody>
+      <tr><td>PM2.5, PM10, O₃</td><td>Open-Meteo Air Quality (mô hình CAMS)</td><td><span class="tag info">Tái phân tích mô hình</span></td><td>~45 km (0,4°)</td><td>Gần thời gian thực</td><td><span class="tag ok"><a href="phuong-phap.html#tram-that" style="color:inherit;text-decoration:none">Đã đối chiếu 3 trạm OpenAQ</a></span></td></tr>
+      <tr><td>PM2.5 đo thực tế tại trạm</td><td>OpenAQ (LSQ Hoa Kỳ, AirGradient CMT8, Linh Trung)</td><td><span class="tag ok">Quan trắc mặt đất</span></td><td>Tại điểm đặt trạm</td><td>Theo giờ</td><td><span class="tag ok">Dùng làm chuẩn đối chiếu &amp; học máy</span></td></tr>
+      <tr><td>Nhiệt độ, độ ẩm, gió 10m, mưa</td><td>Open-Meteo / ERA5 Reanalysis</td><td><span class="tag info">Tái phân tích khí tượng</span></td><td>~9–25 km</td><td>Gần thời gian thực</td><td><span class="tag info">Chuẩn tái phân tích quốc tế</span></td></tr>
+      <tr><td>NO₂, CO, SO₂</td><td>Sentinel-5P TROPOMI qua Google Earth Engine</td><td><span class="tag info">Viễn thám cột khí (mol/m²)</span></td><td>~1–7 km</td><td>2–3 tuần</td><td><span class="tag warn">Chỉ báo xu hướng (không tính AQI)</span></td></tr>
+      <tr><td>Giá trị theo 168 phường/xã</td><td>Nội suy IDW từ ≤ 4 điểm ước tính gần nhất</td><td><span class="tag warn">Nội suy không gian</span></td><td>Theo ranh giới phường</td><td>—</td><td><span class="tag warn">Tham khảo xu hướng vùng</span></td></tr>
+    </tbody></table>
   </div>
+
+  <div class="grid2">
+    <div class="card"><h3>Chuỗi dữ liệu PM &amp; Khí tượng theo điểm ước tính</h3><div id="bangMatDat">Đang tải…</div></div>
+    <div class="card"><h3>Chuỗi dữ liệu cột khí vệ tinh Sentinel-5P</h3><div id="bangVeTinh">Đang tải…</div></div>
+  </div>
+
+  <details class="card" id="theDongBo" style="padding:14px 18px">
+    <summary style="cursor:pointer;font-weight:700;font-size:15px;color:var(--primary-dark)">Vận hành đồng bộ tự động &amp; Lịch sử tác vụ (Task Scheduler / Background Service)</summary>
+    <div style="margin-top:12px">
+      <div class="db-o" id="dbTomTat"><div class="trong">Đang tải…</div></div>
+      <p class="db-ghi">Hệ thống tự động đồng bộ qua <b>Windows Task Scheduler</b> (07:30 hằng ngày) và dịch vụ nền của máy chủ (kiểm tra mỗi 10 phút), tự động lấy bù các ngày thiếu mà không tạo bản ghi trùng lặp. Thao tác kích hoạt thủ công và xem nhật ký tiến trình bên dưới chỉ hiển thị khi đăng nhập tài khoản Quản trị viên (Admin).</p>
+      <div id="dbQuanTri" style="display:none;margin:10px 0">
+        <button class="btn" id="nutDongBo">Đồng bộ ngay (Admin)</button>
+        <button class="btn" id="nutLog" style="background:#fff;color:var(--primary-dark);border:1px solid #c9d6ea;box-shadow:none;margin-left:6px">Xem log tiến trình</button>
+        <span id="dbThongBao" style="margin-left:10px;font-size:13px;color:var(--text-2)"></span>
+        <pre id="dbLog" style="display:none;max-height:320px;overflow:auto;background:#0b2545;color:#d6e4ff;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:10px;white-space:pre-wrap"></pre>
+      </div>
+      <div id="dbLichSu" style="overflow-x:auto"></div>
+    </div>
+  </details>
   <style>
     .db-o { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin-bottom:10px; }
     .db-o .o { background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
@@ -85,25 +102,13 @@
     .db-tt.loi { background:#fde7e9; color:#b3261e; } .db-tt.dang_chay { background:#e8f0fe; color:#1557b0; }
   </style>
 
-  <div class="card"><h3>📚 Phân loại nguồn dữ liệu</h3>
-    <table><thead><tr><th>Chỉ số</th><th>Nguồn</th><th>Bản chất</th><th>Độ phân giải</th><th>Độ trễ</th><th>Kiểm chứng đo đạc</th></tr></thead><tbody>
-      <tr><td>PM2.5, PM10, O₃</td><td>Open-Meteo Air Quality (mô hình CAMS)</td><td><span class="tag info">Mô hình</span></td><td>~45 km (0,4°)</td><td>Gần thời gian thực</td><td><span class="tag bad">Chưa</span></td></tr>
-      <tr><td>Nhiệt độ, độ ẩm, gió, mưa</td><td>Open-Meteo Weather</td><td><span class="tag info">Mô hình/tái phân tích</span></td><td>~9–25 km</td><td>Gần thời gian thực</td><td><span class="tag warn">Chưa</span></td></tr>
-      <tr><td>NO₂, CO, SO₂</td><td>Sentinel-5P TROPOMI qua Google Earth Engine</td><td><span class="tag info">Vệ tinh (cột khí, mol/m²)</span></td><td>~1–7 km</td><td>2–3 tuần</td><td><span class="tag bad">Không phải nồng độ mặt đất</span></td></tr>
-      <tr><td>Giá trị theo điểm (đã hiệu chỉnh)</td><td>Mô hình hiệu chỉnh không gian (Random Forest)</td><td><span class="tag warn">Ước tính</span></td><td>Theo điểm</td><td>—</td><td><span class="tag bad">Chưa chứng minh</span></td></tr>
-      <tr><td>Giá trị theo phường/xã</td><td>Nội suy IDW từ ≤ 4 điểm gần nhất</td><td><span class="tag warn">Ước tính</span></td><td>Theo phường/xã</td><td>—</td><td><span class="tag bad">Không</span></td></tr>
-    </tbody></table>
-  </div>
-
-  <div class="kpis" id="kpis"></div>
-
-  <div class="grid2">
-    <div class="card"><h3>🌫️ Dữ liệu PM/thời tiết theo điểm</h3><div id="bangMatDat">Đang tải…</div></div>
-    <div class="card"><h3>🛰️ Dữ liệu vệ tinh theo điểm</h3><div id="bangVeTinh">Đang tải…</div></div>
-  </div>
-
-  <div class="card"><h3>🧪 Chất lượng &amp; hiệu chỉnh</h3><div id="hieuChinh">Đang tải…</div></div>
-  <div class="card"><h3>🤖 Mô hình dự báo</h3><div id="moHinh">Đang tải…</div></div>
+  <details class="card" style="padding:14px 18px">
+    <summary style="cursor:pointer;font-weight:700;font-size:15px;color:var(--primary-dark)">Thông số kỹ thuật: Hiệu chỉnh không gian &amp; Metadata mô hình</summary>
+    <div style="margin-top:12px">
+      <h4 style="margin:0 0 8px">Chất lượng &amp; hiệu chỉnh không gian</h4><div id="hieuChinh">Đang tải…</div>
+      <h4 style="margin:14px 0 8px">Metadata mô hình dự báo</h4><div id="moHinh">Đang tải…</div>
+    </div>
+  </details>
 </div>
 
 <script>
@@ -112,7 +117,7 @@ const token = localStorage.getItem('ho_ten') ? 'phien-cookie' : null; // token t
 const hoTen = localStorage.getItem('ho_ten');
 const userBox = document.getElementById('userBox');
 userBox.innerHTML = token
-  ? `<span>👤 ${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
+  ? `<span>${hoTen || ''}</span><button onclick="dangXuat()">Đăng xuất</button>`
   : `<button onclick="window.location.href='login.html'">Đăng nhập</button>`;
 async function dangXuat() { try { await fetch((window.API_ORIGIN || '') + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (e) { /* bỏ qua */ } localStorage.clear(); location.reload(); }
 async function goiApi(path, opt = {}) {
@@ -174,10 +179,10 @@ goiApi('/trang-thai-du-lieu').then(d => {
   function ve(d) {
     const g = d.lich_su[0], dl = d.du_lieu;
     document.getElementById('dbTomTat').innerHTML =
-      `<div class="o"><div class="l">PM, O₃, thời tiết (Open-Meteo)</div><div class="v">${ngay(dl.openmeteo_den)} ${dl.openmeteo_du ? '✅' : '⚠️'}</div><div class="s">${dl.openmeteo_du ? 'đã có tới hôm qua' : 'đang thiếu ngày gần đây'} · cập nhật ${gio(dl.openmeteo_cap_nhat)}</div></div>` +
+      `<div class="o"><div class="l">PM, O₃, thời tiết (Open-Meteo)</div><div class="v">${ngay(dl.openmeteo_den)} ${dl.openmeteo_du ? '' : ''}</div><div class="s">${dl.openmeteo_du ? 'đã có tới hôm qua' : 'đang thiếu ngày gần đây'} · cập nhật ${gio(dl.openmeteo_cap_nhat)}</div></div>` +
       `<div class="o"><div class="l">Khí vệ tinh (Sentinel-5P)</div><div class="v">${ngay(dl.gee_den)}</div><div class="s">vệ tinh trễ khoảng 1 tuần · cập nhật ${gio(dl.gee_cap_nhat)}</div></div>` +
       `<div class="o"><div class="l">Lần đồng bộ gần nhất</div><div class="v">${g ? `<span class="db-tt ${e(g.trang_thai)}">${TT[g.trang_thai] || e(g.trang_thai)}</span>` : '--'}</div><div class="s">${g ? gio(g.bat_dau) + ' · ' + (NGUON[g.nguon] || e(g.nguon)) : 'chưa có'}</div></div>` +
-      `<div class="o"><div class="l">Lịch tự động</div><div class="v">${d.dang_chay ? '⏳ Đang đồng bộ…' : '7:30 hằng ngày'}</div><div class="s">${d.lich_may_chu_bat ? 'máy chủ kiểm tra mỗi 10 phút · lần hẹn kế ' + gio(d.lan_hen_ke) : 'lịch máy chủ đang tắt (DONG_BO_BAT=0)'}</div></div>`;
+      `<div class="o"><div class="l">Lịch tự động</div><div class="v">${d.dang_chay ? 'Đang đồng bộ…' : '7:30 hằng ngày'}</div><div class="s">${d.lich_may_chu_bat ? 'máy chủ kiểm tra mỗi 10 phút · lần hẹn kế ' + gio(d.lan_hen_ke) : 'lịch máy chủ đang tắt (DONG_BO_BAT=0)'}</div></div>`;
     document.getElementById('dbLichSu').innerHTML = d.lich_su.length ? `<table><thead><tr><th>#</th><th>Bắt đầu</th><th>Kích hoạt</th><th>Kết quả</th><th>Open-Meteo</th><th>Vệ tinh</th><th>Ghi chú</th></tr></thead><tbody>` +
       d.lich_su.map(r => `<tr><td>${r.id}</td><td>${gio(r.bat_dau)}</td><td>${NGUON[r.nguon] || e(r.nguon)}</td><td><span class="db-tt ${e(r.trang_thai)}">${TT[r.trang_thai] || e(r.trang_thai)}</span></td>` +
         `<td>${e(r.openmeteo || '--')}${r.so_dong_openmeteo != null ? ' · ' + r.so_dong_openmeteo + ' dòng' : ''}</td><td>${e(r.gee || '--')}${r.so_dong_gee != null ? ' · ' + r.so_dong_gee + ' dòng' : ''}</td><td>${e(r.ghi_chu || '')}</td></tr>`).join('') + '</tbody></table>' : '';
@@ -201,7 +206,7 @@ goiApi('/trang-thai-du-lieu').then(d => {
   AirLive.nghe('dong_bo.xong', () => setTimeout(tai, 800));     // máy chủ đẩy sự kiện khi đồng bộ xong (SSE)
 })();
 </script>
-<script src="nav.js"></script>
-<script src="pwa.js"></script>
+<script src="nav.js?v=22"></script>
+<script src="pwa.js?v=22"></script>
 </body>
 </html>

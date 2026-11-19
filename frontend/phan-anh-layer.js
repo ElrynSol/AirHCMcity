@@ -28,12 +28,12 @@
     var xm = p.trang_thai === 'xac_minh';
     return '<div class="pa-pop"><b>' + esc(p.bieu_tuong) + ' ' + esc(p.ten_loai) + '</b><br>' +
       '<span class="tag ' + (xm ? 'xm">ĐÃ XÁC MINH' : 'moi">CHƯA XÁC MINH') + '</span> · ' + truoc(p.tao_luc) + '<br>' +
-      (p.phuong ? '<small>📍 ' + esc(p.phuong) + '</small><br>' : '') +
+      (p.phuong ? '<small> ' + esc(p.phuong) + '</small><br>' : '') +
       (p.mo_ta ? '<span>' + esc(p.mo_ta) + '</span><br>' : '') +
       (p.aqi_tp != null ? '<small>AQI thành phố lúc gửi: ' + esc(p.aqi_tp) + '</small><br>' : '') +
-      '<small>👥 ' + p.so_xac_nhan + ' người khác cũng thấy</small><br>' +
+      '<small> ' + p.so_xac_nhan + ' người khác cũng thấy</small><br>' +
       (p.cua_toi ? '<small>Phản ánh của bạn</small>' :
-        '<button type="button" data-pa-xn="' + p.id + '"' + (p.da_xac_nhan ? ' disabled>Bạn đã xác nhận' : '>👍 Tôi cũng thấy') + '</button>') +
+        '<button type="button" data-pa-xn="' + p.id + '"' + (p.da_xac_nhan ? ' disabled>Bạn đã xác nhận' : '> Tôi cũng thấy') + '</button>') +
       (/phan-anh\.html$/.test(location.pathname) ? '' : '<br><a href="phan-anh.html">Gửi phản ánh →</a>') + '</div>';
   }
 
@@ -62,7 +62,7 @@
     fetch(API + '/phan-anh/' + nut.getAttribute('data-pa-xn') + '/xac-nhan', { method: 'POST', credentials: 'include' })
       .then(function (r) {
         if (r.status === 401) { location.href = 'login.html?tiep=' + encodeURIComponent(location.pathname.split('/').pop() || 'index.html'); return null; }
-        return r.json().then(function (d) { nut.textContent = r.ok ? 'Đã ghi nhận 👍' : (d.detail || 'Không thực hiện được'); if (r.ok) setTimeout(tai, 800); });
+        return r.json().then(function (d) { nut.textContent = r.ok ? 'Đã ghi nhận ' : (d.detail || 'Không thực hiện được'); if (r.ok) setTimeout(tai, 800); });
       }).catch(function () { nut.disabled = false; });
   }, true);   // pha capture: Leaflet chặn sự kiện click lan ra khỏi khung popup nên phải bắt trước khi tới popup
 
@@ -72,7 +72,7 @@
     var nhan = document.createElement('label'); nhan.className = 'toggle-row'; nhan.title = 'Khói, đốt rác, bụi công trình... do người dân gửi trong 72 giờ qua';
     var o = document.createElement('input'); o.type = 'checkbox'; o.checked = true;
     o.onchange = function () { if (o.checked) lop.addTo(map); else map.removeLayer(lop); };
-    nhan.appendChild(o); nhan.appendChild(document.createTextNode(' 📣 Phản ánh của người dân'));
+    nhan.appendChild(o); nhan.appendChild(document.createTextNode('  Phản ánh của người dân'));
     bang.insertBefore(nhan, nutNhiet);
   }
 

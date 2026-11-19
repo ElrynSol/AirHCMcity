@@ -114,6 +114,16 @@ SQL_NGAY_CUOI_TRAM_CU_NHAT = """
             LEFT JOIN {bang} d ON d.tram_id = t.id
             WHERE t.trang_thai = 'Hoat Dong' GROUP BY t.id) x"""
 
+SQL_TRAM_THIEU_90_NGAY = """
+        SELECT COUNT(*) FROM (
+            SELECT t.id, COUNT(d.ngay_do) AS so_ngay
+            FROM tram_quan_trac t
+            LEFT JOIN du_lieu_tram_mat_dat d ON d.tram_id = t.id AND d.ngay_do >= CURRENT_DATE - 92
+            WHERE t.trang_thai = 'Hoat Dong'
+            GROUP BY t.id
+            HAVING COUNT(d.ngay_do) < 88
+        ) x"""
+
 
 def ngay_cuoi_tram_cu_nhat(conn, bang):
     v = conn.execute(text(SQL_NGAY_CUOI_TRAM_CU_NHAT.format(bang=bang))).scalar()
@@ -121,8 +131,15 @@ def ngay_cuoi_tram_cu_nhat(conn, bang):
 
 
 def khoang_ngay(conn, hom_nay):
-    return tinh_khoang(hom_nay, ngay_cuoi_tram_cu_nhat(conn, "du_lieu_tram_mat_dat"),
-                       ngay_cuoi_tram_cu_nhat(conn, "du_lieu_gee_tphcm"))
+    (om_tu, om_den), gee = tinh_khoang(hom_nay, ngay_cuoi_tram_cu_nhat(conn, "du_lieu_tram_mat_dat"),
+                                       ngay_cuoi_tram_cu_nhat(conn, "du_lieu_gee_tphcm"))
+    try:
+        thieu_90 = conn.execute(text(SQL_TRAM_THIEU_90_NGAY)).scalar() or 0
+        if thieu_90 > 0:
+            om_tu = min(om_tu, hom_nay - timedelta(days=95))
+    except Exception:
+        pass
+    return (om_tu, om_den), gee
 
 
 def tinh_khoang(hom_nay, om_cuoi, gee_cuoi):
