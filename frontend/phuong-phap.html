@@ -51,6 +51,17 @@
   .phong-to { position: fixed; inset: 0; background: rgba(8, 15, 30, .82); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 16px; cursor: zoom-out; }
   .phong-to.mo { display: flex; }
   .phong-to img { max-width: 100%; max-height: 100%; background: #fff; border-radius: 10px; }
+  .kl { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .kl-dat { background: #e6f4ea; color: #137333; } .kl-tham_khao { background: #fef7e0; color: #8a5a00; }
+  .kl-chua_dat { background: #fde7e9; color: #b3261e; } .kl-chua_kiem_dinh, .kl-thuc_nghiem { background: #e8f0fe; color: #1557b0; }
+  table.bang td { vertical-align: top; }
+  table.bang td small { color: var(--text-muted); display: block; margin-top: 2px; line-height: 1.4; }
+  .chuoi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  .chuoi > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 13px; line-height: 1.5; position: relative; }
+  .chuoi > div b { display: block; color: var(--primary-dark); margin-bottom: 4px; }
+  .chuoi > div:not(:last-child)::after { content: '\2192'; position: absolute; right: -10px; top: 40%; color: var(--text-muted); font-weight: 700; }
+  @media (max-width: 860px) { .chuoi { grid-template-columns: 1fr; } .chuoi > div::after { display: none; } }
+  .nhan-manh { background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.55; margin-top: 12px; }
 </style>
 </head>
 <body><div id="header">
@@ -73,8 +84,37 @@
       <li><b>1. Thu thập dữ liệu tự động:</b> Kết hợp dữ liệu khí quyển theo giờ (Open-Meteo CAMS/ERA5), ảnh vệ tinh Sentinel-5P và số đo từ các trạm mặt đất quanh TP.HCM (OpenAQ).</li>
       <li><b>2. Làm sạch &amp; Kiểm soát chất lượng:</b> Tự động lọc bỏ các bản ghi lỗi thiết bị, chuẩn hóa theo múi giờ Việt Nam và lưu trữ vào cơ sở dữ liệu không gian PostGIS (168 phường/xã).</li>
       <li><b>3. Quy đổi chỉ số VN_AQI:</b> Tính toán chỉ số chất lượng không khí và phân thành 6 cấp màu cảnh báo sức khỏe theo đúng Quyết định 1459/QĐ-TCMT và QCVN 05:2023/BTNMT.</li>
-      <li><b>4. Dự báo bằng Học máy:</b> Sử dụng mô hình Gradient Boosting (dự báo 1–24 giờ tới) và Random Forest (dự báo theo ngày &amp; phân loại cảnh báo vượt ngưỡng).</li>
+      <li><b>4. Dự báo bằng Học máy:</b> HistGradientBoosting cho 1–24 giờ tới; Random Forest và Ridge cho ngày mai, 7 ngày (PM2.5, PM10, O3); khí hậu học có hiệu chỉnh cho xu hướng 1–6 tháng. Chi tiết ở 4 mục dưới đây.</li>
     </ol>
+  </section>
+
+  <section id="mo-hinh-chi-so" class="card">
+    <h3>1. Mô hình dự báo cho từng chỉ số và tầm dự báo</h3>
+    <p class="ghi" style="margin-top:0">Mỗi chỉ số và mỗi tầm dự báo dùng một mô hình riêng, được chọn sau khi so với các mô hình đối chứng trên cùng tập kiểm tra. Số liệu đọc trực tiếp từ kết quả huấn luyện mới nhất.</p>
+    <div id="bangMoHinh" style="overflow-x:auto">Đang tải…</div>
+    <p class="ghi" id="ghiKhongDuBao"></p>
+  </section>
+
+  <section id="do-phan-giai" class="card">
+    <h3>2. Độ phân giải không gian – thời gian của dữ liệu</h3>
+    <p class="ghi" style="margin-top:0">Độ phân giải của dữ liệu qua từng khâu, từ nguồn gốc đến bản đồ:</p>
+    <div class="chuoi" id="chuoiPhanGiai"></div>
+    <div id="bangNguon" style="overflow-x:auto;margin-top:14px"></div>
+    <div class="nhan-manh" id="phanGiaiHieuDung"></div>
+  </section>
+
+  <section id="tich-hop" class="card">
+    <h3>3. Tích hợp dữ liệu từ nhiều nguồn</h3>
+    <p class="ghi" style="margin-top:0">Các nguồn khác nhau về lưới không gian, bước thời gian, múi giờ và đơn vị. Hệ thống đưa tất cả về cùng một khung (điểm × ngày) qua các bước sau:</p>
+    <ol class="duong" id="buocTichHop" style="margin-top:10px"></ol>
+    <div id="bangGhepNguon" style="overflow-x:auto;margin-top:14px"></div>
+  </section>
+
+  <section id="danh-gia" class="card">
+    <h3>4. Quy trình và kết quả đánh giá mô hình</h3>
+    <ol class="duong" id="quyTrinhDG" style="margin-top:6px"></ol>
+    <div id="bangDanhGia" style="overflow-x:auto;margin-top:14px">Đang tải…</div>
+    <p class="ghi" id="ghiTieuChi"></p>
   </section>
 
   <section id="theo-gio" class="card">
@@ -95,16 +135,16 @@
     <h3>Báo cáo thực nghiệm học máy (Dành cho giảng viên &amp; nghiên cứu)</h3>
     <p class="ghi" style="margin-top:0">Kết quả so sánh các thuật toán học máy (Hồi quy, Phân loại cảnh báo, Dự báo chuỗi thời gian) và biểu đồ phân tích chuyên sâu:</p>
 
-    <details id="lab" open style="margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2)">
-      <summary style="cursor:pointer;font-weight:700;color:var(--primary-dark)">1. Kết quả 3 bài toán Học máy: Hồi quy (Lab01) · Phân loại cảnh báo (Lab02) · Chuỗi thời gian (Lab03)</summary>
+    <details id="thuc-nghiem-ml" open style="margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2)">
+      <summary style="cursor:pointer;font-weight:700;color:var(--primary-dark)">1. Kết quả thực nghiệm 3 bài toán Học máy: Hồi quy PM2.5 · Phân loại cảnh báo · Chuỗi thời gian</summary>
       <div style="margin-top:12px">
         <div class="grid2">
-          <div><b>Bài toán 1: Ước lượng bụi mịn từ thời tiết (6 mô hình)</b><div id="labBang01" style="margin-top:8px"></div></div>
-          <div><b>Bài toán 2: Phát hiện ngày vượt ngưỡng an toàn (&gt; 25 µg/m³)</b><div id="labBang02" style="margin-top:8px"></div></div>
+          <div><b>Bài toán 1: Hồi quy ước lượng PM2.5 từ khí tượng (6 thuật toán)</b><div id="bangHoiQuy" style="margin-top:8px"></div></div>
+          <div><b>Bài toán 2: Phân loại nguy cơ vượt ngưỡng an toàn (&gt; 25 µg/m³)</b><div id="bangPhanLoai" style="margin-top:8px"></div></div>
         </div>
-        <div style="margin-top:14px"><b>Bài toán 3: Dự báo chuỗi thời gian ngày kế tiếp</b><div id="labBang03" style="margin-top:8px"></div></div>
-        <div class="lab-luoi" id="labLuoi"></div>
-        <p class="ghi" id="labGhi"></p>
+        <div style="margin-top:14px"><b>Bài toán 3: Dự báo chuỗi thời gian PM2.5 ngày kế tiếp</b><div id="bangChuoiThoiGian" style="margin-top:8px"></div></div>
+        <div class="lab-luoi" id="luoiBieuDoML"></div>
+        <p class="ghi" id="ghiChuML"></p>
       </div>
     </details>
 
@@ -136,13 +176,16 @@ const ngay = s => s ? String(s).slice(0, 10).split('-').reverse().join('/') : '-
 const hoTen = (() => { try { return localStorage.getItem('ho_ten'); } catch (e) { return null; } })();
 document.getElementById('userBox').innerHTML = hoTen ? `<span>${hoTen.replace(/[<>&]/g, '')}</span>` : `<button onclick="location.href='login.html'">Đăng nhập</button>`;
 
-Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => null)]).then(([d, g]) => {
-  document.getElementById('thoiDiem').textContent = d.khoang_du_lieu ? ` (dữ liệu ${d.khoang_du_lieu})` : '';
+Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => null), lay('/dong-bo/trang-thai').catch(() => null)]).then(([d, g, tt]) => {
+  // Mô hình giữ cố định mốc huấn luyện để số đánh giá kiểm chứng lại được; dữ liệu hiển thị vẫn đồng bộ hằng ngày.
+  const moiNhat = tt && tt.du_lieu && tt.du_lieu.openmeteo_den;
+  document.getElementById('thoiDiem').textContent = d.khoang_du_lieu
+    ? `. Dữ liệu cập nhật hằng ngày${moiNhat ? `, mới nhất đến ${ngay(moiNhat)}` : ''}; mô hình theo ngày được huấn luyện trên đoạn ${d.khoang_du_lieu.split(' - ').map(ngay).join(' – ')} và giữ cố định để kết quả đánh giá kiểm chứng lại được` : '';
   const the = (l, v, s, tag, lop) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div><span class="the-tag ${lop}">${tag}</span></div>`;
   let html = '';
   if (g) html += the('Dự báo ngắn hạn (1–24 giờ)', '±' + so(g.tong.mae || g.tong.rmse, 1) + ' µg/m³',
     `Sai số trung bình · Chính xác hơn ${pt(g.tong.ky_nang_so_voi_persistence, false)} so với giữ nguyên hiện tại`, 'Mô hình Gradient Boosting', 't-ok');
-  html += the('Phát hiện ngày vượt ngưỡng', '89,5%', 'Tỷ lệ bắt trúng các ngày bụi mịn vượt mức Tốt (> 25 µg/m³) trên tập kiểm tra', 'Mô hình Random Forest', 't-ok');
+  html += `<div class="kpi" id="theVuotNguong"><div class="l">Phát hiện ngày vượt ngưỡng</div><div class="v">--</div><div class="s">Tỷ lệ bắt trúng các ngày bụi mịn vượt mức Tốt (> 25 µg/m³) trên tập kiểm tra</div><span class="the-tag t-ok">Random Forest · thực nghiệm</span></div>`;
   html += the('Đối chiếu trạm đo mặt đất', '3 trạm', 'Lãnh sự quán Hoa Kỳ, CMT8 và Linh Trung (qua mạng lưới OpenAQ)', 'Kiểm chứng thực tế', 't-info');
   html += the('Tiêu chuẩn áp dụng', 'VN_AQI', 'Quyết định 1459/QĐ-TCMT và Quy chuẩn QCVN 05:2023/BTNMT', '6 cấp cảnh báo', 't-info');
   document.getElementById('ketQuaChinh').innerHTML = html;
@@ -158,9 +201,56 @@ Promise.all([lay('/danh-gia-mo-hinh'), lay('/du-bao-gio/chi-so').catch(() => nul
         scales: { y: { beginAtZero: true, title: { display: true, text: 'Mức cải thiện (%)' } }, x: { title: { display: true, text: 'Tầm dự báo trước' } } } }
     });
     const max = Math.max(...kn), bMax = buoc[kn.indexOf(max)];
-    document.getElementById('ghiGio').innerHTML = `Đánh giá trên ${g.so_mau.toLocaleString('vi-VN')} mẫu kiểm tra độc lập. Mô hình cải thiện độ chính xác ở cả 24 mốc giờ, đạt hiệu quả cao nhất (+${String(max).replace('.', ',')}%) ở tầm dự báo trước ${bMax} giờ.`;
+    document.getElementById('ghiGio').innerHTML = `Huấn luyện trên ${g.so_mau.toLocaleString('vi-VN')} mẫu theo giờ, kiểm tra trên đoạn thời gian chưa dùng để huấn luyện (từ ${ngay(g.kiem_tra_tu)}). Mô hình cải thiện độ chính xác ở cả 24 mốc giờ, đạt hiệu quả cao nhất (+${String(max).replace('.', ',')}%) ở tầm dự báo trước ${bMax} giờ.`;
   }
 }).catch(e => { document.getElementById('ketQuaChinh').innerHTML = `<div class="loi">${e.message}</div>`; });
+
+lay('/phuong-phap').then(d => {
+  const $ = id => document.getElementById(id);
+  const e = s => String(s == null ? '—' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const TEN_KL = { dat: 'Đạt', tham_khao: 'Tham khảo', chua_dat: 'Chưa hơn mốc', chua_kiem_dinh: 'Hơn mốc (chưa có KTC)', thuc_nghiem: 'Thực nghiệm' };
+  const kl = k => `<span class="kl kl-${e(k)}">${e(TEN_KL[k] || k)}</span>`;
+  // 1. Mô hình theo chỉ số
+  $('bangMoHinh').innerHTML = `<table class="bang"><thead><tr><th>Chỉ số</th><th>Tầm dự báo</th><th>Độ phân giải đầu ra</th><th>Mô hình vận hành</th><th>Đối chứng</th><th class="so">Số đặc trưng</th></tr></thead><tbody>` +
+    d.mo_hinh.map(m => `<tr><td><b>${e(m.chi_so)}</b><small>${e(m.nhom)}</small></td><td>${e(m.tam)}</td><td>${e(m.do_phan_giai_ra)}</td>
+      <td>${e(m.mo_hinh)}<small>${e(m.du_lieu)}</small></td><td>${e(m.doi_chung)}</td>
+      <td class="so" title="${e((m.dac_trung || []).join(', '))}">${m.so_dac_trung || '—'}</td></tr>`).join('') + '</tbody></table>';
+  $('ghiKhongDuBao').innerHTML = Object.entries(d.khong_du_bao || {}).map(([k, v]) => `<b>Không dự báo ${e(k)}:</b> ${e(v)}`).join('<br>') +
+    '<br>Rê chuột vào cột "Số đặc trưng" để xem danh sách đặc trưng đầu vào của từng mô hình.';
+  // 2. Độ phân giải
+  $('chuoiPhanGiai').innerHTML = d.chuoi_do_phan_giai.map(c => `<div><b>${e(c.khau)}</b>Không gian: ${e(c.khong_gian)}<br>Thời gian: ${e(c.thoi_gian)}</div>`).join('');
+  $('bangNguon').innerHTML = `<table class="bang"><thead><tr><th>Nguồn</th><th>Chỉ số</th><th>Độ phân giải không gian</th><th>Độ phân giải thời gian</th><th>Độ trễ</th></tr></thead><tbody>` +
+    d.nguon.map(n => `<tr><td><b>${e(n.ten)}</b></td><td>${e(n.chi_so)}</td><td>${e(n.khong_gian)}</td><td>${e(n.thoi_gian)}</td><td>${e(n.do_tre)}</td></tr>`).join('') + '</tbody></table>';
+  const h = d.do_phan_giai_hieu_dung;
+  if (h && h.o_luoi_theo_nam && h.o_luoi_theo_nam.length) {
+    const nam = h.o_luoi_theo_nam, cuoi = nam[nam.length - 1], k = h.kiem_cheo_idw || {};
+    $('phanGiaiHieuDung').innerHTML = `<b>Độ phân giải hiệu dụng (đo từ dữ liệu):</b> lưới CAMS rộng ≈ 44 km nên nhiều điểm gần nhau rơi vào cùng một ô và nhận cùng một chuỗi PM2.5. ` +
+      `Năm ${cuoi.nam}, ${cuoi.so_diem} điểm chỉ thuộc <b>${cuoi.so_o_luoi_khac_nhau} ô lưới CAMS</b> khác nhau (khí tượng: ${cuoi.so_o_luoi_khi_tuong_khac_nhau} ô); các năm trước ` +
+      nam.slice(0, -1).map(x => `${x.nam}: ${x.so_o_luoi_khac_nhau}/${x.so_diem}`).join(', ') + `. ` +
+      `Vì vậy bản đồ 168 phường/xã là độ phân giải <i>hiển thị</i> (do nội suy), còn độ phân giải <i>thông tin</i> là số ô lưới này. ` +
+      (k.RMSE_idw ? `Kiểm chéo bỏ một ô (${k.so_ngay} ngày, đã gộp các điểm cùng ô): IDW có RMSE ${so(k.RMSE_idw, 2)} µg/m³, so với ${so(k.RMSE_trung_binh_con_lai, 2)} nếu chỉ lấy trung bình các ô còn lại (tốt hơn ${pt(k.ky_nang, false)}).` : '');
+  } else $('phanGiaiHieuDung').textContent = 'Chạy ml/danh_gia_noi_suy.py để tính độ phân giải hiệu dụng.';
+  // 3. Tích hợp
+  $('buocTichHop').innerHTML = d.tich_hop.map(b => `<li><b>${e(b.buoc)}:</b> ${e(b.mo_ta)}<br><small style="color:var(--text-muted)">${e(b.ma_nguon)}</small></li>`).join('');
+  $('bangGhepNguon').innerHTML = `<table class="bang"><thead><tr><th>Nguồn</th><th>Quy về vị trí điểm</th><th>Quy về thời gian</th><th>Đơn vị</th><th>Bảng lưu</th></tr></thead><tbody>` +
+    d.nguon.map(n => `<tr><td><b>${e(n.ten)}</b></td><td>${e(n.lay_theo_vi_tri)}</td><td>${e(n.mui_gio)}; ${e(n.gop_thoi_gian)}</td><td>${e(n.don_vi)}</td><td><code>${e(n.bang)}</code></td></tr>`).join('') + '</tbody></table>';
+  // 4. Đánh giá
+  $('quyTrinhDG').innerHTML = d.quy_trinh_danh_gia.map(x => `<li>${e(x)}</li>`).join('');
+  const giaTri = g => {
+    if (!g) return '<td class="so">—</td><td>—</td><td class="so">—</td>';
+    if (g.ket_luan === 'thuc_nghiem')
+      return `<td class="so">Recall ${so(g.Recall * 100, 1)}%<small>AUC ${so(g.ROC_AUC, 3)}</small></td><td>${e(g.thuoc_do)}</td><td class="so">${g.so_mau_kiem_tra || '—'} ngày</td>`;
+    const kh = g.khoang ? `<small>[${so(g.khoang[0], 3)}; ${so(g.khoang[1], 3)}] · ${e(g.loai_khoang)}</small>` : '';
+    const picp = g.PICP_80 != null ? `<small>PICP 80%: ${so(g.PICP_80 * 100, 1)}% · Brier ${so(g.Brier_WHO15, 3)}</small>` : '';
+    const sai = g.RMSE != null ? `<small>RMSE ${so(g.RMSE, 2)}${g.MAE != null ? ' · MAE ' + so(g.MAE, 2) : ''}</small>` : (g.MAE != null ? `<small>MAE ${so(g.MAE, 2)}</small>` : '');
+    return `<td class="so"><b>${pt(g.ky_nang)}</b>${kh}</td><td>${e(g.thuoc_do)}${sai}${picp}</td>
+      <td class="so">${g.so_mau_kiem_tra != null ? Number(g.so_mau_kiem_tra).toLocaleString('vi-VN') : '—'}${g.kiem_tra_tu ? `<small>từ ${ngay(g.kiem_tra_tu)}</small>` : ''}</td>`;
+  };
+  $('bangDanhGia').innerHTML = `<table class="bang"><thead><tr><th>Chỉ số · tầm dự báo</th><th>Mô hình</th><th class="so">Kỹ năng</th><th>Thước đo</th><th class="so">Mẫu kiểm tra</th><th>Kết luận</th></tr></thead><tbody>` +
+    d.mo_hinh.map(m => `<tr><td><b>${e(m.chi_so)}</b><small>${e(m.tam)}</small></td><td>${e((m.danh_gia && m.danh_gia.mo_hinh_chon) || m.mo_hinh.split(' (')[0])}</td>${giaTri(m.danh_gia)}<td>${m.danh_gia ? kl(m.danh_gia.ket_luan) : '—'}</td></tr>`).join('') + '</tbody></table>';
+  $('ghiTieuChi').innerHTML = '<b>Tiêu chí kết luận:</b> ' + Object.entries(d.tieu_chi).map(([k, v]) => `${kl(k)} ${e(v)}`).join(' · ') +
+    '. Kỹ năng = 1 − RMSE mô hình / RMSE mốc; kỹ năng dương nghĩa là mô hình tốt hơn cách đoán đơn giản.';
+}).catch(err => { document.getElementById('bangMoHinh').innerHTML = `<div class="loi">${err.message}</div>`; });
 
 lay('/doi-chieu-tram-that').then(d => {
   const f = (x, n = 1) => x == null ? '--' : Number(x).toFixed(n).replace('.', ',');
@@ -172,12 +262,12 @@ lay('/doi-chieu-tram-that').then(d => {
         <td>${ngay((n || g).tu)} – ${ngay((n || g).den)}</td><td class="so">${n ? n.so_ngay + ' ngày' : g.so_gio + ' giờ'}</td>
         <td class="so"><b>${f(n ? n.tb_do_that : g.tb_do_that)} µg/m³</b></td><td class="so">${f(n ? n.tb_cams : g.tb_cams)} µg/m³</td>
         <td class="so">${f(n ? n.bias_cams_tru_that : g.bias_cams_tru_that)} µg/m³</td></tr>`; }).join('') + '</tbody></table>';
-  document.getElementById('ghiTramThat').innerHTML = `Mức bụi mịn trung bình dài hạn của mô hình bám khá sát số đo thực tế tại mặt đất (chênh lệch trung bình chỉ khoảng 3–6 µg/m³).`;
+  document.getElementById('ghiTramThat').innerHTML = `Trung bình dài hạn của mô hình chỉ chênh khoảng 3–6 µg/m³ so với số đo thật, nhưng diễn biến từng ngày khớp kém (tương quan theo ngày khoảng 0,3 tại CMT8). Vì vậy hệ thống có thêm mô hình học trực tiếp từ số đo thật tại CMT8 (mục 1 và 4 ở trên).`;
 }).catch(() => { document.getElementById('bangTramThat').textContent = 'Đang cập nhật dữ liệu đối chiếu.'; });
 
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const bangLab = (ds) => {
+  const bangHoiQuy = (ds) => {
     if (!ds || !ds.length) return '<p class="ghi">Chưa có số liệu.</p>';
     const tot = Math.min(...ds.map(d => d.MAE));
     return `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Thuật toán</th><th class="so">Sai số TB (MAE)</th><th class="so">RMSE</th></tr></thead><tbody>` +
@@ -185,7 +275,7 @@ lay('/doi-chieu-tram-that').then(d => {
         return `<tr class="${nen ? 'nen' : ''}${d.MAE === tot ? ' tot' : ''}"><td>${esc(d.model)}</td><td class="so">±${so(d.MAE, 2)} µg/m³</td><td class="so">${so(d.RMSE, 2)} µg/m³</td></tr>`; }).join('') +
       '</tbody></table></div>';
   };
-  const bangLab02 = (c2) => {
+  const bangPhanLoai = (c2) => {
     if (!c2 || !c2.mo_hinh || !c2.mo_hinh.length) return '<p class="ghi">Chưa có số liệu.</p>';
     const tot = Math.max(...c2.mo_hinh.map(d => d.F1));
     return `<div style="overflow-x:auto"><table class="bang"><thead><tr><th>Thuật toán phân loại</th><th class="so">Độ chính xác</th><th class="so">Tỷ lệ bắt trúng (Recall)</th><th class="so">Điểm F1</th></tr></thead><tbody>` +
@@ -193,18 +283,20 @@ lay('/doi-chieu-tram-that').then(d => {
       `</tbody></table></div>`;
   };
   fetch('hinh/ml/danh_sach.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
-    const c1 = d.chi_so.lab01, c2 = d.chi_so.lab02, c3 = d.chi_so.lab03;
-    document.getElementById('labBang01').innerHTML = bangLab(c1 && c1.mo_hinh);
-    document.getElementById('labBang02').innerHTML = bangLab02(c2);
-    document.getElementById('labBang03').innerHTML = bangLab(c3 && c3.mo_hinh ? c3.mo_hinh.filter(x => x.model !== 'Prophet') : []);
-    const chon3 = ['lab01_importance', 'lab02_roc', 'lab03_so_sanh'];
+    const c1 = d.chi_so.hoi_quy, c2 = d.chi_so.phan_loai, c3 = d.chi_so.chuoi_thoi_gian;
+    const rf = c2 && c2.mo_hinh && c2.mo_hinh.find(m => /^Random Forest/.test(m.model));
+    const oVN = document.querySelector('#theVuotNguong .v'); if (oVN && rf) oVN.textContent = so(rf.Recall * 100, 1) + '%';
+    document.getElementById('bangHoiQuy').innerHTML = bangHoiQuy(c1 && c1.mo_hinh);
+    document.getElementById('bangPhanLoai').innerHTML = bangPhanLoai(c2);
+    document.getElementById('bangChuoiThoiGian').innerHTML = bangHoiQuy(c3 && c3.mo_hinh ? c3.mo_hinh.filter(x => x.model !== 'Prophet') : []);
+    const chon3 = ['muc_do_quan_trong_dac_trung_pm25', 'duong_cong_roc_canh_bao_pm25', 'so_sanh_mo_hinh_chuoi_thoi_gian'];
     const dsBieuDo = chon3.map(id => d.bieu_do.find(x => x.id === id)).filter(Boolean);
-    document.getElementById('labLuoi').innerHTML = dsBieuDo.map(b =>
-      `<figure><img src="${esc(b.anh)}" alt="${esc(b.tieu_de)}" loading="lazy"><figcaption><b><span class="lab-the">${esc(b.id.split('_')[0].toUpperCase())}</span>${esc(b.tieu_de)}</b><span>${esc(b.mo_ta)}</span></figcaption></figure>`).join('');
-    document.getElementById('labGhi').textContent = `3 biểu đồ đại diện cho 3 bài toán học máy (bấm vào hình để phóng to).`;
+    document.getElementById('luoiBieuDoML').innerHTML = dsBieuDo.map(b =>
+      `<figure><img src="${esc(b.anh)}" alt="${esc(b.tieu_de)}" loading="lazy"><figcaption><b><span class="lab-the">${esc((b.nhom || 'Học máy').toUpperCase())}</span>${esc(b.tieu_de)}</b><span>${esc(b.mo_ta)}</span></figcaption></figure>`).join('');
+    document.getElementById('ghiChuML').textContent = `3 biểu đồ đại diện cho 3 nhóm bài toán học máy trên dữ liệu TP.HCM (bấm vào hình để phóng to).`;
   }).catch(() => {});
   const pt0 = document.getElementById('phongTo');
-  document.getElementById('labLuoi').addEventListener('click', e => { if (e.target.tagName === 'IMG') { pt0.querySelector('img').src = e.target.src; pt0.querySelector('img').alt = e.target.alt; pt0.classList.add('mo'); } });
+  document.getElementById('luoiBieuDoML').addEventListener('click', e => { if (e.target.tagName === 'IMG') { pt0.querySelector('img').src = e.target.src; pt0.querySelector('img').alt = e.target.alt; pt0.classList.add('mo'); } });
   pt0.addEventListener('click', () => pt0.classList.remove('mo'));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') pt0.classList.remove('mo'); });
 })();

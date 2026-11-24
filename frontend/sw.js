@@ -1,8 +1,8 @@
 /* Service worker: chạy offline phần giao diện, API ưu tiên mạng (có bản lưu gần nhất khi mất mạng),
    nhận thông báo đẩy (Web Push) khi AQI vượt ngưỡng — kể cả lúc đã đóng trang. */
-const PHIEN_BAN = 'aqi-v6-22';  // v6.8: làm lại trang tải app, ẩn trang trạng thái dữ liệu vào Quản trị, quét sạch toàn bộ emoji và khung rỗng
+const PHIEN_BAN = 'aqi-v6-28';  // v6.10: trang Phương pháp có 4 mục mô hình theo chỉ số, độ phân giải, tích hợp đa nguồn, đánh giá
 const LOI = ['./', 'tong-quan.html', 'chart-theme.js', 'index.html', 'du-bao.html', 'kich-ban.html', 'ban-do-nhiet.html', 'tram.html', 'so-sanh.html', 'canh-bao.html',
-  'thong-ke.html', 'bao-cao.html', 'gioi-thieu.html', 'phuong-phap.html', 'phan-anh.html', 'phan-anh-layer.js', 'tai-app.html', 'tra-cuu-khong-gian.html', 'hoa-gio.html', 'khao-sat.html', 'trang-thai-du-lieu.html', 'login.html', 'tai-khoan.html', 'chinh-sach-rieng-tu.html',
+  'thong-ke.html', 'bao-cao.html', 'gioi-thieu.html', 'phuong-phap.html', 'phan-anh.html', 'phan-anh-layer.js', 'tai-app.html', 'tra-cuu-khong-gian.html', 'hoa-gio.html', 'trang-thai-du-lieu.html', 'login.html', 'tai-khoan.html', 'chinh-sach-rieng-tu.html',
   'style.css', 'app-config.js', 'aqi-vn.js', 'song-truc-tiep.js', 'tro-ly.js', 'pwa.js', 'nav.js', 'thong-bao-day.js',
   'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];

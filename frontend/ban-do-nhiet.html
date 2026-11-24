@@ -326,7 +326,7 @@ function dungTab() {
   document.getElementById('tabs').innerHTML = D.ngay.map((d, i) => { const nn = nhanNgay(d), a = D.anh[i];
     const tin = a.phuong.filter(p => p.aqi != null && (TT_PHUONG[p.ma] || {}).do_tin_cay !== 'thap');
     const tbAqi = tin.length ? tin.reduce((s, p) => s + p.aqi, 0) / tin.length : null, m = AQI_VN.muc(tbAqi);
-    return `<button class="ngay-tab${i === ngayChon ? ' on' : ''}" role="tab" aria-selected="${i === ngayChon}" onclick="chonNgay(${i})"><div class="t1">${nn.ten}</div><div class="t2">${nn.ten !== nn.dm ? nn.dm + ' · ' : ''}${a.da_kiem_chung ? 'Hiện trạng' : 'Dự báo'}</div>
+    return `<button class="ngay-tab${i === ngayChon ? ' on' : ''}" role="tab" aria-selected="${i === ngayChon}" onclick="chonNgay(${i})"><div class="t1">${nn.ten}</div><div class="t2">${nn.ten !== nn.dm ? nn.dm + ' · ' : ''}${a.da_kiem_chung ? 'Dự báo (đã kiểm chứng)' : 'Dự báo (tham khảo)'}</div>
       <div class="t3"><span class="cham" style="background:${m.mau}"></span>${esc(m.ten)}</div></button>`; }).join('');
 }
 function chonNgay(i) { ngayChon = i; dungTab(); ve(); }

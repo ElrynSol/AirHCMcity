@@ -1,13 +1,14 @@
 """API chính: lắp ráp các router. Chạy từ thư mục backend:  uvicorn main:app --reload"""
 
 from core import config  # nạp .env + sys.path (phải đứng đầu)
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import models
 from database import engine
 
-from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio, khao_sat
+from routers import auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio
 from services.canh_bao_service import _tao_bang_canh_bao, _tao_bang_thu_da_gui, _vong_lap_canh_bao, dang_ky_consumer
 from services import cdc
 from services import dong_bo as dong_bo_service
@@ -20,6 +21,9 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 models.Base.metadata.create_all(bind=engine)
+# Bảng số liệu môi trường (pipeline ghi vào): CSDL mới được tạo đủ bảng; CSDL đã có thì không đổi gì
+with engine.begin() as _c:
+    _c.exec_driver_sql((Path(__file__).resolve().parent / "sql" / "bang_du_lieu.sql").read_text(encoding="utf-8"))
 phien.tao_bang(engine)   # bảng phiên đăng nhập, OTP, cột 2FA (CSDL cũ tự được nâng cấp)
 _tao_bang_canh_bao()
 _tao_bang_thu_da_gui()
@@ -58,7 +62,7 @@ async def ghi_loi_may_chu(request: Request, call_next):
     return response
 
 
-for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio, khao_sat):
+for _router in (auth, tram, du_lieu, aqi, du_bao, admin_gee, bao_cao, thong_ke, canh_bao, nhat_ky, he_thong, luong_canh_bao, dong_thoi_gian, du_bao_gio, kich_ban, ban_do_nhiet, dong_bo, tong_quan, su_kien, tro_ly, day, seo, oauth, phan_anh, ranh_gioi, ung_dung, khong_gian, hoa_gio):
     app.include_router(_router.router)
 
 

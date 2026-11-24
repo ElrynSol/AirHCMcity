@@ -23,7 +23,7 @@ TEN = "AirHCM"
 MO_TA_CHUNG = ("Giám sát và dự báo chất lượng không khí TP.HCM theo VN_AQI (QĐ 1459/QĐ-TCMT): bản đồ AQI, "
                "dự báo PM2.5 24 giờ, cảnh báo ô nhiễm, dữ liệu vệ tinh Sentinel-5P.")
 # Trang riêng tư / quản trị: không cho máy tìm kiếm lập chỉ mục
-KHONG_INDEX = {"login.html", "tai-khoan.html", "nhat-ky.html", "luong-canh-bao.html", "tram.html", "trang-thai-du-lieu.html", "khao-sat.html"}
+KHONG_INDEX = {"login.html", "tai-khoan.html", "nhat-ky.html", "luong-canh-bao.html", "tram.html", "trang-thai-du-lieu.html"}
 # Trang đưa vào sitemap: (tệp, độ ưu tiên, tần suất thay đổi)
 SITEMAP = [("tong-quan.html", "1.0", "hourly"), ("index.html", "0.9", "hourly"), ("du-bao.html", "0.9", "hourly"),
            ("ban-do-nhiet.html", "0.7", "daily"), ("canh-bao.html", "0.7", "hourly"), ("thong-ke.html", "0.6", "daily"),

@@ -44,7 +44,6 @@
   #adminActions { display: none; }
   #modalOverlay, #quickViewOverlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.5); align-items:center; justify-content:center; z-index:100; }
   #modalBox, #quickViewBox { background:white; padding:26px; border-radius:14px; width:460px; max-height:90vh; overflow-y:auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-  #oTimKiem { width:100%; padding:11px 14px; border:1px solid #ddd; border-radius:8px; font-size:13.5px; }
   .map-box { height: 260px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ddd; }
   .map-hint { font-size: 12.5px; color: #666; margin: 4px 0 8px; }
   .map-note { font-size: 11px; color: #999; margin: -6px 0 10px; }
@@ -53,6 +52,18 @@
   .quick-stat-item .label { font-size: 10.5px; color: #888; }
   .quick-stat-item .value { font-size: 15px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
 
+  .tim-vi-tri { position: relative; margin-bottom: 8px; }
+  .tim-hang { display: flex; gap: 6px; }
+  .tim-hang input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13.5px; }
+  .tim-hang .btn { margin-right: 0; padding: 0 16px; font-size: 13px; }
+  .kq-tim { display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 1200; margin-top: 4px; background: #fff;
+            border: 1px solid #dde3ea; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-height: 260px; overflow-y: auto; }
+  .kq-dong { display: flex; gap: 8px; align-items: baseline; padding: 9px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f0f2f5; }
+  .kq-dong:last-child { border-bottom: 0; }
+  .kq-dong:hover { background: #f0f6ff; }
+  .kq-loai { flex: none; font-size: 11px; font-weight: 700; color: #0f47a6; background: #e8f0fe; border-radius: 10px; padding: 1px 8px; }
+  .kq-ten { color: #333; }
+  .tb-vi-tri { font-size: 12.5px; min-height: 18px; margin: -4px 0 10px; }
   .map-wrap { position: relative; }
   .map-layer-panel {
     position: absolute; top: 10px; right: 10px; z-index: 600;
@@ -88,17 +99,21 @@
     <div class="sub" id="tongSoTram">Đang tải dữ liệu...</div>
   </div>
 
-  <div class="card">
-    <input type="text" id="oTimKiem" placeholder="Tìm theo tên hoặc mã điểm..." onkeyup="locTram()">
-  </div>
-
   <div id="adminActions" class="card">
     <h3>Thêm điểm mới</h3>
     <p class="map-hint">Cách nhanh: chọn phường/xã bên dưới để tự điền vị trí trung tâm (= đã có điểm, = chưa có điểm):</p>
     <select id="chonPhuongXaThem" onchange="chonPhuongXa()" style="width:100%; padding:10px; margin-bottom:12px;">
       <option value="">-- Đang tải danh sách phường/xã... --</option>
     </select>
-    <p class="map-hint">Hoặc bấm trực tiếp vào bản đồ bên dưới để chọn chính xác hơn:</p>
+    <p class="map-hint">Hoặc tìm theo tên phường/xã, địa chỉ, rồi bấm hoặc kéo ghim trên bản đồ để chỉnh chính xác:</p>
+    <div class="tim-vi-tri">
+      <div class="tim-hang">
+        <input id="oTimViTri" type="search" autocomplete="off" placeholder="VD: Phường Bến Thành, chợ Bình Tây, 268 Lý Thường Kiệt..."
+               oninput="goiYTimViTri()" onkeydown="if(event.key==='Enter'){event.preventDefault();timViTri();}">
+        <button class="btn btn-primary" type="button" onclick="timViTri()">Tìm</button>
+      </div>
+      <div id="kqTimViTri" class="kq-tim"></div>
+    </div>
     <p class="map-note" id="ghiChuRanhGioiThem">Đang tải dữ liệu ranh giới...</p>
     <div class="map-wrap">
       <div id="miniMapThem" class="map-box"></div>
@@ -107,6 +122,7 @@
         <label><input type="checkbox" id="toggleRanhGioiThem" checked onchange="doiRanhGioiThem()"> Ranh giới phường/xã</label>
       </div>
     </div>
+    <p class="tb-vi-tri" id="tbViTriThem" aria-live="polite"></p>
     <div class="form-row">
       <input id="newMaTram" placeholder="Mã điểm (VD: T13)">
       <input id="newTenTram" placeholder="Tên điểm">
@@ -159,6 +175,7 @@
         <label><input type="checkbox" id="toggleRanhGioiSua" checked onchange="doiRanhGioiSua()"> Ranh giới phường/xã</label>
       </div>
     </div>
+    <p class="tb-vi-tri" id="tbViTriSua" aria-live="polite"></p>
     <div class="form-row"><input id="editMaTram" placeholder="Mã điểm"></div>
     <div class="form-row"><input id="editTenTram" placeholder="Tên điểm"></div>
     <div class="form-row">
@@ -199,13 +216,44 @@ let danhSachTramGoc = [];
 let banDoAQI = {};
 let sapXepHienTai = { cot: null, tang: true };
 
-// Ranh giới thật TP.HCM mở rộng sau sáp nhập
-const RANH_GIOI = { latMin: 10.30, latMax: 11.10, lonMin: 106.35, lonMax: 107.35 };
-const ranhGioiTPHCM = [[RANH_GIOI.latMin, RANH_GIOI.lonMin], [RANH_GIOI.latMax, RANH_GIOI.lonMax]];
+// Khung bao thô (chỉ dùng khi chưa tải xong ranh giới); kiểm tra chính xác bằng đa giác 168 phường/xã bên dưới.
+// Máy chủ cũng kiểm tra lại bằng PostGIS (ST_Contains) nên không thể lưu điểm ngoài thành phố.
+const RANH_GIOI = { latMin: 8.5, latMax: 11.7, lonMin: 106.2, lonMax: 107.7 };
+
+function diemTrongVong(lat, lon, vong) {   // thuật toán tia (ray casting); vong là mảng [lon, lat]
+  let trong = false;
+  for (let i = 0, j = vong.length - 1; i < vong.length; j = i++) {
+    const xi = vong[i][0], yi = vong[i][1], xj = vong[j][0], yj = vong[j][1];
+    if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) trong = !trong;
+  }
+  return trong;
+}
+
+function phuongChuaDiem(lat, lon) {
+  if (!duLieuRanhGioiTram) return null;
+  for (const f of duLieuRanhGioiTram.features) {
+    const g = f.geometry || {};
+    const cacVung = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+    for (const v of cacVung) {
+      if (diemTrongVong(lat, lon, v[0]) && !v.slice(1).some(lo => diemTrongVong(lat, lon, lo))) return f;
+    }
+  }
+  return null;
+}
 
 function trongRanhGioiTPHCM(lat, lon) {
+  if (duLieuRanhGioiTram) return !!phuongChuaDiem(lat, lon);
   return lat >= RANH_GIOI.latMin && lat <= RANH_GIOI.latMax && lon >= RANH_GIOI.lonMin && lon <= RANH_GIOI.lonMax;
 }
+
+function baoViTri(elId, noiDung, loi) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = noiDung;
+  el.style.color = loi ? '#c62828' : '#2e7d32';
+}
+
+function boDau(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase(); }
 
 function khoangCachKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -263,49 +311,23 @@ async function veRanhGioiCoMau(mapInstance) {
   });
 }
 
-// ============ TẢI DỮ LIỆU RANH GIỚI PHƯỜNG/XÃ (dùng chung, tự tải nếu chưa có cache) ============
-const NGUON_RANH_GIOI_TRAM = 'https://api.github.com/repos/thanglequoc/vietnamese-provinces-database/contents/json/geojson/79_ho_chi_minh/wards';
+// ============ RANH GIỚI 168 PHƯỜNG/XÃ (từ PostGIS của hệ thống, trình duyệt tự giữ 1 ngày) ============
 let duLieuRanhGioiTram = null;
+let dangTaiRanhGioi = null;
 
-async function layDuLieuRanhGioi(ghiChuElId) {
+async function layDuLieuRanhGioi() {
   if (duLieuRanhGioiTram) return duLieuRanhGioiTram;
-
-  const cacheKey = 'ranhGioiPhuongXa_v1';
-  const cached = localStorage.getItem(cacheKey);
-  if (cached) {
-    try {
-      duLieuRanhGioiTram = JSON.parse(cached);
-      return duLieuRanhGioiTram;
-    } catch (e) { /* cache hỏng, tải lại */ }
+  if (!dangTaiRanhGioi) {
+    dangTaiRanhGioi = fetch((window.API_ORIGIN || '') + '/api/v1/ranh-gioi/phuong-xa')
+      .then(r => { if (!r.ok) throw new Error('Không tải được ranh giới phường/xã.'); return r.json(); })
+      .then(geo => {
+        geo.features.forEach(f => { f.properties.__label = f.properties.ten || f.properties.ma; });
+        duLieuRanhGioiTram = geo;
+        return geo;
+      })
+      .catch(e => { dangTaiRanhGioi = null; throw e; });
   }
-
-  if (ghiChuElId) {
-    const el = document.getElementById(ghiChuElId);
-    if (el) el.innerText = 'Đang tải ranh giới phường/xã lần đầu, vui lòng đợi...';
-  }
-
-  const response = await fetch(NGUON_RANH_GIOI_TRAM);
-  if (!response.ok) throw new Error('Không tải được danh sách phường/xã.');
-  const files = await response.json();
-  const wardFiles = files.filter(f => f.name.endsWith('.geojson'));
-  const features = [];
-  for (let i = 0; i < wardFiles.length; i += 12) {
-    const batch = await Promise.all(wardFiles.slice(i, i + 12).map(async f => {
-      const res = await fetch(f.download_url);
-      if (!res.ok) return [];
-      const geo = await res.json();
-      return (geo.features || []).map(feature => ({ ...feature, properties: { ...feature.properties, __label: feature.properties?.fullName || feature.properties?.name || f.name.replace('.geojson', '') } }));
-    }));
-    features.push(...batch.flat());
-  }
-  duLieuRanhGioiTram = { type: 'FeatureCollection', features };
-  try { localStorage.setItem(cacheKey, JSON.stringify(duLieuRanhGioiTram)); } catch (e) { /* bỏ qua nếu quá lớn */ }
-
-  if (ghiChuElId) {
-    const el = document.getElementById(ghiChuElId);
-    if (el) el.innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các điểm gần nhất';
-  }
-  return duLieuRanhGioiTram;
+  return dangTaiRanhGioi;
 }
 
 // ============ BẢN ĐỒ CHỌN TỌA ĐỘ - THÊM TRẠM ============
@@ -325,7 +347,9 @@ function khoiTaoMiniMapThem() {
   veRanhGioiCoMau(miniMapThem).then(layer => {
     lopRanhGioiThem = layer;
     if (document.getElementById('toggleRanhGioiThem').checked) lopRanhGioiThem.addTo(miniMapThem);
-    document.getElementById('ghiChuRanhGioiThem').innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các điểm gần nhất';
+    // không cho kéo bản đồ ra quá xa thành phố
+    miniMapThem.setMaxBounds(layer.getBounds().pad(0.15));
+    document.getElementById('ghiChuRanhGioiThem').innerText = 'Màu sắc: mức PM2.5 ước tính theo nội suy từ các điểm gần nhất. Chỉ đặt được điểm bên trong 168 phường/xã.';
     dienDanhSachPhuongXa();
   }).catch(err => {
     document.getElementById('ghiChuRanhGioiThem').innerText = 'Không tải được ranh giới phường/xã (lỗi mạng).';
@@ -336,15 +360,91 @@ function khoiTaoMiniMapThem() {
   // Hiện sẵn marker các điểm ĐÃ CÓ, để thấy trước và né khi chọn vị trí mới
   hienCacTramDaCoLenBanDo(miniMapThem);
 
-  miniMapThem.on('click', (e) => {
-    const { lat, lng } = e.latlng;
-    if (!trongRanhGioiTPHCM(lat, lng)) {
-      alert('Vị trí này nằm ngoài ranh giới TP.HCM (mở rộng sau sáp nhập). Vui lòng chọn vị trí trong khu vực được tô màu trên bản đồ.');
-      return;
-    }
-    datToaDo(lat, lng);
-  });
+  miniMapThem.on('click', (e) => datToaDo(e.latlng.lat, e.latlng.lng));
 }
+
+// ============ TÌM VỊ TRÍ: tên phường/xã (có sẵn) hoặc địa chỉ (OpenStreetMap Nominatim) ============
+let ketQuaTim = [];
+let henGioTim = null;
+
+function veKetQuaTim() {
+  const hop = document.getElementById('kqTimViTri');
+  if (!ketQuaTim.length) { hop.style.display = 'none'; hop.innerHTML = ''; return; }
+  hop.innerHTML = '';
+  ketQuaTim.forEach((k, i) => {
+    const d = document.createElement('div');
+    d.className = 'kq-dong';
+    d.innerHTML = '<span class="kq-loai"></span><span class="kq-ten"></span>';
+    d.firstChild.textContent = k.loai;
+    d.lastChild.textContent = k.ten;
+    d.onclick = () => chonKetQuaTim(i);
+    hop.appendChild(d);
+  });
+  hop.style.display = 'block';
+}
+
+function timPhuongNoiBo(q) {
+  if (!duLieuRanhGioiTram || !q) return [];
+  const k = boDau(q).replace(/^(phuong|xa|dac khu)\s+/, '');
+  return duLieuRanhGioiTram.features
+    .filter(f => boDau(f.properties.__label).includes(k))
+    .slice(0, 6)
+    .map(f => ({ loai: 'Phường/xã', ten: f.properties.__label, feature: f }));
+}
+
+function goiYTimViTri() {
+  clearTimeout(henGioTim);
+  henGioTim = setTimeout(() => {
+    const q = document.getElementById('oTimViTri').value.trim();
+    ketQuaTim = q.length >= 2 ? timPhuongNoiBo(q) : [];
+    veKetQuaTim();
+  }, 150);
+}
+
+async function timViTri() {
+  const q = document.getElementById('oTimViTri').value.trim();
+  if (q.length < 2) return;
+  const noiBo = timPhuongNoiBo(q);
+  baoViTri('tbViTriThem', 'Đang tìm "' + q + '"...', false);
+  let diaChi = [], loiDichVu = false;
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=vn&accept-language=vi'
+      + '&bounded=1&viewbox=' + [RANH_GIOI.lonMin, RANH_GIOI.latMax, RANH_GIOI.lonMax, RANH_GIOI.latMin].join(',')
+      + '&q=' + encodeURIComponent(q);
+    const r = await fetch(url);
+    if (r.ok) diaChi = (await r.json())
+      .map(x => ({ loai: 'Địa chỉ', ten: x.display_name.replace(/, Việt Nam$/, ''), lat: +x.lat, lon: +x.lon }))
+      .filter(x => trongRanhGioiTPHCM(x.lat, x.lon));
+    else loiDichVu = true;
+  } catch (e) { loiDichVu = true; /* mất mạng: vẫn còn kết quả phường/xã */ }
+  ketQuaTim = noiBo.concat(diaChi).slice(0, 10);
+  veKetQuaTim();
+  baoViTri('tbViTriThem',
+    ketQuaTim.length ? 'Chọn một kết quả bên dưới ô tìm kiếm.'
+      : loiDichVu ? 'Dịch vụ tìm địa chỉ đang không phản hồi. Hãy tìm theo tên phường/xã hoặc bấm trực tiếp lên bản đồ.'
+      : 'Không tìm thấy vị trí nào trong TP.HCM khớp với "' + q + '".', !ketQuaTim.length);
+}
+
+function chonKetQuaTim(i) {
+  const k = ketQuaTim[i];
+  ketQuaTim = []; veKetQuaTim();
+  if (!k) return;
+  if (k.feature) {
+    const vung = L.geoJSON(k.feature);
+    miniMapThem.fitBounds(vung.getBounds(), { maxZoom: 15 });
+    const tam = diemTrongPhuong(k.feature);
+    if (!tam || !datToaDo(tam.lat, tam.lng)) {
+      baoViTri('tbViTriThem', 'Đã đưa bản đồ tới ' + k.ten + '. Bấm vào bên trong phường/xã để đặt điểm.', false);
+    }
+  } else {
+    miniMapThem.setView([k.lat, k.lon], 17);
+    datToaDo(k.lat, k.lon);
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('.tim-vi-tri')) { ketQuaTim = []; veKetQuaTim(); }
+});
 
 let lopTramDaCoThem = null;
 
@@ -363,10 +463,28 @@ function hienCacTramDaCoLenBanDo(mapInstance) {
 // ============ DROPDOWN CHỌN NHANH PHƯỜNG/XÃ ============
 let danhSachPhuongXaThem = [];
 
+// Điểm đại diện luôn nằm TRONG phường (ST_PointOnSurface tính ở máy chủ); tâm khung bao có thể rơi ra ngoài phường hình cong.
+let diemDaiDienPhuong = null;
+async function layDiemDaiDien() {
+  if (diemDaiDienPhuong) return diemDaiDienPhuong;
+  diemDaiDienPhuong = {};
+  try {
+    const r = await fetch((window.API_ORIGIN || '') + '/api/v1/ranh-gioi/phuong-xa/danh-sach');
+    if (r.ok) (await r.json()).phuong.forEach(p => { diemDaiDienPhuong[p.ma] = { lat: p.lat, lng: p.lon }; });
+  } catch (e) { /* dùng tâm khung bao */ }
+  return diemDaiDienPhuong;
+}
+function diemTrongPhuong(f) {
+  const c = toaDoGiua(f);
+  if (c && phuongChuaDiem(c.lat, c.lng) === f) return c;
+  return (diemDaiDienPhuong && diemDaiDienPhuong[f.properties.ma]) || c;
+}
+
 async function dienDanhSachPhuongXa() {
   const geoData = await layDuLieuRanhGioi(null);
+  await layDiemDaiDien();
   danhSachPhuongXaThem = geoData.features.map(f => {
-    const center = toaDoGiua(f);
+    const center = diemTrongPhuong(f);
     if (!center) return null;
     const tenPhuong = f.properties.__label;
 
@@ -419,18 +537,37 @@ function doiRanhGioiThem() {
   else miniMapThem.removeLayer(lopRanhGioiThem);
 }
 
+// Đặt ghim vị trí điểm mới. Trả false nếu vị trí không hợp lệ (ngoài thành phố hoặc quá gần điểm đã có).
 function datToaDo(lat, lng, boQuaCanhBaoTrung) {
+  if (!trongRanhGioiTPHCM(lat, lng)) {
+    baoViTri('tbViTriThem', 'Vị trí này nằm ngoài ranh giới 168 phường/xã của TP.HCM. Hãy chọn bên trong vùng tô màu.', true);
+    return false;
+  }
   if (!boQuaCanhBaoTrung) {
     const trungVoiTram = danhSachTramGoc.find(s => s.vi_do && s.kinh_do && khoangCachKm(lat, lng, s.vi_do, s.kinh_do) < 0.3);
     if (trungVoiTram) {
-      alert(`Vị trí này cách điểm "${trungVoiTram.ma_tram} - ${trungVoiTram.ten_tram}" chưa tới 300m.\nVui lòng chọn vị trí khác để tránh trùng lặp dữ liệu quan trắc.`);
-      return;
+      baoViTri('tbViTriThem', `Vị trí này cách điểm "${trungVoiTram.ma_tram} - ${trungVoiTram.ten_tram}" chưa tới 300 m. Hãy chọn chỗ khác để tránh trùng dữ liệu.`, true);
+      return false;
     }
   }
   document.getElementById('newViDo').value = lat.toFixed(6);
   document.getElementById('newKinhDo').value = lng.toFixed(6);
-  if (miniMarkerThem) miniMapThem.removeLayer(miniMarkerThem);
-  miniMarkerThem = L.marker([lat, lng]).addTo(miniMapThem);
+  if (miniMarkerThem) {
+    miniMarkerThem.setLatLng([lat, lng]);
+  } else {
+    miniMarkerThem = L.marker([lat, lng], { draggable: true, title: 'Kéo để chỉnh vị trí' }).addTo(miniMapThem);
+    miniMarkerThem.on('dragend', (e) => {
+      const p = e.target.getLatLng();
+      const cu = [parseFloat(document.getElementById('newViDo').value), parseFloat(document.getElementById('newKinhDo').value)];
+      if (!datToaDo(p.lat, p.lng)) e.target.setLatLng(cu);   // kéo ra ngoài thì trả ghim về chỗ cũ
+    });
+  }
+  const f = phuongChuaDiem(lat, lng);
+  const tenPhuong = f ? f.properties.__label : '';
+  baoViTri('tbViTriThem', tenPhuong ? `Đã chọn vị trí thuộc ${tenPhuong} (${lat.toFixed(5)}, ${lng.toFixed(5)}). Có thể kéo ghim để chỉnh.` : 'Đã chọn vị trí. Có thể kéo ghim để chỉnh.', false);
+  const oTen = document.getElementById('newTenTram');
+  if (tenPhuong && !oTen.value.trim()) oTen.value = tenPhuong;
+  return true;
 }
 
 // ============ BẢN ĐỒ CHỌN TỌA ĐỘ - SỬA TRẠM ============
@@ -457,19 +594,38 @@ function khoiTaoMiniMapSua(lat, lon) {
     console.error(err);
   });
 
-  if (lat && lon) miniMarkerSua = L.marker([lat, lon]).addTo(miniMapSua);
-
-  miniMapSua.on('click', (e) => {
-    const { lat, lng } = e.latlng;
-    if (!trongRanhGioiTPHCM(lat, lng)) {
-      alert('Vị trí này nằm ngoài ranh giới TP.HCM. Vui lòng chọn trong khu vực được tô màu trên bản đồ.');
-      return;
+  miniMarkerSua = null;
+  baoViTri('tbViTriSua', '', false);
+  const datSua = (la, lo) => {
+    if (!trongRanhGioiTPHCM(la, lo)) {
+      baoViTri('tbViTriSua', 'Vị trí này nằm ngoài ranh giới 168 phường/xã của TP.HCM.', true);
+      return false;
     }
-    document.getElementById('editViDo').value = lat.toFixed(6);
-    document.getElementById('editKinhDo').value = lng.toFixed(6);
-    if (miniMarkerSua) miniMapSua.removeLayer(miniMarkerSua);
-    miniMarkerSua = L.marker([lat, lng]).addTo(miniMapSua);
-  });
+    document.getElementById('editViDo').value = la.toFixed(6);
+    document.getElementById('editKinhDo').value = lo.toFixed(6);
+    if (miniMarkerSua) miniMarkerSua.setLatLng([la, lo]);
+    else {
+      miniMarkerSua = L.marker([la, lo], { draggable: true, title: 'Kéo để chỉnh vị trí' }).addTo(miniMapSua);
+      miniMarkerSua.on('dragend', (e) => {
+        const p = e.target.getLatLng();
+        const cu = [parseFloat(document.getElementById('editViDo').value), parseFloat(document.getElementById('editKinhDo').value)];
+        if (!datSua(p.lat, p.lng)) e.target.setLatLng(cu);
+      });
+    }
+    const f = phuongChuaDiem(la, lo);
+    if (f) baoViTri('tbViTriSua', 'Vị trí thuộc ' + f.properties.__label + '. Có thể kéo ghim để chỉnh.', false);
+    return true;
+  };
+  if (lat && lon) {
+    miniMarkerSua = L.marker([lat, lon], { draggable: true, title: 'Kéo để chỉnh vị trí' }).addTo(miniMapSua);
+    miniMarkerSua.on('dragend', (e) => {
+      const p = e.target.getLatLng();
+      const cu = [parseFloat(document.getElementById('editViDo').value), parseFloat(document.getElementById('editKinhDo').value)];
+      if (!datSua(p.lat, p.lng)) e.target.setLatLng(cu);
+    });
+  }
+
+  miniMapSua.on('click', (e) => datSua(e.latlng.lat, e.latlng.lng));
 
   setTimeout(() => miniMapSua.invalidateSize(), 150);
 }
@@ -545,33 +701,27 @@ function hienThiTram(stations) {
       ? `<span class="badge" style="background:${badgeAQI[aqiInfo.muc_do] || '#999'};color:${AQI_VN.theoTen(aqiInfo.muc_do).chu};">${aqiInfo.aqi ?? '--'} - ${aqiInfo.muc_do}</span>`
       : '<span style="color:#999; font-size:12px;">--</span>';
 
+    const _esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const _js = v => _esc(JSON.stringify(v));
     const nutAdmin = vaiTro === 'admin' ? `
-      <button class="btn btn-edit" onclick='moModalSua(${JSON.stringify(s)})'>Sửa</button>
-      <button class="btn btn-danger" onclick="xoaTram(${s.id}, '${s.ma_tram}')">Xóa</button>
+      <button class="btn btn-edit" onclick="moModalSua(${_js(s)})">Sửa</button>
+      <button class="btn btn-danger" onclick="xoaTram(${Number(s.id)}, ${_js(s.ma_tram)})">Xóa</button>
     ` : '';
 
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><b>${s.ma_tram}</b></td>
-      <td><span class="ten-tram-link" onclick='xemNhanh(${JSON.stringify(s)})'>${s.ten_tram}</span></td>
+      <td><b>${_esc(s.ma_tram)}</b></td>
+      <td><span class="ten-tram-link" onclick="xemNhanh(${_js(s)})">${_esc(s.ten_tram)}</span></td>
       <td>${aqiHtml}</td>
       <td>${s.vi_do?.toFixed(4)}, ${s.kinh_do?.toFixed(4)}</td>
       <td>${badge}</td>
       <td>
-        <button class="btn btn-quick" onclick='xemNhanh(${JSON.stringify(s)})'>Xem nhanh</button>
+        <button class="btn btn-quick" onclick="xemNhanh(${_js(s)})">Xem nhanh</button>
         ${nutAdmin}
       </td>
     `;
     tbody.appendChild(row);
   });
-}
-
-function locTram() {
-  const tuKhoa = document.getElementById('oTimKiem').value.toLowerCase();
-  const ketQua = danhSachTramGoc.filter(s =>
-    s.ten_tram.toLowerCase().includes(tuKhoa) || s.ma_tram.toLowerCase().includes(tuKhoa)
-  );
-  hienThiTram(ketQua);
 }
 
 function sapXep(cot) {
@@ -638,9 +788,10 @@ function themTram() {
       document.getElementById('newViDo').value = '';
       document.getElementById('newKinhDo').value = '';
       if (miniMarkerThem) { miniMapThem.removeLayer(miniMarkerThem); miniMarkerThem = null; }
+      baoViTri('tbViTriThem', '', false);
       taiDanhSachTram();
     } else {
-      alert('Lỗi: ' + JSON.stringify(data.detail));
+      alert('Lỗi: ' + (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)));
     }
   })
   .catch(err => {
@@ -689,7 +840,7 @@ function luuSuaTram() {
   })
   .then(data => {
     if (data.id) { alert('Đã cập nhật điểm!'); dongModal(); taiDanhSachTram(); }
-    else { alert('Lỗi: ' + JSON.stringify(data.detail)); }
+    else { alert('Lỗi: ' + (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail))); }
   })
   .catch(err => {
     if (err.message === 'TOKEN_HET_HAN') {

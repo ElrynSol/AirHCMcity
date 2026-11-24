@@ -1,108 +1,122 @@
 {
- "cap_nhat": "2026-11-18T19:33:07",
- "nguon": "Code bài Lab01 (Hồi quy), BTTH2/Lab02 (Phân loại), BTTH3/Lab03 (Chuỗi thời gian) môn Python cho Máy học; dữ liệu du_lieu/gio_cache.csv (TP.HCM)",
+ "cap_nhat": "2026-11-20T05:40:15",
+ "nguon": "Thực nghiệm 3 bài toán học máy (Hồi quy, Phân loại vượt ngưỡng, Chuỗi thời gian) trên tập dữ liệu PM2.5 và khí tượng TP.HCM (du_lieu/gio_cache.csv)",
  "bieu_do": [
   {
-   "id": "lab01_heatmap",
-   "mo_ta": "Hệ số Pearson giữa PM2.5 và các biến thời tiết (code heatmap của Lab01).",
-   "tieu_de": "Ma trận tương quan",
-   "anh": "hinh/ml/lab01_heatmap.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "tuong_quan_khi_tuong_pm25",
+   "mo_ta": "Hệ số tương quan Pearson giữa nồng độ PM2.5 và các yếu tố khí tượng tại TP.HCM.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Ma trận tương quan khí tượng – PM2.5",
+   "anh": "hinh/ml/tuong_quan_khi_tuong_pm25.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_tuong_quan",
-   "mo_ta": "Pearson (tuyến tính) và Spearman (thứ hạng) của từng đặc trưng với PM2.5.",
-   "tieu_de": "Xếp hạng tương quan với PM2.5",
-   "anh": "hinh/ml/lab01_tuong_quan.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "phan_tan_pm25_khi_tuong",
+   "mo_ta": "Quan hệ phân bố giữa bụi mịn PM2.5 với nhiệt độ, độ ẩm, tốc độ gió và lượng mưa.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Biểu đồ phân tán PM2.5 theo biến khí tượng",
+   "anh": "hinh/ml/phan_tan_pm25_khi_tuong.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_theo_thang",
-   "mo_ta": "Phân bố PM2.5 trung bình ngày theo từng tháng; đường đỏ là trung vị.",
-   "tieu_de": "PM2.5 theo tháng",
-   "anh": "hinh/ml/lab01_theo_thang.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "bien_thien_pm25_theo_thang",
+   "mo_ta": "Quy luật mùa vụ bụi mịn PM2.5 giữa mùa khô và mùa mưa tại TP.HCM.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Biến thiên nồng độ PM2.5 theo tháng",
+   "anh": "hinh/ml/bien_thien_pm25_theo_thang.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_gio",
-   "mo_ta": "Gió càng mạnh, bụi càng được khuếch tán; vòng đỏ là 1% ngày ô nhiễm nhất.",
-   "tieu_de": "Gió và PM2.5",
-   "anh": "hinh/ml/lab01_gio.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "anh_huong_toc_do_gio_pm25",
+   "mo_ta": "Mức suy giảm nồng độ PM2.5 khi tốc độ gió tăng (khả năng khuếch tán khí quyển).",
+   "nhom": "Hồi quy",
+   "tieu_de": "Ảnh hưởng của tốc độ gió đến PM2.5",
+   "anh": "hinh/ml/anh_huong_toc_do_gio_pm25.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_mua",
-   "mo_ta": "PM2.5 mùa khô so với mùa mưa, và phân phối PM2.5 (gốc và log).",
-   "tieu_de": "Mùa khô và mùa mưa",
-   "anh": "hinh/ml/lab01_mua.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "anh_huong_luong_mua_pm25",
+   "mo_ta": "Tác động rửa trôi bụi mịn PM2.5 giữa ngày có mưa và ngày không mưa.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Ảnh hưởng của lượng mưa đến PM2.5",
+   "anh": "hinh/ml/anh_huong_luong_mua_pm25.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_importance",
-   "mo_ta": "Mức đóng góp của từng biến thời tiết vào ước lượng PM2.5.",
-   "tieu_de": "Độ quan trọng đặc trưng (Random Forest)",
-   "anh": "hinh/ml/lab01_importance.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "muc_do_quan_trong_dac_trung_pm25",
+   "mo_ta": "Xếp hạng độ quan trọng đặc trưng (Feature Importance) từ mô hình Random Forest hồi quy.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Mức độ ảnh hưởng của các yếu tố đến PM2.5",
+   "anh": "hinh/ml/muc_do_quan_trong_dac_trung_pm25.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_so_sanh",
-   "mo_ta": "R² và MAE trên tập test của 6 mô hình trong Lab01.",
-   "tieu_de": "So sánh 6 mô hình hồi quy",
-   "anh": "hinh/ml/lab01_so_sanh.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "so_sanh_6_mo_hinh_hoi_quy",
+   "mo_ta": "Đối chiếu sai số MAE, RMSE và R² giữa 6 thuật toán hồi quy trên tập kiểm tra độc lập.",
+   "nhom": "Hồi quy",
+   "tieu_de": "So sánh hiệu năng 6 mô hình hồi quy PM2.5",
+   "anh": "hinh/ml/so_sanh_6_mo_hinh_hoi_quy.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab01_thuc_te_du_doan",
-   "mo_ta": "Mô hình tốt nhất: điểm càng sát đường đỏ càng đúng; phần dư nên dao động quanh 0.",
-   "tieu_de": "Thực tế và dự đoán",
-   "anh": "hinh/ml/lab01_thuc_te_du_doan.png",
-   "notebook": "ml/notebooks/Lab01_PM25_HCM.ipynb"
+   "id": "pm25_thuc_te_va_du_bao",
+   "mo_ta": "Phân bố điểm dự báo so với giá trị quan trắc thực tế trên tập kiểm tra.",
+   "nhom": "Hồi quy",
+   "tieu_de": "Đối chiếu PM2.5 thực tế và dự báo",
+   "anh": "hinh/ml/pm25_thuc_te_va_du_bao.png",
+   "notebook": "ml/notebooks/01_hoi_quy_pm25_hcm.ipynb"
   },
   {
-   "id": "lab02_confusion",
-   "mo_ta": "So sánh KNN, Decision Tree và Random Forest khi phân loại ngày PM2.5 vượt 25 µg/m³ trên tập test.",
-   "tieu_de": "Ma trận nhầm lẫn (BTTH2 — Phân loại vượt ngưỡng)",
-   "anh": "hinh/ml/lab02_confusion.png",
-   "notebook": "ml/notebooks/Lab02_PM25_HCM.ipynb"
+   "id": "ma_tran_nham_lan_canh_bao_pm25",
+   "mo_ta": "Đánh giá khả năng nhận diện đúng các ngày bụi mịn vượt ngưỡng an toàn (> 25 µg/m³).",
+   "nhom": "Phân loại",
+   "tieu_de": "Ma trận nhầm lẫn phân loại vượt ngưỡng PM2.5",
+   "anh": "hinh/ml/ma_tran_nham_lan_canh_bao_pm25.png",
+   "notebook": "ml/notebooks/02_phan_loai_canh_bao_pm25.ipynb"
   },
   {
-   "id": "lab02_roc",
-   "mo_ta": "Đánh giá độ nhạy (Recall) và diện tích dưới đường cong ROC (AUC) khi phát hiện ngày bụi mịn vượt ngưỡng.",
-   "tieu_de": "Đường cong ROC & Precision/Recall/F1 (BTTH2)",
-   "anh": "hinh/ml/lab02_roc.png",
-   "notebook": "ml/notebooks/Lab02_PM25_HCM.ipynb"
+   "id": "duong_cong_roc_canh_bao_pm25",
+   "mo_ta": "So sánh diện tích dưới đường cong ROC (AUC) và Precision/Recall/F1 của KNN, Decision Tree và Random Forest.",
+   "nhom": "Phân loại",
+   "tieu_de": "Đường cong ROC & Hiệu năng phân loại cảnh báo",
+   "anh": "hinh/ml/duong_cong_roc_canh_bao_pm25.png",
+   "notebook": "ml/notebooks/02_phan_loai_canh_bao_pm25.ipynb"
   },
   {
-   "id": "lab03_prophet",
-   "mo_ta": "Prophet học xu hướng + chu kỳ năm/tuần; 25% cuối chuỗi dùng để kiểm tra.",
-   "tieu_de": "Prophet: mùa vụ của PM2.5",
-   "anh": "hinh/ml/lab03_prophet.png",
-   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+   "id": "chuoi_thoi_gian_prophet_pm25",
+   "mo_ta": "Phân tích xu hướng dài hạn và chu kỳ mùa vụ bằng mô hình Prophet.",
+   "nhom": "Chuỗi thời gian",
+   "tieu_de": "Dự báo chuỗi thời gian PM2.5 bằng Prophet",
+   "anh": "hinh/ml/chuoi_thoi_gian_prophet_pm25.png",
+   "notebook": "ml/notebooks/03_chuoi_thoi_gian_pm25.ipynb"
   },
   {
-   "id": "lab03_ar",
-   "mo_ta": "Dự báo PM2.5 ngày mai từ 7 ngày trước bằng hồi quy tuyến tính.",
-   "tieu_de": "Tự hồi quy 7 ngày",
-   "anh": "hinh/ml/lab03_ar.png",
-   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+   "id": "tu_hoi_quy_7_ngay_pm25",
+   "mo_ta": "Dự báo PM2.5 ngày kế tiếp dựa trên chuỗi 7 ngày quan trắc liên tiếp trước đó.",
+   "nhom": "Chuỗi thời gian",
+   "tieu_de": "Mô hình tự hồi quy 7 ngày (AR-7) cho PM2.5",
+   "anh": "hinh/ml/tu_hoi_quy_7_ngay_pm25.png",
+   "notebook": "ml/notebooks/03_chuoi_thoi_gian_pm25.ipynb"
   },
   {
-   "id": "lab03_ar_do_am",
-   "mo_ta": "Thêm độ ẩm 7 ngày trước làm biến phụ (giống bài Lab dùng humidity).",
-   "tieu_de": "Tự hồi quy thêm độ ẩm",
-   "anh": "hinh/ml/lab03_ar_do_am.png",
-   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+   "id": "tu_hoi_quy_ket_hop_do_am",
+   "mo_ta": "Mở rộng mô hình tự hồi quy 7 ngày bổ sung biến khí tượng độ ẩm tương đối.",
+   "nhom": "Chuỗi thời gian",
+   "tieu_de": "Tự hồi quy kết hợp biến ngoại sinh độ ẩm",
+   "anh": "hinh/ml/tu_hoi_quy_ket_hop_do_am.png",
+   "notebook": "ml/notebooks/03_chuoi_thoi_gian_pm25.ipynb"
   },
   {
-   "id": "lab03_so_sanh",
-   "mo_ta": "RMSE dự báo ngày mai của Prophet và tự hồi quy so với cách đoán 'ngày mai = hôm nay'.",
-   "tieu_de": "So với mô hình nền",
-   "anh": "hinh/ml/lab03_so_sanh.png",
-   "notebook": "ml/notebooks/Lab03_PM25_HCM.ipynb"
+   "id": "so_sanh_mo_hinh_chuoi_thoi_gian",
+   "mo_ta": "Đối chiếu MAE và RMSE giữa mô hình nền (Persistence), Prophet và Tự hồi quy (AR).",
+   "nhom": "Chuỗi thời gian",
+   "tieu_de": "So sánh sai số các mô hình dự báo chuỗi thời gian",
+   "anh": "hinh/ml/so_sanh_mo_hinh_chuoi_thoi_gian.png",
+   "notebook": "ml/notebooks/03_chuoi_thoi_gian_pm25.ipynb"
   }
  ],
  "chi_so": {
-  "lab01": {
+  "hoi_quy": {
    "so_ngay": 1529,
    "mo_hinh": [
     {
@@ -143,7 +157,7 @@
     }
    ]
   },
-  "lab02": {
+  "phan_loai": {
    "nguong_ugm3": 25.0,
    "so_ngay_test": 382,
    "so_ngay_vuot_test": 210,
@@ -174,7 +188,7 @@
     }
    ]
   },
-  "lab03": {
+  "chuoi_thoi_gian": {
    "so_ngay_test": 381,
    "mo_hinh": [
     {

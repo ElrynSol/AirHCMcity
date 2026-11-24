@@ -50,9 +50,22 @@ $env_ = Join-Path $Goc '.env'
 if (-not (Test-Path $env_)) {
   Copy-Item (Join-Path $Goc '.env.example') $env_
   $jwt = & $vpy -c "import secrets; print(secrets.token_urlsafe(48))"
-  $mk = Read-Host 'Mật khẩu tài khoản postgres của PostgreSQL trên máy này'
+  # bỏ các phím đã bấm trong lúc chờ cài thư viện, để chúng không tự trả lời các câu hỏi dưới đây
+  try { $Host.UI.RawUI.FlushInputBuffer() } catch {}
+  do {
+    $mkAn = Read-Host 'Mật khẩu tài khoản postgres của PostgreSQL trên máy này' -AsSecureString   # gõ hiện dấu *, không lộ mật khẩu
+    $mk = [Runtime.InteropServices.Marshal]::PtrToStringBSTR([Runtime.InteropServices.Marshal]::SecureStringToBSTR($mkAn))
+    if (-not $mk) { Write-Host 'Chưa nhập mật khẩu, hãy nhập lại.' -ForegroundColor Yellow }
+  } until ($mk)
+  # Tên CSDL: Enter = air_quality_db. Đặt tên khác khi máy đã có một bản AirHCM (vd. airhcm_moi) để cài mới hoàn toàn.
+  do {
+    $ten = (Read-Host 'Tên cơ sở dữ liệu sẽ tạo (Enter = air_quality_db)').Trim()
+    if (-not $ten) { $ten = 'air_quality_db' }
+    $hopLe = $ten -match '^[A-Za-z_][A-Za-z0-9_]{0,62}$'
+    if (-not $hopLe) { Write-Host 'Tên chỉ gồm chữ không dấu, số, dấu gạch dưới và không bắt đầu bằng số.' -ForegroundColor Yellow }
+  } until ($hopLe)
   $nd = Get-Content $env_ -Encoding UTF8
-  $nd = $nd -replace '^JWT_SECRET_KEY=.*', "JWT_SECRET_KEY=$jwt" -replace '^DB_PASS=.*', "DB_PASS=$mk"
+  $nd = $nd -replace '^JWT_SECRET_KEY=.*', "JWT_SECRET_KEY=$jwt" -replace '^DB_PASS=.*', "DB_PASS=$mk" -replace '^DB_NAME=.*', "DB_NAME=$ten"
   [IO.File]::WriteAllLines($env_, $nd, (New-Object Text.UTF8Encoding $false))
   Write-Host 'Đã tạo .env (khóa JWT ngẫu nhiên). Mở .env để điền SMTP, GEMINI_API_KEY nếu cần.'
 } else { Write-Host 'Giữ .env hiện có' }

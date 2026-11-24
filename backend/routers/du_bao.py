@@ -204,6 +204,14 @@ def get_forecast_aqi():
     return ket_qua
 
 
+@router.get("/api/v1/phuong-phap")
+def get_phuong_phap():
+    """Hồ sơ phương pháp: mô hình theo từng chỉ số và tầm dự báo, độ phân giải không gian – thời gian của dữ liệu,
+    các bước tích hợp đa nguồn, quy trình và kết quả đánh giá (đọc từ tệp kết quả huấn luyện) — core/phuong_phap.py."""
+    from core import phuong_phap
+    return phuong_phap.tong_hop()
+
+
 @router.get("/api/v1/danh-gia-mo-hinh")
 def danh_gia_mo_hinh():
     """Số liệu đánh giá các mô hình theo ngày (tập kiểm tra theo thời gian, kiểm chéo cuốn chiếu, CI bootstrap)

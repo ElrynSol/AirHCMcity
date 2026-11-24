@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net" modified="2026-11-19T16:05:00.000Z" agent="AirHCM" version="24.0.0">
+  <diagram id="diag_1" name="1. Use-Case Hệ thống">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1360" pageHeight="960" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="HỆ THỐNG QUẢN LÝ, GIÁM SÁT VÀ DỰ BÁO CHẤT LƯỢNG KHÔNG KHÍ TP.HCM (AirHCM)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=15;fontStyle=1;fillColor=#f8fafc;strokeColor=#0f3460;strokeWidth=2;spacingTop=10;" vertex="1" parent="1"><mxGeometry x="240" y="20" width="820" height="900" as="geometry"/></mxCell>
+        <mxCell id="3" value="Khách / Người dùng
+(Viewer)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="60" y="220" width="48" height="90" as="geometry"/></mxCell>
+        <mxCell id="4" value="Quản trị viên
+(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="60" y="660" width="48" height="90" as="geometry"/></mxCell>
+        <mxCell id="5" value="Open-Meteo API
+(CAMS / ERA5)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="1170" y="140" width="44" height="80" as="geometry"/></mxCell>
+        <mxCell id="6" value="Google Earth Engine
+(Sentinel-5P)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="1170" y="320" width="44" height="80" as="geometry"/></mxCell>
+        <mxCell id="7" value="OpenAQ API v3
+(Trạm mặt đất)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="1170" y="500" width="44" height="80" as="geometry"/></mxCell>
+        <mxCell id="8" value="Gmail SMTP /
+Web Push" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;fontStyle=1;fillColor=#e2e8f0;strokeColor=#1e293b;" vertex="1" parent="1"><mxGeometry x="1170" y="690" width="44" height="80" as="geometry"/></mxCell>
+        <mxCell id="9" value="Đăng ký, Đăng nhập (2FA / Google OAuth)
+&amp; Khôi phục mật khẩu OTP" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="75" width="290" height="56" as="geometry"/></mxCell>
+        <mxCell id="10" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="9"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="11" value="Xem Tổng quan AQI &amp; Bản đồ 168 phường/xã" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="145" width="290" height="50" as="geometry"/></mxCell>
+        <mxCell id="12" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="11"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="13" value="Tra cứu không gian PostGIS
+(Bán kính, Khung, Đa giác, GPS)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="210" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="14" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="13"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="15" value="Xem Dự báo PM2.5 (24 giờ, 7 ngày)
+&amp; Đối chiếu trạm thật OpenAQ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="278" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="16" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="15"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="17" value="Mô phỏng kịch bản thời tiết – phát thải
+&amp; Phân tích Hoa gió ô nhiễm" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="345" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="18" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="17"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="19" value="Thống kê lịch sử, So sánh khu vực
+&amp; Xuất báo cáo PDF / Excel" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="412" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="20" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="19"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="21" value="Đăng ký cảnh báo Email / Web Push
+&amp; Cài ứng dụng Android (APK/PWA)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="478" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="22" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="21"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="23" value="Gửi phản ánh ô nhiễm cộng đồng
+&amp; Hỏi đáp Trợ lý AirHCM" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="545" width="290" height="52" as="geometry"/></mxCell>
+        <mxCell id="24" value="" style="endArrow=none;html=1;strokeColor=#1d4ed8;strokeWidth=1.2;" edge="1" parent="1" source="3" target="23"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="25" value="Quản lý danh mục điểm dữ liệu (CRUD PostGIS)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="625" width="290" height="48" as="geometry"/></mxCell>
+        <mxCell id="26" value="" style="endArrow=none;html=1;strokeColor=#b91c1c;strokeWidth=1.2;" edge="1" parent="1" source="4" target="25"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="27" value="Đồng bộ thủ công &amp; Xem trạng thái dữ liệu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="685" width="290" height="48" as="geometry"/></mxCell>
+        <mxCell id="28" value="" style="endArrow=none;html=1;strokeColor=#b91c1c;strokeWidth=1.2;" edge="1" parent="1" source="4" target="27"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="29" value="Duyệt phản ánh cộng đồng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="745" width="290" height="46" as="geometry"/></mxCell>
+        <mxCell id="30" value="" style="endArrow=none;html=1;strokeColor=#b91c1c;strokeWidth=1.2;" edge="1" parent="1" source="4" target="29"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="31" value="Giám sát luồng cảnh báo &amp; Nhật ký hệ thống" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="300" y="805" width="290" height="48" as="geometry"/></mxCell>
+        <mxCell id="32" value="" style="endArrow=none;html=1;strokeColor=#b91c1c;strokeWidth=1.2;" edge="1" parent="1" source="4" target="31"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="33" value="" style="endArrow=block;endFill=0;html=1;strokeColor=#334155;strokeWidth=1.5;" edge="1" parent="1" source="4" target="3"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="34" value="Đồng bộ tự động hằng ngày
+&amp; Nạp bù đủ 90 ngày" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#15803d;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="730" y="190" width="260" height="58" as="geometry"/></mxCell>
+        <mxCell id="35" value="Làm sạch, QA/QC &amp;
+Tính VN_AQI (QĐ 1459)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#15803d;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="730" y="320" width="260" height="58" as="geometry"/></mxCell>
+        <mxCell id="36" value="Huấn luyện &amp; Kiểm chứng
+3 bài toán Học máy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#15803d;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="730" y="450" width="260" height="58" as="geometry"/></mxCell>
+        <mxCell id="37" value="Đánh giá ngưỡng CDC &amp;
+Gửi cảnh báo tự động" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#15803d;fontSize=11.5;fontColor=#0f172a;" vertex="1" parent="1"><mxGeometry x="730" y="660" width="260" height="58" as="geometry"/></mxCell>
+        <mxCell id="38" value="«include»" style="dashed=1;endArrow=open;html=1;strokeColor=#15803d;fontSize=10.5;" edge="1" parent="1" source="34" target="35"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="39" value="«extend»" style="dashed=1;endArrow=open;html=1;strokeColor=#15803d;fontSize=10.5;" edge="1" parent="1" source="21" target="37"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="40" value="«include»" style="dashed=1;endArrow=open;html=1;strokeColor=#15803d;fontSize=10.5;" edge="1" parent="1" source="37" target="35"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="41" value="" style="endArrow=none;html=1;strokeColor=#15803d;" edge="1" parent="1" source="34" target="5"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="42" value="" style="endArrow=none;html=1;strokeColor=#15803d;" edge="1" parent="1" source="34" target="6"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="43" value="" style="endArrow=none;html=1;strokeColor=#15803d;" edge="1" parent="1" source="34" target="7"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="44" value="" style="endArrow=none;html=1;strokeColor=#15803d;" edge="1" parent="1" source="36" target="7"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="45" value="" style="endArrow=none;html=1;strokeColor=#15803d;" edge="1" parent="1" source="37" target="8"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

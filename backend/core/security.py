@@ -28,8 +28,17 @@ def chuan_hoa_email(email: str) -> str:
 
 
 def ip_cua(request: Request) -> str:
-    """IP người dùng. Sau reverse proxy (Caddy/Nginx), uvicorn chạy với --proxy-headers sẽ tự điền IP thật."""
-    return request.client.host if request.client else "?"
+    """IP thật của người dùng. Khi đi qua reverse proxy nội bộ (Cloudflare Tunnel / Caddy trên 127.0.0.1),
+    ưu tiên CF-Connecting-IP rồi đến X-Forwarded-For để mỗi người dùng Internet có hạn mức riêng."""
+    host = request.client.host if request.client else "?"
+    if host in ("127.0.0.1", "::1"):
+        cf_ip = (request.headers.get("cf-connecting-ip") or "").strip()
+        if cf_ip:
+            return cf_ip[:64]
+        xff = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip()
+        if xff:
+            return xff[:64]
+    return host
 
 
 def thiet_bi_cua(request: Request) -> str:

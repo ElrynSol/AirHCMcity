@@ -1,0 +1,62 @@
+{
+ "cap_nhat": "2026-11-22T20:49:28",
+ "du_lieu": "2022-08-04 → 2026-11-19",
+ "so_diem": 17,
+ "khung_toa_do": {
+  "lat": [
+   10.346,
+   11.204
+  ],
+  "lon": [
+   106.586,
+   107.169
+  ]
+ },
+ "o_luoi_theo_nam": [
+  {
+   "nam": 2022,
+   "so_diem": 13,
+   "so_o_luoi_khac_nhau": 4,
+   "so_o_luoi_khi_tuong_khac_nhau": 10
+  },
+  {
+   "nam": 2023,
+   "so_diem": 13,
+   "so_o_luoi_khac_nhau": 4,
+   "so_o_luoi_khi_tuong_khac_nhau": 10
+  },
+  {
+   "nam": 2024,
+   "so_diem": 13,
+   "so_o_luoi_khac_nhau": 4,
+   "so_o_luoi_khi_tuong_khac_nhau": 10
+  },
+  {
+   "nam": 2025,
+   "so_diem": 13,
+   "so_o_luoi_khac_nhau": 4,
+   "so_o_luoi_khi_tuong_khac_nhau": 10
+  },
+  {
+   "nam": 2026,
+   "so_diem": 17,
+   "so_o_luoi_khac_nhau": 8,
+   "so_o_luoi_khi_tuong_khac_nhau": 14
+  }
+ ],
+ "do_lech_chuan_giua_cac_diem_moi_ngay": 5.91,
+ "kiem_cheo_idw": {
+  "so_ngay": 97,
+  "toi_thieu_o_luoi_moi_ngay": 5,
+  "RMSE_idw": 6.418,
+  "RMSE_trung_binh_con_lai": 8.552,
+  "khong_gop_o_luoi": {
+   "so_ngay": 1569,
+   "RMSE_idw": 4.573,
+   "RMSE_trung_binh_con_lai": 6.97,
+   "ky_nang": 0.344
+  },
+  "ky_nang": 0.249
+ },
+ "dien_giai": "Số ô lưới khác nhau là độ phân giải không gian THỰC của số liệu CAMS; bản đồ 168 phường/xã là độ phân giải HIỂN THỊ do nội suy, không thêm thông tin mới. Kiểm chéo đã gộp các điểm cùng ô lưới để không bị lạc quan giả tạo."
+}

@@ -45,7 +45,9 @@ def _cho(giay: int) -> str:
 
 
 def _https(request: Request) -> bool:
-    return request.url.scheme == "https" or _bat("COOKIE_SECURE")
+    qua_proxy = bool(request.client and request.client.host in ("127.0.0.1", "::1"))
+    xfp = (request.headers.get("x-forwarded-proto") or "").split(",")[0].strip().lower()
+    return request.url.scheme == "https" or (qua_proxy and xfp == "https") or _bat("COOKIE_SECURE")
 
 
 def _dat_cookie(request: Request, response: Response, token: str, han: int, ghi_nho: bool) -> None:

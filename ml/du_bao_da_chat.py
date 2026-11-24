@@ -110,7 +110,7 @@ def main():
         print(f"{ten:<14} chọn: {dg['mo_hinh_chon']:<18} | RF kỹ năng {x['Random Forest']['ky_nang']:+.3f} CI {x['Random Forest']['ky_nang_ci95']} "
               f"| Ridge {x['Hồi quy tuyến tính']['ky_nang']:+.3f} CI {x['Hồi quy tuyến tính']['ky_nang_ci95']}")
     kq_tong = {"cap_nhat": datetime.now().isoformat(timespec="seconds"), "du_lieu": f"{df.index.min():%d/%m/%Y} → {df.index.max():%d/%m/%Y}",
-               "chat": kq, "khong_du_bao": {"NO2, CO, SO2": "Chỉ có cột khí vệ tinh Sentinel-5P (mol/m², trễ 2–3 tuần), không phải nồng độ "
+               "chat": kq, "khong_du_bao": {"NO2, CO, SO2": "CAMS có NO2, CO, SO2 nhưng các khí này phát thải tại chỗ (giao thông, công nghiệp) và tồn tại ngắn, lưới 44 km khó đại diện cho nồng độ ở phường; chưa có số đo mặt đất nào của ba khí để kiểm chứng; số liệu vệ tinh là lượng khí cả cột (mol/m²), trễ 1–2 tuần → chưa dự báo, chỉ dùng theo dõi hiện trạng và phân tích độ nhạy."
                                                             "mặt đất → không dự báo, không so với QCVN."},
                "luu_y": "Số liệu là trung bình thành phố từ mô hình CAMS. O₃ là trung bình ngày; QCVN dùng trung bình 8 giờ nên không kết luận vượt chuẩn."}
     (GOC / "models" / "du_bao_da_chat.json").write_text(json.dumps(kq_tong, ensure_ascii=False, indent=1), encoding="utf-8")

@@ -1,5 +1,5 @@
-"""Chạy các notebook phân tích (code bài Lab01, Lab03 môn Python cho Máy học — chỉ đổi dữ liệu đầu vào)
-rồi xuất biểu đồ lên web (trang Phương pháp).
+"""Chạy các notebook thực nghiệm học máy (Hồi quy, Phân loại cảnh báo, Chuỗi thời gian PM2.5 TP.HCM)
+rồi xuất biểu đồ lên web (trang Phương pháp & Độ chính xác).
 
 Chạy từ thư mục gốc dự án:
     python ml/notebooks/xuat_bieu_do.py            # chạy lại notebook + xuất ảnh
@@ -22,7 +22,11 @@ from pathlib import Path
 THU_MUC = Path(__file__).resolve().parent
 GOC = THU_MUC.parent.parent
 DICH = GOC / "frontend" / "hinh" / "ml"
-NOTEBOOK = ["Lab01_PM25_HCM.ipynb", "Lab02_PM25_HCM.ipynb", "Lab03_PM25_HCM.ipynb"]
+NOTEBOOK = [
+    "01_hoi_quy_pm25_hcm.ipynb",
+    "02_phan_loai_canh_bao_pm25.ipynb",
+    "03_chuoi_thoi_gian_pm25.ipynb",
+]
 
 
 def sua_prophet_windows() -> None:
@@ -91,14 +95,14 @@ def main() -> int:
         bieu_do += xuat(ten)
 
     chi_so = {}
-    for k in ("lab01", "lab02", "lab03"):
+    for k in ("hoi_quy", "phan_loai", "chuoi_thoi_gian"):
         f = THU_MUC / "ket_qua" / f"{k}_chi_so.json"
         if f.exists():
             chi_so[k] = json.loads(f.read_text(encoding="utf-8"))
 
     (DICH / "danh_sach.json").write_text(json.dumps({
         "cap_nhat": datetime.now().isoformat(timespec="seconds"),
-        "nguon": "Code bài Lab01 (Hồi quy), BTTH2/Lab02 (Phân loại), BTTH3/Lab03 (Chuỗi thời gian) môn Python cho Máy học; dữ liệu du_lieu/gio_cache.csv (TP.HCM)",
+        "nguon": "Thực nghiệm 3 bài toán học máy (Hồi quy, Phân loại vượt ngưỡng, Chuỗi thời gian) trên tập dữ liệu PM2.5 và khí tượng TP.HCM (du_lieu/gio_cache.csv)",
         "bieu_do": bieu_do,
         "chi_so": chi_so,
     }, ensure_ascii=False, indent=1), encoding="utf-8")

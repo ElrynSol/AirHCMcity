@@ -202,7 +202,7 @@
   }
  },
  "khong_du_bao": {
-  "NO2, CO, SO2": "Chỉ có cột khí vệ tinh Sentinel-5P (mol/m², trễ 2–3 tuần), không phải nồng độ mặt đất → không dự báo, không so với QCVN."
+  "NO2, CO, SO2": "CAMS có NO2, CO, SO2 nhưng các khí này phát thải tại chỗ (giao thông, công nghiệp) và tồn tại ngắn, lưới 44 km khó đại diện cho nồng độ ở phường; chưa có số đo mặt đất nào của ba khí để kiểm chứng; số liệu vệ tinh là lượng khí cả cột (mol/m²), trễ 1–2 tuần → chưa dự báo, chỉ dùng theo dõi hiện trạng và phân tích độ nhạy."
  },
  "luu_y": "Số liệu là trung bình thành phố từ mô hình CAMS. O₃ là trung bình ngày; QCVN dùng trung bình 8 giờ nên không kết luận vượt chuẩn."
 }

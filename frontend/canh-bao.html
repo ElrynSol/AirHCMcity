@@ -84,7 +84,7 @@
       <h3 style="margin:0;">Diễn biến hôm nay (PM2.5 theo giờ)</h3>
       <span class="gio-hien-tai-badge" id="gioHienTaiBadge"></span>
     </div>
-    <canvas id="bieuDoHomNay" height="110"></canvas>
+    <div style="position:relative; height:260px;"><canvas id="bieuDoHomNay"></canvas></div>
     <p class="luu-y" style="margin-top:10px;">* Chỉ hiển thị từ 00:00 đến giờ hiện tại; mặc định là trung tâm TP.HCM, bấm "Dùng vị trí hiện tại" để xem theo vị trí của bạn. Để xem chi tiết theo từng điểm và các ngày trước, vào trang Bản đồ.</p>
   </div>
 
@@ -203,19 +203,20 @@ goiApi('/aqi-tat-ca-tram')
     tbody.innerHTML = '';
     let aqiMax = 0, mucDoMax = 'Tốt', tramMax = '';
 
+    const _esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     data.forEach(d => {
       const cls = badgeClass[d.muc_do] || '';
       const icon = iconMuc[d.muc_do] || '';
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td><b>${d.ma_tram}</b> - ${d.ten_tram}</td>
+        <td><b>${_esc(d.ma_tram)}</b> - ${_esc(d.ten_tram)}</td>
         <td class="aqi-so">${d.aqi ?? '--'}</td>
-        <td>${d.chat_gay_o_nhiem ?? '--'}</td>
-        <td><span class="badge ${cls}">${icon} ${d.muc_do}</span></td>
+        <td>${_esc(d.chat_gay_o_nhiem ?? '--')}</td>
+        <td><span class="badge ${cls}">${icon} ${_esc(d.muc_do)}</span></td>
         <td>${dinhDangNgayVN(d.ngay_do)}</td>
       `;
       tbody.appendChild(row);
-      if (d.aqi && d.aqi > aqiMax) { aqiMax = d.aqi; mucDoMax = d.muc_do; tramMax = `${d.ma_tram} - ${d.ten_tram}`; }
+      if (d.aqi && d.aqi > aqiMax) { aqiMax = d.aqi; mucDoMax = d.muc_do; tramMax = `${_esc(d.ma_tram)} - ${_esc(d.ten_tram)}`; }
     });
 
     mucDoHienTai = mucDoMax;
@@ -261,16 +262,17 @@ function timViTri() {
       if (tatCa.length === 0) { box.innerHTML = '<p style="color:#999;">Chưa có dữ liệu tọa độ điểm.</p>'; return; }
       // Chỉ lấy điểm trong bán kính NGUONG_KM; điểm xa hơn không đại diện cho vị trí của bạn
       const cacTramCoKhoangCach = tatCa.filter(d => d.khoangCach <= NGUONG_KM).slice(0, 3);
+      const _esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       if (cacTramCoKhoangCach.length === 0) {
         const gan = tatCa[0];
-        box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">Bạn đang ở xa khu vực quan trắc: điểm gần nhất là <b>${gan.ma_tram} - ${gan.ten_tram}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
+        box.innerHTML = `<div style="padding:14px;background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;font-size:13.5px;">Bạn đang ở xa khu vực quan trắc: điểm gần nhất là <b>${_esc(gan.ma_tram)} - ${_esc(gan.ten_tram)}</b>, cách ${gan.khoangCach.toFixed(0)} km (ngoài ${NGUONG_KM} km nên không đại diện cho vị trí của bạn).</div>`;
         return;
       }
       taiDienBienHomNay(latitude, longitude);
       box.innerHTML = `<b>Điểm trong bán kính ${NGUONG_KM} km quanh bạn (tối đa 3 điểm):</b>` + cacTramCoKhoangCach.map(d => `
         <div style="padding:14px; background:${mauNen[d.muc_do] || '#f9f9f9'}; border-left:4px solid ${mauVien[d.muc_do] || '#999'}; border-radius:8px; margin-top:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b style="font-size:14px;">${d.ma_tram} - ${d.ten_tram}</b>
+            <b style="font-size:14px;">${_esc(d.ma_tram)} - ${_esc(d.ten_tram)}</b>
             <span style="font-size:12px; color:#666;">cách ${d.khoangCach.toFixed(1)} km</span>
           </div>
           <div style="display:flex; gap:16px; margin-top:8px; flex-wrap:wrap;">
@@ -343,7 +345,7 @@ function taiDienBienHomNay(lat = 10.7769, lon = 106.7009) {
           }]
         },
         options: {
-          responsive: true,
+          responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: { x: { ticks: { maxTicksLimit: 8 } }, y: { title: { display: true, text: 'µg/m³' } } }
         }

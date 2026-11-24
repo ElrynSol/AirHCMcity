@@ -451,8 +451,9 @@ async function hienThongTinViTri(lat, lon) {
     });
     if (!best) { box.textContent = 'Chưa có điểm nào.'; return; }
     const a = list.find(x => x.ten_tram === best.s.ten_tram);
-    box.innerHTML = `Điểm gần nhất: <b>${best.s.ma_tram} · ${best.s.ten_tram}</b> (${best.km.toFixed(1)} km)<br>` +
-      (a ? `AQI: <b>${a.aqi ?? '--'}</b> · ${a.muc_do ?? ''}` : 'Chưa có AQI') +
+    const _esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    box.innerHTML = `Điểm gần nhất: <b>${_esc(best.s.ma_tram)} · ${_esc(best.s.ten_tram)}</b> (${best.km.toFixed(1)} km)<br>` +
+      (a ? `AQI: <b>${a.aqi ?? '--'}</b> · ${_esc(a.muc_do ?? '')}` : 'Chưa có AQI') +
       `<div style="font-size:11px;color:#667085;margin-top:4px;">Số liệu của điểm gần nhất, không phải đo trực tiếp tại vị trí của bạn.</div>`;
   } catch (e) { box.textContent = e.message; }
 }

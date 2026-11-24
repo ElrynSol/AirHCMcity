@@ -15,6 +15,7 @@ router = APIRouter()
 
 @router.get("/api/v1/du-lieu-pm25")
 def get_pm25_history(so_ngay: int = 30, db: Session = Depends(get_db)):
+    so_ngay = max(1, min(so_ngay, 365))
     result = db.execute(text("""
         SELECT ngay_do, pm25_mean, pm10_mean
         FROM du_lieu_tram_mat_dat

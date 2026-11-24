@@ -163,7 +163,8 @@ def kiem_csdl(tao: bool):
             else:
                 loi("CSDL chưa bật PostGIS → chạy lại với --tao-csdl (cần cài gói PostGIS cho PostgreSQL)")
             so = c.execute(text("SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")).scalar()
-            (ok if so > 3 else canh_bao)(f"{so} bảng" + ("" if so > 3 else " — CSDL trống: khôi phục backup.sql hoặc chạy data_pipeline/run_pipeline.py"))
+            (ok if so > 3 else canh_bao)(f"{so} bảng" + ("" if so > 3 else " — CSDL mới, chưa có dữ liệu: chạy chay_server.bat (tự tạo bảng, nạp ranh giới) rồi "
+                                              "venv\\Scripts\\python data_pipeline\\du_lieu_mo.py --nhap"))
     except Exception as e:
         thong_diep = str(e).splitlines()[0]
         if tao and "does not exist" in thong_diep:

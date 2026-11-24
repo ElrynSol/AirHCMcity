@@ -26,7 +26,7 @@ Nhờ vậy, mỗi phần có thể sửa, kiểm thử và triển khai riêng 
 | Máy chủ | `backend/` | API FastAPI: xác thực, dữ liệu, AQI, dự báo, cảnh báo, sự kiện thời gian thực, trợ lý AI |
 | Giao diện web | `frontend/` | 22 trang web (bản đồ, dự báo, thống kê, báo cáo...), cài đặt được như ứng dụng (PWA) |
 | Ứng dụng di động | `mobile/` | Đóng gói web thành ứng dụng Android (Capacitor) |
-| Kiểm thử | `tests/`, `tools/` | 138 ca kiểm thử tự động (pytest) + kiểm thử đầu-cuối 6 luồng dữ liệu |
+| Kiểm thử | `tests/`, `tools/` | 228 ca kiểm thử tự động (pytest) + kiểm thử đầu-cuối 6 luồng dữ liệu |
 | Triển khai | `dong_goi/` | Docker đa kiến trúc, bản chạy 24/7 (Caddy HTTPS, sao lưu), kiểm tra môi trường, tạo bản nộp |
 | Tài liệu | `docs/` | Tài liệu cấu trúc này, lịch sử phiên bản, hình minh họa |
 
@@ -40,12 +40,12 @@ air_quality_project/
 │   ├── routers/        Các nhóm đường dẫn API (mỗi tệp = một nhóm chức năng)
 │   └── services/       Xử lý nghiệp vụ, truy vấn PostGIS (router gọi service, service truy cập dữ liệu)
 ├── frontend/           Giao diện web: 22 trang HTML + mã JS/CSS dùng chung, PWA
-├── ml/                 Tính AQI, huấn luyện, dự báo · notebooks/ (Lab01, Lab03 môn Python cho Máy học)
+├── ml/                 Tính AQI, huấn luyện, dự báo · notebooks/ (thực nghiệm hồi quy, phân loại, chuỗi thời gian PM2.5)
 ├── models/             Mô hình đã huấn luyện (.pkl, .joblib) + chỉ số đánh giá (.json)
 ├── data_pipeline/      Tải, làm sạch, nạp, đồng bộ dữ liệu; nạp ranh giới phường vào PostGIS
 ├── du_lieu/            gio_cache.csv (số liệu theo giờ đã tải) · ranh_gioi/ (168 phường/xã, bản gọn)
 ├── mobile/             Ứng dụng Android (Capacitor) + tệp cài đặt AirHCM.apk
-├── tests/              142 kiểm thử tự động (pytest)
+├── tests/              228 kiểm thử tự động (pytest)
 ├── tools/              kiem_thu_luong_du_lieu.py: kiểm thử đầu-cuối 6 luồng dữ liệu trên máy chủ đang chạy
 ├── dong_goi/           Docker (máy cá nhân + máy chủ 24/7), Caddyfile, trien_khai/, kiểm tra môi trường, tạo bản nộp
 ├── docs/               Tài liệu: cấu trúc, CSDL PostGIS, triển khai Oracle, đăng nhập mạng xã hội
@@ -88,6 +88,7 @@ air_quality_project/
 | `logbus.py` | Nhật ký tập trung: mọi thành phần ghi về một bảng `nhat_ky_he_thong` |
 | `events.py` | Bus sự kiện nội bộ theo mô hình publish/subscribe |
 | `day_su_kien.py` | Đẩy sự kiện từ bus ra trình duyệt bằng Server-Sent Events (SSE) |
+| `phuong_phap.py` | Hồ sơ phương pháp: mô hình theo chỉ số và tầm dự báo, độ phân giải không gian – thời gian, các bước tích hợp đa nguồn, quy tắc kết luận đánh giá; đọc chỉ số từ `models/` (API `/api/v1/phuong-phap`) |
 
 **`routers/` — các nhóm API** (mỗi tệp tương ứng một nhóm chức năng trên web)
 
@@ -178,10 +179,15 @@ air_quality_project/
 | `train_downscale_model.py` | Làm mịn không gian (spatial downscaling) PM2.5, PM10, O₃ |
 | `phan_cum_tram.py` | Phân cụm các trạm theo mức ô nhiễm (K-Means) |
 | `predict.py` | Dùng mô hình đã huấn luyện để dự báo theo ngày |
-| `notebooks/Lab01_PM25_HCM.ipynb` | Code bài Lab01 môn Python cho Máy học (hồi quy, 6 mô hình, tương quan) áp dụng cho PM2.5 TP.HCM |
-| `notebooks/Lab03_PM25_HCM.ipynb` | Code bài Lab03 (Prophet, tự hồi quy 7 ngày) áp dụng cho PM2.5 TP.HCM, so với mô hình nền |
+| `notebooks/01_hoi_quy_pm25_hcm.ipynb` | Phân tích tương quan khí tượng và hồi quy PM2.5 (so sánh 6 thuật toán) trên dữ liệu TP.HCM |
+| `notebooks/02_phan_loai_canh_bao_pm25.ipynb` | Phân loại nguy cơ ngày PM2.5 vượt ngưỡng an toàn (> 25 µg/m³) bằng KNN, Decision Tree và Random Forest |
+| `notebooks/03_chuoi_thoi_gian_pm25.ipynb` | Phân tích chuỗi thời gian và tự hồi quy 7 ngày dự báo PM2.5 (so với mô hình nền) |
 | `notebooks/xuat_bieu_do.py` | Chạy 2 notebook và xuất biểu đồ lên web |
+| `danh_gia_noi_suy.py` | Đo độ phân giải hiệu dụng (số ô lưới CAMS/khí tượng khác nhau mỗi năm) và kiểm chéo bỏ một ô của nội suy IDW → `models/danh_gia_noi_suy.json` |
+| `du_bao_da_chat.py`, `mo_hinh_tram_that.py`, `danh_gia_xac_suat.py` | Dự báo ngày mai PM2.5/PM10/O3 (Ridge/RF tự chọn theo KTC 95%); mô hình học từ số đo thật CMT8; kiểm chứng dự báo xác suất (PICP, Brier) |
 | `doi_chieu_bai_bao.py` | Đối chiếu với bài báo Rakholia và cs. (Urban Climate 2022): đặc điểm PM2.5 theo giờ/ngày trong tuần, so sánh SGD – Gradient Boosting – MLP, thí nghiệm cửa sổ huấn luyện |
+
+Tóm tắt bốn nội dung mô hình – độ phân giải – tích hợp – đánh giá: `docs/PHUONG_PHAP_DU_BAO.md`.
 
 `models/` chứa kết quả của các script trên: `random_forest_pm25*.pkl`, `downscale_*.pkl`, `du_bao_gio.joblib`, `kmeans_phan_cum.pkl`... cùng các tệp `.json` lưu chỉ số đánh giá được hiển thị trên trang Phương pháp.
 
@@ -216,7 +222,7 @@ air_quality_project/
 
 ### 3.7. `tests/` — Kiểm thử tự động
 
-148 ca kiểm thử chạy **không cần CSDL và không gọi API thật**: tính AQI (`test_aqi.py`), xác thực (`test_auth.py`), dự báo theo ngày/giờ (`test_train_model.py`, `test_predict.py`, `test_du_bao_gio.py`), bản đồ nhiệt (`test_ban_do_nhiet.py`), kịch bản (`test_kich_ban.py`), đồng bộ (`test_dong_bo.py`), IoT (`test_iot.py`), trợ lý AI (`test_tro_ly.py`), đối chiếu trạm thật (`test_doi_chieu.py`), bảo mật đăng nhập + SEO (`test_bao_mat.py`).
+228 ca kiểm thử chạy **không cần CSDL và không gọi API thật**: tính AQI (`test_aqi.py`), xác thực (`test_auth.py`), dự báo theo ngày/giờ (`test_train_model.py`, `test_predict.py`, `test_du_bao_gio.py`), bản đồ nhiệt (`test_ban_do_nhiet.py`), kịch bản (`test_kich_ban.py`), đồng bộ (`test_dong_bo.py`), IoT (`test_iot.py`), trợ lý AI (`test_tro_ly.py`), đối chiếu trạm thật (`test_doi_chieu.py`), bảo mật đăng nhập + SEO (`test_bao_mat.py`).
 
 Kiểm thử đầu-cuối trên máy chủ đang chạy (dùng CSDL và mạng thật): `python tools/kiem_thu_luong_du_lieu.py`.
 

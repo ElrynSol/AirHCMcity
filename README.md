@@ -161,9 +161,8 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 - Ngoài số liệu hiện tại, trợ lý được nạp **tài liệu dự án** (`README.md`, `mobile/README_MOBILE.md`, tự đọc lại khi tệp đổi) nên trả lời được câu hỏi về kiến trúc, cách tính AQI, mô hình, IoT, cách chạy… Chỉ dùng thông tin có trong tài liệu, không bịa.
 - Không có khóa: chế độ tự động có thêm ý định "đồ án" (tóm tắt kiến trúc, công nghệ, cách chạy).
 
-## v6.0 — Bảo mật doanh nghiệp, chạy nền, triển khai 24/7, phân tích theo bài Lab
-- **Phân tích theo bài Lab môn Python cho Máy học**: `ml/notebooks/Lab01_PM25_HCM.ipynb` (hồi quy, so sánh 6 mô hình, tương quan)
-  và `Lab03_PM25_HCM.ipynb` (Prophet, tự hồi quy 7 ngày). Code giữ nguyên từ bài Lab, chỉ đổi dữ liệu đầu vào sang PM2.5 TP.HCM.
+## v6.0 — Bảo mật doanh nghiệp, chạy nền, triển khai 24/7, thực nghiệm học máy chuyên sâu
+- **Thực nghiệm 3 bài toán Học máy trên dữ liệu PM2.5 TP.HCM**: `ml/notebooks/01_hoi_quy_pm25_hcm.ipynb` (hồi quy, so sánh 6 mô hình, tương quan khí tượng), `02_phan_loai_canh_bao_pm25.ipynb` (phân loại nguy cơ vượt ngưỡng > 25 µg/m³) và `03_chuoi_thoi_gian_pm25.ipynb` (Prophet, tự hồi quy 7 ngày).
   `python ml/notebooks/xuat_bieu_do.py` chạy lại và đưa 12 biểu đồ lên trang Phương pháp. Kết quả trung thực:
   thời tiết cùng ngày giải thích khoảng 50% biến động PM2.5 (gió quan trọng nhất); tự hồi quy chỉ hơn "ngày mai = hôm nay" khoảng 6%.
 - **Đăng nhập chuẩn doanh nghiệp**: xem mục Bảo mật; trang mới `tai-khoan.html`.
@@ -260,8 +259,16 @@ Trang `luong-canh-bao.html` (mở từ trang Nhật ký): chạy từng giai đo
 - **Dự báo nhiều chất** PM2.5, PM10, O₃ (`ml/du_bao_da_chat.py`): Ridge hơn "mai = hôm nay" 5–7%, khoảng tin cậy bootstrap không chứa 0;
   NO₂/CO/SO₂ ghi rõ không dự báo (chỉ có cột khí vệ tinh).
 - QA/QC số đo thật: loại mã lỗi 985 của AirNow. Xác suất vượt ngưỡng ghi rõ "thử nghiệm" (Brier chưa hơn khí hậu). Kịch bản ghi rõ là phân tích độ nhạy.
-- Khảo sát **SUS** (`khao-sat.html`), bảng so sánh với các hệ thống hiện có (Giới thiệu), kiểm thử giao diện tĩnh, bỏ gọi cứng `localhost:8000`.
+- Bảng so sánh với các hệ thống hiện có (Giới thiệu), kiểm thử giao diện tĩnh, bỏ gọi cứng `localhost:8000`.
 - Bí mật ra ngoài OneDrive (`%USERPROFILE%\.airhcm\`), script `sao_luu_csdl.ps1`. 201 kiểm thử.
+
+## v6.10 — Trình bày rõ mô hình, độ phân giải, tích hợp dữ liệu và đánh giá
+
+- `GET /api/v1/phuong-phap` (`backend/core/phuong_phap.py`): mô hình cho từng chỉ số và tầm dự báo, độ phân giải không gian – thời gian
+  qua từng khâu, các bước tích hợp đa nguồn, quy trình và quy tắc kết luận đánh giá; số liệu đọc từ tệp kết quả trong `models/`.
+- Trang Phương pháp thêm 4 mục tương ứng. Tài liệu tóm tắt: `docs/PHUONG_PHAP_DU_BAO.md`.
+- `ml/danh_gia_noi_suy.py`: đo độ phân giải hiệu dụng (17 điểm thuộc 8 ô lưới CAMS) và kiểm chéo bỏ một ô của IDW (đã gộp điểm cùng ô).
+- 228 kiểm thử (thêm `tests/test_phuong_phap.py`).
 
 ## Mã nguồn mở và bộ dữ liệu
 

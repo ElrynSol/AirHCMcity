@@ -45,12 +45,16 @@ def _nguon(url: str | None) -> str | None:
 
 class BaoMatHTTP(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        https = request.url.scheme == "https"
+        qua_proxy = bool(request.client and request.client.host in ("127.0.0.1", "::1"))
+        xfp = (request.headers.get("x-forwarded-proto") or "").split(",")[0].strip().lower()
+        https = request.url.scheme == "https" or (qua_proxy and xfp == "https")
+        scheme_that = "https" if https else request.url.scheme
 
         if request.method in _PHUONG_THUC_GHI and request.cookies.get(COOKIE_NAME):
             nguon = _nguon(request.headers.get("origin")) or _nguon(request.headers.get("referer"))
-            cua_minh = f"{request.url.scheme}://{request.url.netloc}".lower()
-            duoc_phep = {cua_minh, *(o.lower().rstrip("/") for o in CORS_ORIGINS)}
+            cua_minh = f"{scheme_that}://{request.url.netloc}".lower()
+            duoc_phep = {cua_minh, f"{request.url.scheme}://{request.url.netloc}".lower(),
+                         *(o.lower().rstrip("/") for o in CORS_ORIGINS)}
             if nguon is not None and nguon not in duoc_phep:
                 return JSONResponse({"detail": "Yêu cầu bị từ chối (sai nguồn gốc – nghi ngờ CSRF)"}, status_code=403)
 

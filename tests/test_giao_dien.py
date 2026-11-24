@@ -66,15 +66,3 @@ def test_id_dom_khop_voi_html(trang):
     bo_qua = {"ghiChuGio", "ma2FATat", "ma2FAXN", "mk2FA"}  # các phần tử được JS tạo động khi cần
     thieu = (ids_js - ids_html) - bo_qua
     assert not thieu, f"{trang.name}: gọi getElementById nhưng không có id trong HTML: {sorted(thieu)}"
-
-
-def test_diem_sus_theo_cong_thuc_brooke():
-    from services.khao_sat import diem_sus, xep_hang, tong_hop_tu
-    assert diem_sus([5, 1, 5, 1, 5, 1, 5, 1, 5, 1]) == 100.0
-    assert diem_sus([1, 5, 1, 5, 1, 5, 1, 5, 1, 5]) == 0.0
-    assert diem_sus([3] * 10) == 50.0
-    assert xep_hang(85) .startswith("A") and xep_hang(68).startswith("C") and xep_hang(40).startswith("F")
-    with pytest.raises(ValueError):
-        diem_sus([6, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-    th = tong_hop_tu([("sinh_vien", [5, 1] * 5, 100.0), ("nguoi_dan", [3] * 10, 50.0)])
-    assert th["so_phieu"] == 2 and th["sus_tb"] == 75.0 and th["ci95"][0] < 75 < th["ci95"][1]

@@ -49,12 +49,18 @@ def nhap(engine):
             if c.execute(text(f"SELECT EXISTS (SELECT 1 FROM {bang})")).scalar():
                 print(f"  bỏ qua {bang}: bảng đã có dữ liệu"); continue
             df = pd.read_csv(f)
+            # Chỉ nạp các cột mà bảng trên máy này thật sự có (CSDL cài mới có thể thiếu cột phụ của bản cũ, vd. nhom_o_nhiem)
+            cot = {r[0] for r in c.execute(text(
+                "SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = :b"), {"b": bang})}
             if bang == "tram_quan_trac":
-                c.execute(text("""INSERT INTO tram_quan_trac (id, ma_tram, ten_tram, toado, trang_thai, nhom_o_nhiem)
-                    VALUES (:id, :ma_tram, :ten_tram, ST_SetSRID(ST_MakePoint(:kinh_do, :vi_do), 4326), :trang_thai, :nhom_o_nhiem)"""),
+                them = ["trang_thai"] + (["nhom_o_nhiem"] if "nhom_o_nhiem" in cot and "nhom_o_nhiem" in df.columns else [])
+                c.execute(text(f"""INSERT INTO tram_quan_trac (id, ma_tram, ten_tram, toado, {', '.join(them)})
+                    VALUES (:id, :ma_tram, :ten_tram, ST_SetSRID(ST_MakePoint(:kinh_do, :vi_do), 4326), {', '.join(':' + k for k in them)})"""),
                     df.astype(object).where(df.notna(), None).to_dict("records"))
             else:
-                df.to_sql(bang, c, if_exists="append", index=False, method="multi", chunksize=2000)
+                bo = [k for k in df.columns if k not in cot]
+                if bo: print(f"  {bang}: bỏ qua cột không có trong bảng: {', '.join(bo)}")
+                df[[k for k in df.columns if k in cot]].to_sql(bang, c, if_exists="append", index=False, method="multi", chunksize=2000)
             c.execute(text(f"SELECT setval(pg_get_serial_sequence('{bang}', 'id'), (SELECT MAX(id) FROM {bang}))"))
             print(f"  {bang:<24} nạp {len(df):,} dòng")
 

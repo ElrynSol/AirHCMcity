@@ -1,6 +1,5 @@
 # Thư viện cho notebook phân tích (ml/notebooks/) — KHÔNG cần cho máy chủ.
 # Cài: pip install -r requirements.txt -r ml/notebooks/requirements-notebook.txt
-# (giống thư viện các bài Lab01, Lab03 môn Python cho Máy học)
 seaborn>=0.13
 mlxtend>=0.23
 prophet>=1.1.5

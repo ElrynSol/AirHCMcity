@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from core import logbus
+from core.security import ip_cua
 from services import tro_ly
 from services.tong_quan import tong_quan
 
@@ -41,7 +42,7 @@ async def hoi(request: Request):
         raise HTTPException(status_code=400, detail="Chưa có câu hỏi")
     cau_hoi = cau_hoi[:tro_ly.DO_DAI_CAU_HOI]
     lich_su = tro_ly.lam_sach_lich_su((body or {}).get("lich_su"))
-    ip = request.client.host if request.client else "?"
+    ip = ip_cua(request)
     ncc = tro_ly.nha_cung_cap()
     duoc, dung_ai, thong_bao = tro_ly.kiem_tra_gioi_han(ip, ncc is not None)
     if not duoc:

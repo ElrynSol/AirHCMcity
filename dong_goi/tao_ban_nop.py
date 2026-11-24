@@ -7,7 +7,7 @@ Chạy từ bất kỳ đâu:
     python dong_goi/tao_ban_nop.py --thu            # chỉ liệt kê, không tạo zip
     python dong_goi/tao_ban_nop.py --khong-mo-hinh  # bỏ models/ (nhẹ hơn ~28 MB, phải huấn luyện lại mới chạy dự báo)
     python dong_goi/tao_ban_nop.py --khong-apk      # bỏ mobile/AirHCM.apk
-    python dong_goi/tao_ban_nop.py --kiem-thu       # chạy 142 kiểm thử tự động trước; có lỗi thì không đóng gói
+    python dong_goi/tao_ban_nop.py --kiem-thu       # chạy toàn bộ kiểm thử tự động (228 ca) trước; có lỗi thì không đóng gói
 Trong zip có MUC_LUC.txt: phiên bản, ngày tạo, danh sách tệp kèm SHA-256 (kiểm tra bản nộp không bị sửa/hỏng).
 Zip vừa tạo được mở lại và kiểm tra CRC từng tệp. Chỉ dùng thư viện chuẩn của Python.
 """
@@ -32,7 +32,8 @@ DUONG_DAN_BO = {"tools/cu",            # công cụ cũ dùng một lần (đã 
                 "ml/notebooks/data"}   # dữ liệu ngày do notebook tự tạo lại từ du_lieu/gio_cache.csv
 # File bí mật / dữ liệu cá nhân / nhật ký máy
 TEP_BO = {".env", "gee-key.json", "backup.sql", "mlflow.db", "log_dong_bo.txt", "local.properties", ".dong_bo.lock",
-          "ĐCCT_NgôHoàngDũng_12_ĐH_THMT.docx", "Lab01.ipynb", "BTTH2.ipynb", "BTTH3.ipynb"}   # bài tập gốc để tham khảo, không thuộc bản nộp
+          "Bao_cao_Do_an_Chuyen_nganh_AirHCM_1250080037.docx",
+          "Bao_cao_AirHCM_DaSua_MoDau_Chuong1.docx"}   # bản nháp báo cáo cũ (báo cáo nộp riêng ở thư mục 01_Bao_cao)
 DUOI_BO = {".pyc", ".log", ".sql", ".gz", ".pem", ".key", ".keystore", ".jks"}
 
 DUOI_VAN_BAN = {".py", ".js", ".html", ".css", ".md", ".txt", ".json", ".toml", ".yml", ".yaml", ".bat", ".ps1",
@@ -49,6 +50,8 @@ def bi_bo(rel: Path, khong_mo_hinh: bool, khong_apk: bool) -> bool:
     if any(p in THU_MUC_BO for p in rel.parts[:-1]) or any(s == d or s.startswith(d + "/") for d in DUONG_DAN_BO):
         return True
     ten = rel.name
+    if s.startswith("backend/sql/") and rel.suffix.lower() == ".sql":
+        return False   # cấu trúc bảng (không chứa dữ liệu) – máy chủ cần để tạo CSDL mới
     if ten in TEP_BO or (ten.startswith(".env.") and ten != ".env.example") or rel.suffix.lower() in DUOI_BO:
         return True
     if rel.parts[0] == "models" and ten.startswith("downscale_"):
